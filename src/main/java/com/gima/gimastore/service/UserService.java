@@ -12,15 +12,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+
 public class UserService {
 
     private UserRepository userRepo;
 
+    public UserService(UserRepository userRepo) {
+    	this. userRepo=userRepo;
+    }
     public UserDTO addUser(UserDTO userDTO) {
+    	
         User map = ObjectMapperUtils.map(userDTO, User.class);
         map.setRole(new Role(userDTO.getRoleId()));
         User user = userRepo.save(map);
+        
         return ObjectMapperUtils.map(user, UserDTO.class);
     }
 

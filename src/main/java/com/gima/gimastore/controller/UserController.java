@@ -1,6 +1,7 @@
 package com.gima.gimastore.controller;
 
 import com.gima.gimastore.model.UserDTO;
+import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,12 +10,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@AllArgsConstructor
+
 @CrossOrigin(origins = "*")
 public class UserController {
 
     private UserService userService;
-
+    public UserController(UserService userService) {
+    	this. userService=userService;
+    }
     @PostMapping
     public ResponseEntity<?> insertUser(@RequestBody UserDTO dto) {
         try {

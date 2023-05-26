@@ -5,13 +5,15 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+
+import com.gima.gimastore.service.UserService;
+
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "Roles")
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class Role implements Serializable {
 
     @Id
@@ -24,6 +26,10 @@ public class Role implements Serializable {
     @OneToMany(mappedBy = "role")
     private List<User> userList;
 
+    
+    public Role() {
+    	
+    }
     public Role(Long id) {
         this.id = id;
     }
