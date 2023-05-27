@@ -1,5 +1,6 @@
 package com.gima.gimastore.model;
 
+import com.gima.gimastore.entity.Role;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ public class UserDTO implements Serializable {
     private String firstName;
     @NotNull
     private String lastName;
-    private Long roleId;
+    private Role role;
 
     public Long getId() {
         return id;
@@ -62,11 +63,11 @@ public class UserDTO implements Serializable {
         this.lastName = lastName;
     }
 
-    public Long getRoleId() {
-        return roleId;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

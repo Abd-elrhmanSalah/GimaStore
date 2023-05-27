@@ -2,6 +2,8 @@ package com.gima.gimastore.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -33,6 +35,7 @@ public class User implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "role_id")
+    @LazyCollection(value = LazyCollectionOption.TRUE)
     private Role role;
 
     public Long getId() {

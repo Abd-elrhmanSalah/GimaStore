@@ -1,31 +1,47 @@
 package com.gima.gimastore.controller;
 
+import com.gima.gimastore.exception.ApplicationException;
+import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.UserDTO;
-import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.service.UserService;
-import lombok.AllArgsConstructor;
+import com.gima.gimastore.util.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
+import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
+
 @RestController
 @RequestMapping("/user")
-
 @CrossOrigin(origins = "*")
 public class UserController {
 
     private UserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
     public UserController(UserService userService) {
-    	this. userService=userService;
+        this.userService = userService;
     }
+
     @PostMapping
-    public ResponseEntity<?> insertUser(@RequestBody UserDTO dto) {
+    public ResponseEntity<?> insertUser(@Valid @RequestBody UserDTO dto) {
         try {
             userService.addUser(dto);
-            return new ResponseEntity<>("Success", HttpStatus.OK);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "User added" + SUCCESS.getMessage()), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
             ex.printStackTrace();
-            return new ResponseEntity<>("error in save", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -33,20 +49,36 @@ public class UserController {
     @PatchMapping
     public ResponseEntity<?> updateUser(@RequestBody UserDTO dto) {
         try {
-            return new ResponseEntity<>(userService.updateUser(dto), HttpStatus.OK);
+            userService.updateUser(dto);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "User Updated" + SUCCESS.getMessage()), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
             ex.printStackTrace();
-            return new ResponseEntity<>("error in update", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteUser(@RequestBody UserDTO dto) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
-            return new ResponseEntity<>(userService.updateUser(dto), HttpStatus.OK);
+            userService.deleteUser(id);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "User deleted" + SUCCESS.getMessage()), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
             ex.printStackTrace();
-            return new ResponseEntity<>("error in delete", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -54,9 +86,15 @@ public class UserController {
     public ResponseEntity<?> getAllUsers() {
         try {
             return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
             ex.printStackTrace();
-            return new ResponseEntity<>("error in fetching data", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -64,9 +102,15 @@ public class UserController {
     public ResponseEntity<?> getUsersById(@PathVariable Long id) {
         try {
             return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
             ex.printStackTrace();
-            return new ResponseEntity<>("error in fetching data", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

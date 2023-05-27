@@ -1,13 +1,9 @@
 package com.gima.gimastore.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-
-import com.gima.gimastore.service.UserService;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -17,19 +13,21 @@ import java.util.List;
 public class Role implements Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id")
     private Long id;
     @Column(name = "ROLENAME")
     private String roleName;
 
-    @OneToMany(mappedBy = "role")
-    private List<User> userList;
+//    @OneToMany(mappedBy = "role")
+//
+//    private List<User> userList;
 
-    
+
     public Role() {
-    	
+
     }
+
     public Role(Long id) {
         this.id = id;
     }
@@ -50,11 +48,11 @@ public class Role implements Serializable {
         this.roleName = roleName;
     }
 
-    public List<User> getUserList() {
-        return userList;
-    }
-
-    public void setUserList(List<User> userList) {
-        this.userList = userList;
-    }
+//    public List<User> getUserList() {
+//        return userList;
+//    }
+//
+//    public void setUserList(List<User> userList) {
+//        this.userList = userList;
+//    }
 }
