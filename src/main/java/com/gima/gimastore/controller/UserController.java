@@ -50,8 +50,11 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<?> updateUser(@RequestPart UserDTO dto, @RequestParam("avatar") MultipartFile file) {
+    public ResponseEntity<?> updateUser(@RequestPart String stringDto, @RequestParam("avatar") MultipartFile file) {
         try {
+            Gson gson = new Gson();
+            UserDTO dto = gson.fromJson(stringDto, UserDTO.class);
+
             userService.updateUser(dto, file);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تعديل بيانات المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
 
