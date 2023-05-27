@@ -5,9 +5,9 @@ public enum ResponseCodes {
     SUCCESS("111", "SUCCESS", " successfully"),
     SUBMIT_REQUEST("000", "Submit requests Error", "can't submit the requests "),
     NO_USER("001", "UserId Error", "This userId not exist"),
+    LOGIN_FAILED("002", "Login Error", "Username Or Password not correct"),
 
 
-    BANKCBE_CODE("002", "Bank CBE Error", "Bank CBE Code not valid"),
     TRANSACTION_TYPE("003", "TransactionType Error", "TransactionType Code not valid"),
     DEPITBUDGET_CATEGOR("004", "DebitBudget Category Error", "DebitBudget Category code not exist"),
     DEPITBUDGET_TYPE("005", "DebitBudget Type Error", "DebitBudget Type code not exist"),
