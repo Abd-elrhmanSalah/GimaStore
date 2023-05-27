@@ -5,15 +5,19 @@ import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.UserDTO;
 import com.gima.gimastore.repository.UserRepository;
+import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.gima.gimastore.constant.ResponseCodes.NO_USER;
+import static com.gima.gimastore.constant.ResponseCodes.REPEATED_USERNAME;
 
 @Service
 
@@ -25,20 +29,31 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    public UserDTO addUser(UserDTO userDTO) {
+    public UserDTO addUser(UserDTO userDTO, MultipartFile file) throws IOException {
 
+        validateUserName(userDTO.getUserName());
         User map = ObjectMapperUtils.map(userDTO, User.class);
-        map.setRole(userDTO.getRole());
 
-        return ObjectMapperUtils.map(userRepo.save(map), UserDTO.class);
+        map.setRole(userDTO.getRole());
+        User savedUser = userRepo.save(map);
+        if(!file.isEmpty())
+        savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
+
+        return ObjectMapperUtils.map(userRepo.save(savedUser), UserDTO.class);
     }
 
-    public UserDTO updateUser(UserDTO userDTO) {
+    public UserDTO updateUser(UserDTO userDTO, MultipartFile file) throws IOException  {
+
         Optional<User> userById = userRepo.findById(userDTO.getId());
         if (Objects.isNull(userById) || userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER.getCode(), NO_USER.getKey(), NO_USER.getMessage()));
 
-        return ObjectMapperUtils.map(userRepo.save(ObjectMapperUtils.map(userDTO, User.class)), UserDTO.class);
+        validateUserName(userDTO.getUserName());
+        User savedUser = userRepo.save(ObjectMapperUtils.map(userDTO, User.class));
+        if(!file.isEmpty())
+            savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
+
+        return ObjectMapperUtils.map(userRepo.save(savedUser), UserDTO.class);
     }
 
     public void deleteUser(Long id) {
@@ -46,7 +61,7 @@ public class UserService {
         if (Objects.isNull(userById) || userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER.getCode(), NO_USER.getKey(), NO_USER.getMessage()));
 
-        userRepo.delete(ObjectMapperUtils.map(userById, User.class));
+        userRepo.deleteById(userById.get().getId());
 
     }
 
@@ -60,8 +75,15 @@ public class UserService {
         Optional<User> userById = userRepo.findById(id);
         if (Objects.isNull(userById) || userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER.getCode(), NO_USER.getKey(), NO_USER.getMessage()));
+        UserDTO userDto = ObjectMapperUtils.map(userById.get(), UserDTO.class);
+        userDto.setAvatar(ImageUtil.decompressImage(userById.get().getAvatar()));
+        return userDto;
+    }
 
-        return ObjectMapperUtils.map(userById.get(), UserDTO.class);
+    private void validateUserName(String username) {
+        if (userRepo.existsByUserName(username))
+            throw new ApplicationException(new StatusResponse(REPEATED_USERNAME.getCode(), REPEATED_USERNAME.getKey(), REPEATED_USERNAME.getMessage()));
+
     }
 }
 

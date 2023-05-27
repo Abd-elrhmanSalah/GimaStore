@@ -36,16 +36,21 @@ public class User implements Serializable {
     @LazyCollection(value = LazyCollectionOption.TRUE)
     private Role role;
 
+    @Lob
+    @Column(name = "AVATAR", length = 1000)
+    private byte[] avatar;
+
     public User() {
     }
 
-    public User(Long id, String userName, String password, String firstName, String lastName, Role role) {
+    public User(Long id, String userName, String password, String firstName, String lastName, Role role, byte[] avatar) {
         this.id = id;
         this.userName = userName;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
+        this.avatar = avatar;
     }
 
     public Long getId() {
@@ -94,5 +99,13 @@ public class User implements Serializable {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public byte[] getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
     }
 }

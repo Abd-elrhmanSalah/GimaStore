@@ -3,6 +3,7 @@ package com.gima.gimastore.model;
 import com.gima.gimastore.entity.Role;
 import com.sun.istack.NotNull;
 
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 
@@ -12,6 +13,7 @@ public class UserDTO implements Serializable {
     @NotNull
     private String userName;
     @NotNull
+    @Size(min = 6, message = "كلمة السر لا يجب ان تقل عن 6")
     private String password;
     @NotNull
     private String firstName;
@@ -19,16 +21,19 @@ public class UserDTO implements Serializable {
     private String lastName;
     private Role role;
 
+    private byte[] avatar;
+
     public UserDTO() {
     }
 
-    public UserDTO(Long id, String userName, String password, String firstName, String lastName, Role role) {
+    public UserDTO(Long id, String userName, String password, String firstName, String lastName, Role role, byte[] avatar) {
         this.id = id;
         this.userName = userName;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
+        this.avatar = avatar;
     }
 
     public Long getId() {
@@ -77,5 +82,13 @@ public class UserDTO implements Serializable {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public byte[] getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
     }
 }

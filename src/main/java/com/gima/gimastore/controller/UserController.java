@@ -10,8 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
 
@@ -28,10 +27,10 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> insertUser(@Valid @RequestBody UserDTO dto) {
+    public ResponseEntity<?> insertUser(@RequestPart UserDTO dto, @RequestParam("avatar") MultipartFile file) {
         try {
-            userService.addUser(dto);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "User added" + SUCCESS.getMessage()), HttpStatus.OK);
+            userService.addUser(dto, file);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت إضافة المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -47,10 +46,10 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<?> updateUser(@RequestBody UserDTO dto) {
+    public ResponseEntity<?> updateUser(@RequestPart UserDTO dto, @RequestParam("avatar")MultipartFile file) {
         try {
-            userService.updateUser(dto);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "User Updated" + SUCCESS.getMessage()), HttpStatus.OK);
+            userService.updateUser(dto,file);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تعديل بيانات المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -68,7 +67,7 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "User deleted" + SUCCESS.getMessage()), HttpStatus.OK);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم حذف المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
