@@ -2,6 +2,7 @@ package com.gima.gimastore.model;
 
 import com.gima.gimastore.entity.Role;
 import com.sun.istack.NotNull;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -20,7 +21,7 @@ public class UserDTO implements Serializable {
     @NotNull
     private String lastName;
     private Role role;
-
+    private MultipartFile file;
     private byte[] avatar;
 
     public UserDTO() {
@@ -90,5 +91,13 @@ public class UserDTO implements Serializable {
 
     public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
 }
