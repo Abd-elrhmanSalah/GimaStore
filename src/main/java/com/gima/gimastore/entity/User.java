@@ -1,7 +1,6 @@
 package com.gima.gimastore.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -10,8 +9,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "USERS")
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,6 +35,18 @@ public class User implements Serializable {
     @JoinColumn(name = "role_id")
     @LazyCollection(value = LazyCollectionOption.TRUE)
     private Role role;
+
+    public User() {
+    }
+
+    public User(Long id, String userName, String password, String firstName, String lastName, Role role) {
+        this.id = id;
+        this.userName = userName;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
+    }
 
     public Long getId() {
         return id;

@@ -1,12 +1,6 @@
-
-
-
 package com.gima.gimastore.constant;
 
-import lombok.Getter;
 
-
-@Getter
 public enum ResponseCodes {
     SUCCESS("111", "SUCCESS", " successfully"),
     SUBMIT_REQUEST("000", "Submit requests Error", "can't submit the requests "),
@@ -46,5 +40,17 @@ public enum ResponseCodes {
         this.code = code;
         this.key = key;
         this.message = message;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

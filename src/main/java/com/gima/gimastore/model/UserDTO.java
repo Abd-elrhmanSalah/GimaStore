@@ -2,14 +2,10 @@ package com.gima.gimastore.model;
 
 import com.gima.gimastore.entity.Role;
 import com.sun.istack.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 
-@AllArgsConstructor
-@NoArgsConstructor
 public class UserDTO implements Serializable {
 
     private Long id;
@@ -22,6 +18,18 @@ public class UserDTO implements Serializable {
     @NotNull
     private String lastName;
     private Role role;
+
+    public UserDTO() {
+    }
+
+    public UserDTO(Long id, String userName, String password, String firstName, String lastName, Role role) {
+        this.id = id;
+        this.userName = userName;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
+    }
 
     public Long getId() {
         return id;
