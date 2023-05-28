@@ -1,8 +1,9 @@
 package com.gima.gimastore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.gima.gimastore.entity.Role;
 import com.sun.istack.NotNull;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -21,20 +22,18 @@ public class UserDTO implements Serializable {
     @NotNull
     private String lastName;
     private Role role;
-    private MultipartFile file;
+
     private byte[] avatar;
+    @JsonIgnore
+    @JsonDeserialize
+    private Boolean changePassword;
+
+    @JsonIgnore
+    @JsonDeserialize
+    private String oldPassword;
+
 
     public UserDTO() {
-    }
-
-    public UserDTO(Long id, String userName, String password, String firstName, String lastName, Role role, byte[] avatar) {
-        this.id = id;
-        this.userName = userName;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.role = role;
-        this.avatar = avatar;
     }
 
     public Long getId() {
@@ -93,11 +92,19 @@ public class UserDTO implements Serializable {
         this.avatar = avatar;
     }
 
-    public MultipartFile getFile() {
-        return file;
+    public Boolean getChangePassword() {
+        return changePassword;
     }
 
-    public void setFile(MultipartFile file) {
-        this.file = file;
+    public void setChangePassword(Boolean changePassword) {
+        this.changePassword = changePassword;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
     }
 }

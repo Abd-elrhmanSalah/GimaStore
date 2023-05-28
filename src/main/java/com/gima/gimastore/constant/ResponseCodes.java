@@ -5,9 +5,9 @@ public enum ResponseCodes {
     SUCCESS("111", "SUCCESS", " بنجاح"),
     SUBMIT_REQUEST("000", "Submit requests Error", "can't submit the requests "),
     NO_USER("001", "UserId Error", "Tهذا المستخدم غير موجود"),
-    REPEATED_USERNAME("002", "UserName Error", "اسم المستخدم موجود بالغل"),
+    REPEATED_USERNAME("002", "UserName Error", "اسم المستخدم موجود بالفعل"),
     LOGIN_FAILED("003", "Login Error", "اسم المستخدم او كلمة السر غير صحيحة"),
-
+    PASSWORD_INCORRECT("003", "Old Password Error", "كلمة السر غير صحيحة"),
 
     DEPITBUDGET_CATEGOR("004", "DebitBudget Category Error", "DebitBudget Category code not exist"),
     DEPITBUDGET_TYPE("005", "DebitBudget Type Error", "DebitBudget Type code not exist"),

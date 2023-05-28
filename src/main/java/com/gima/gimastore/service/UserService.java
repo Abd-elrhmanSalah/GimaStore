@@ -16,8 +16,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.gima.gimastore.constant.ResponseCodes.NO_USER;
-import static com.gima.gimastore.constant.ResponseCodes.REPEATED_USERNAME;
+import static com.gima.gimastore.constant.ResponseCodes.*;
 
 @Service
 
@@ -36,21 +35,27 @@ public class UserService {
 
         map.setRole(userDTO.getRole());
         User savedUser = userRepo.save(map);
-        if(!file.isEmpty())
-        savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
+        if (!file.isEmpty())
+            savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
 
         return ObjectMapperUtils.map(userRepo.save(savedUser), UserDTO.class);
     }
 
-    public UserDTO updateUser(UserDTO userDTO, MultipartFile file) throws IOException  {
+    public UserDTO updateUser(UserDTO userDTO, MultipartFile file) throws IOException {
 
         Optional<User> userById = userRepo.findById(userDTO.getId());
         if (Objects.isNull(userById) || userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER.getCode(), NO_USER.getKey(), NO_USER.getMessage()));
 
-        validateUserName(userDTO.getUserName());
+        validateUserNameAndID(userDTO.getUserName(), userDTO.getId());
+
+        if (userDTO.getChangePassword() == true) {
+            if (!userRepo.existsByPasswordAndId(userDTO.getOldPassword(), userDTO.getId()))
+                throw new ApplicationException(new StatusResponse(PASSWORD_INCORRECT.getCode(), PASSWORD_INCORRECT.getKey(), PASSWORD_INCORRECT.getMessage()));
+        }
         User savedUser = userRepo.save(ObjectMapperUtils.map(userDTO, User.class));
-        if(!file.isEmpty())
+
+        if (!file.isEmpty())
             savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
 
         return ObjectMapperUtils.map(userRepo.save(savedUser), UserDTO.class);
@@ -83,6 +88,13 @@ public class UserService {
     private void validateUserName(String username) {
         if (userRepo.existsByUserName(username))
             throw new ApplicationException(new StatusResponse(REPEATED_USERNAME.getCode(), REPEATED_USERNAME.getKey(), REPEATED_USERNAME.getMessage()));
+
+    }
+
+    private void validateUserNameAndID(String username, Long userId) {
+        if (!userRepo.findById(userId).get().getUserName().equals(username))
+            if (userRepo.existsByUserName(username))
+                throw new ApplicationException(new StatusResponse(REPEATED_USERNAME.getCode(), REPEATED_USERNAME.getKey(), REPEATED_USERNAME.getMessage()));
 
     }
 }
