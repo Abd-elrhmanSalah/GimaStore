@@ -1,11 +1,9 @@
 package com.gima.gimastore.entity;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
 @Entity
 @Table(name = "Roles")
@@ -16,12 +14,9 @@ public class Role implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id")
     private Long id;
-    @Column(name = "ROLENAME")
+    @Column(name = "ROLE_NAME")
+    @Nationalized
     private String roleName;
-
-//    @OneToMany(mappedBy = "role")
-//
-//    private List<User> userList;
 
 
     public Role() {

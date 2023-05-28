@@ -4,13 +4,13 @@ package com.gima.gimastore.constant;
 public enum ResponseCodes {
     SUCCESS("111", "SUCCESS", " بنجاح"),
     SUBMIT_REQUEST("000", "Submit requests Error", "can't submit the requests "),
-    NO_USER("001", "UserId Error", "Tهذا المستخدم غير موجود"),
+    NO_USER_ID("001", "UserId Error", "هذا المستخدم غير موجود"),
     REPEATED_USERNAME("002", "UserName Error", "اسم المستخدم موجود بالفعل"),
     LOGIN_FAILED("003", "Login Error", "اسم المستخدم او كلمة السر غير صحيحة"),
-    PASSWORD_INCORRECT("003", "Old Password Error", "كلمة السر غير صحيحة"),
+    PASSWORD_INCORRECT("004", "Old Password Error", "كلمة السر غير صحيحة"),
 
-    DEPITBUDGET_CATEGOR("004", "DebitBudget Category Error", "DebitBudget Category code not exist"),
-    DEPITBUDGET_TYPE("005", "DebitBudget Type Error", "DebitBudget Type code not exist"),
+    NO_STORE_ID("005", "StoreId Error", "لايوجد مخزن بهذا الID"),
+    NO_ROLE_ID("006", "RoleId Error", "لا يوجد "),
     CREDITBUDGET_CATEGOR("006", "CreditBudget Category Error", "CreditBudget Category code not exist"),
     CREDITBUDGET_TYPE("007", "CreditBudget Type Error", "CreditBudget Type code not exist"),
 

@@ -1,9 +1,11 @@
 package com.gima.gimastore.service;
 
+import com.gima.gimastore.entity.Role;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.UserDTO;
+import com.gima.gimastore.repository.RoleRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
@@ -23,9 +25,11 @@ import static com.gima.gimastore.constant.ResponseCodes.*;
 public class UserService {
 
     private UserRepository userRepo;
+    private RoleRepository roleRepo;
 
-    public UserService(UserRepository userRepo) {
+    public UserService(UserRepository userRepo, RoleRepository roleRepo) {
         this.userRepo = userRepo;
+        this.roleRepo = roleRepo;
     }
 
     public UserDTO addUser(UserDTO userDTO, MultipartFile file) throws IOException {
@@ -45,7 +49,7 @@ public class UserService {
 
         Optional<User> userById = userRepo.findById(userDTO.getId());
         if (Objects.isNull(userById) || userById.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_USER.getCode(), NO_USER.getKey(), NO_USER.getMessage()));
+            throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
 
         validateUserNameAndID(userDTO.getUserName(), userDTO.getId());
 
@@ -64,7 +68,7 @@ public class UserService {
     public void deleteUser(Long id) {
         Optional<User> userById = userRepo.findById(id);
         if (Objects.isNull(userById) || userById.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_USER.getCode(), NO_USER.getKey(), NO_USER.getMessage()));
+            throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
 
         userRepo.deleteById(userById.get().getId());
 
@@ -79,10 +83,19 @@ public class UserService {
     public UserDTO getUserById(Long id) {
         Optional<User> userById = userRepo.findById(id);
         if (Objects.isNull(userById) || userById.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_USER.getCode(), NO_USER.getKey(), NO_USER.getMessage()));
+            throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
         UserDTO userDto = ObjectMapperUtils.map(userById.get(), UserDTO.class);
         userDto.setAvatar(ImageUtil.decompressImage(userById.get().getAvatar()));
         return userDto;
+    }
+
+    public List<UserDTO> getAllUsersByRoleId(Long roleId) {
+        Optional<Role> role = roleRepo.findById(roleId);
+        if (role.isEmpty())
+            throw new ApplicationException(new StatusResponse(NO_ROLE_ID.getCode(), NO_ROLE_ID.getKey(), NO_ROLE_ID.getMessage()));
+
+        List<User> users = userRepo.findByRole(ObjectMapperUtils.map(role.get(), Role.class));
+        return ObjectMapperUtils.mapAll(users, UserDTO.class);
     }
 
     private void validateUserName(String username) {

@@ -2,39 +2,36 @@ package com.gima.gimastore.controller;
 
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
-import com.gima.gimastore.model.UserDTO;
-import com.gima.gimastore.service.UserService;
+import com.gima.gimastore.model.StoreDTO;
+import com.gima.gimastore.service.StoreService;
 import com.gima.gimastore.util.Utils;
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 
 import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/store")
 @CrossOrigin(origins = "*")
-public class UserController {
+public class StoreController {
+    private StoreService storeService;
 
-    private UserService userService;
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public StoreController(StoreService storeService) {
+        this.storeService = storeService;
     }
 
     @PostMapping
-    public ResponseEntity<?> insertUser(@RequestPart String stringDto, @RequestPart("avatar") MultipartFile file) {
+    public ResponseEntity<?> addStore(@Valid @RequestBody StoreDTO dto) {
         try {
-            Gson gson = new Gson();
-            UserDTO dto = gson.fromJson(stringDto, UserDTO.class);
-
-            userService.addUser(dto, file);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت إضافة المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
+            storeService.add(dto);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت إضافة المخزن" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -46,17 +43,13 @@ public class UserController {
             return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     @PatchMapping
-    public ResponseEntity<?> updateUser(@RequestPart String stringDto, @RequestParam("avatar") MultipartFile file) {
+    public ResponseEntity<?> updateStore(@Valid @RequestBody StoreDTO dto) {
         try {
-            Gson gson = new Gson();
-            UserDTO dto = gson.fromJson(stringDto, UserDTO.class);
-
-            userService.updateUser(dto, file);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تعديل بيانات المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
+            storeService.update(dto);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت تعديل المخزن" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -71,10 +64,10 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteStore(@PathVariable Long id) {
         try {
-            userService.deleteUser(id);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم حذف المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
+            storeService.delete(id);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت حذف المخزن" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -89,9 +82,11 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllUsers() {
+    public ResponseEntity<?> getAllStores() {
         try {
-            return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+
+            return new ResponseEntity<>(storeService.findAll(), HttpStatus.OK);
+
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
@@ -105,9 +100,11 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUsersById(@PathVariable Long id) {
+    public ResponseEntity<?> getStoreById(@PathVariable Long id) {
         try {
-            return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
+
+            return new ResponseEntity<>(storeService.findById(id), HttpStatus.OK);
+
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
@@ -119,19 +116,5 @@ public class UserController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/getByRoleId/{id}")
-    public ResponseEntity<?> getUsersByRole(@PathVariable Long id) {
-        try {
-            return new ResponseEntity<>(userService.getAllUsersByRoleId(id), HttpStatus.OK);
-        } catch (ApplicationException e) {
-            logger.error(e.getMessage(), e);
-            e.printStackTrace();
-            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
-            ex.printStackTrace();
-            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+
 }

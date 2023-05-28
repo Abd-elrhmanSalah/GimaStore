@@ -3,13 +3,13 @@ package com.gima.gimastore.entity;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "USERS")
-
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -20,15 +20,19 @@ public class User implements Serializable {
     private Long id;
 
     @Column(name = "USER_NAME")
+    @Nationalized
     private String userName;
 
     @Column(name = "PASSWORD")
+    @Nationalized
     private String password;
 
     @Column(name = "FIRST_NAME")
+    @Nationalized
     private String firstName;
 
     @Column(name = "LAST_NAME")
+    @Nationalized
     private String lastName;
 
     @ManyToOne
@@ -41,6 +45,10 @@ public class User implements Serializable {
     private byte[] avatar;
 
     public User() {
+    }
+
+    public User(Long id) {
+        this.id = id;
     }
 
     public User(Long id, String userName, String password, String firstName, String lastName, Role role, byte[] avatar) {
