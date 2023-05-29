@@ -2,41 +2,37 @@ package com.gima.gimastore.controller;
 
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
-import com.gima.gimastore.model.UserDTO;
-import com.gima.gimastore.service.UserService;
+import com.gima.gimastore.model.PartDTO;
+import com.gima.gimastore.service.PartService;
 import com.gima.gimastore.util.Utils;
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 
 import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/part")
 @CrossOrigin(origins = "*")
-public class UserController {
+public class PartController {
 
-    private UserService userService;
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private PartService partService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    private static final Logger logger = LoggerFactory.getLogger(PartController.class);
+
+    public PartController(PartService partService) {
+        this.partService = partService;
     }
 
     @PostMapping
-    public ResponseEntity<?> insertUser(@RequestPart String stringDto, @RequestPart("avatar") MultipartFile file) {
+    public ResponseEntity<?> addPart(@Valid @RequestBody PartDTO dto) {
         try {
-            Gson gson = new Gson();
-            UserDTO dto = gson.fromJson(stringDto, UserDTO.class);
-
-            userService.addUser(dto, file);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت إضافة المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
+            partService.add(dto);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت إضافة الجزء" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -48,17 +44,13 @@ public class UserController {
             return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     @PatchMapping
-    public ResponseEntity<?> updateUser(@RequestPart String stringDto, @RequestParam("avatar") MultipartFile file) {
+    public ResponseEntity<?> updatePart(@Valid @RequestBody PartDTO dto) {
         try {
-            Gson gson = new Gson();
-            UserDTO dto = gson.fromJson(stringDto, UserDTO.class);
-
-            userService.updateUser(dto, file);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تعديل بيانات المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
+            partService.update(dto);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت تعديل الجزء" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -73,10 +65,10 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deletePart(@PathVariable Long id) {
         try {
-            userService.deleteUser(id);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم حذف المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
+            partService.delete(id);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت حذف الجزء" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -91,9 +83,11 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllUsers() {
+    public ResponseEntity<?> getAllParts() {
         try {
-            return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+
+            return new ResponseEntity<>(partService.findAll(), HttpStatus.OK);
+
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
@@ -107,30 +101,11 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUsersById(@PathVariable Long id) {
+    public ResponseEntity<?> getPartById(@PathVariable Long id) {
         try {
-//            UserDTO userById = userService.getUserById(id);
-//
-//            return ResponseEntity.ok()
-//                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + userById.getUserName() + "\"")
-//
-//                    .body(userById);
-            return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
-        } catch (ApplicationException e) {
-            logger.error(e.getMessage(), e);
-            e.printStackTrace();
-            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
-            ex.printStackTrace();
-            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @GetMapping("/getByRoleId/{id}")
-    public ResponseEntity<?> getUsersByRole(@PathVariable Long id) {
-        try {
-            return new ResponseEntity<>(userService.getAllUsersByRoleId(id), HttpStatus.OK);
+
+            return new ResponseEntity<>(partService.findById(id), HttpStatus.OK);
+
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();

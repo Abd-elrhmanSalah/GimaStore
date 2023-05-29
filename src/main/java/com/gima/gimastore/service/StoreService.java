@@ -17,8 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.gima.gimastore.constant.ResponseCodes.NO_STORE_ID;
-import static com.gima.gimastore.constant.ResponseCodes.NO_USER_ID;
+import static com.gima.gimastore.constant.ResponseCodes.*;
 
 @Service
 public class StoreService implements CommonRepo<StoreDTO> {
@@ -45,6 +44,11 @@ public class StoreService implements CommonRepo<StoreDTO> {
         Optional<User> byId = userRepo.findById(dto.getUserDTO().getId());
         if (byId.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_STORE_ID.getMessage()));
+
+
+        if (storeRepo.existsByUser(byId.get()))
+            throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
+
         Store store = ObjectMapperUtils.map(dto, Store.class);
         store.setUser(new User(dto.getUserDTO().getId()));
         storeRepo.save(store);
@@ -71,8 +75,8 @@ public class StoreService implements CommonRepo<StoreDTO> {
         List<Store> storeList = storeRepo.findAll();
         return storeList.stream().map(store -> {
             StoreDTO storeDto = ObjectMapperUtils.map(store, StoreDTO.class);
-            if(!Objects.isNull(store.getUser()))
-            storeDto.setUserDTO(ObjectMapperUtils.map(store.getUser(), UserDTO.class));
+            if (!Objects.isNull(store.getUser()))
+                storeDto.setUserDTO(ObjectMapperUtils.map(store.getUser(), UserDTO.class));
             return storeDto;
         }).collect(Collectors.toList());
 
