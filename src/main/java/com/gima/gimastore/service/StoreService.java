@@ -1,6 +1,7 @@
 package com.gima.gimastore.service;
 
 import com.gima.gimastore.entity.Store;
+import com.gima.gimastore.entity.Supplier;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
@@ -56,6 +57,10 @@ public class StoreService implements CommonRepo<StoreDTO> {
 
     @Override
     public void delete(Long id) {
+        Optional<Store> byId = storeRepo.findById(id);
+        if (Objects.isNull(byId))
+            throw new ApplicationException(new StatusResponse(NO_STORE_ID.getCode(), NO_STORE_ID.getKey(), NO_STORE_ID.getMessage()));
+
         storeRepo.deleteById(id);
 
     }

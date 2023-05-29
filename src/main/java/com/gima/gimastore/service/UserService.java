@@ -50,7 +50,7 @@ public class UserService {
     public void updateUser(UserDTO userDTO, MultipartFile file) throws IOException {
 
         Optional<User> userById = userRepo.findById(userDTO.getId());
-        if (Objects.isNull(userById) || userById.isEmpty())
+        if ( userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
 
         validateUserNameAndID(userDTO.getUserName(), userDTO.getId());
@@ -69,7 +69,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         Optional<User> userById = userRepo.findById(id);
-        if (Objects.isNull(userById) || userById.isEmpty())
+        if ( userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
 
         userRepo.deleteById(userById.get().getId());
@@ -95,7 +95,7 @@ public class UserService {
 
     public UserDTO getUserById(Long id) throws IOException, DataFormatException {
         Optional<User> userById = userRepo.findById(id);
-        if (Objects.isNull(userById) || userById.isEmpty())
+        if (userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
 
         UserDTO userDto = ObjectMapperUtils.map(userById.get(), UserDTO.class);

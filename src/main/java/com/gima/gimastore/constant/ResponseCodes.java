@@ -14,6 +14,9 @@ public enum ResponseCodes {
     NO_PART_ID("007", "PartId Error", "لا يوجد  "),
     EXIST_USER_WITH_STORE("008", "User Exist", "هذا المستخدم يشرف على مخزن بالفعل "),
     REPEATED_PARTNAME("009", "PartName Error", "اسم القطعة موجودة بالفعل"),
+    NO_SUPPLIER_ID("010", "SupplierId Error", "لايوجد مورد بهذا الID"),
+    REPEATED_SUPPLIERNAME("011", "SupplierName Error", "اسم المورد موجود بالفعل"),
+
     CREDITBUDGET_CATEGOR("006", "CreditBudget Category Error", "CreditBudget Category code not exist"),
     CREDITBUDGET_TYPE("007", "CreditBudget Type Error", "CreditBudget Type code not exist"),
 
