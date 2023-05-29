@@ -85,7 +85,10 @@ public class UserService {
         if (Objects.isNull(userById) || userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
         UserDTO userDto = ObjectMapperUtils.map(userById.get(), UserDTO.class);
-        userDto.setAvatar(ImageUtil.decompressImage(userById.get().getAvatar()));
+        if (!Objects.isNull(userById.get().getAvatar()))
+            userDto.setAvatar(userById.get().getAvatar());
+
+//        userDto.setAvatar(ImageUtil.decompressImage(userById.get().getAvatar()));
         return userDto;
     }
 

@@ -5,6 +5,7 @@ import com.gima.gimastore.entity.User;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.StoreDTO;
+import com.gima.gimastore.model.UserDTO;
 import com.gima.gimastore.repository.CommonRepo;
 import com.gima.gimastore.repository.StoreRepository;
 import com.gima.gimastore.repository.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.gima.gimastore.constant.ResponseCodes.NO_STORE_ID;
 import static com.gima.gimastore.constant.ResponseCodes.NO_USER_ID;
@@ -59,12 +61,20 @@ public class StoreService implements CommonRepo<StoreDTO> {
         Optional<Store> store = storeRepo.findById(id);
         if (store.isEmpty() || Objects.isNull(store))
             throw new ApplicationException(new StatusResponse(NO_STORE_ID.getCode(), NO_STORE_ID.getKey(), NO_STORE_ID.getMessage()));
-
-        return ObjectMapperUtils.map(store.get(), StoreDTO.class);
+        StoreDTO storedto = ObjectMapperUtils.map(store, StoreDTO.class);
+        storedto.setUserDTO(ObjectMapperUtils.map(store.get().getUser(), UserDTO.class));
+        return storedto;
     }
 
     @Override
     public List<StoreDTO> findAll() {
-        return ObjectMapperUtils.mapAll(storeRepo.findAll(), StoreDTO.class);
+        List<Store> storeList = storeRepo.findAll();
+        return storeList.stream().map(store -> {
+            StoreDTO storeDto = ObjectMapperUtils.map(store, StoreDTO.class);
+            if(!Objects.isNull(store.getUser()))
+            storeDto.setUserDTO(ObjectMapperUtils.map(store.getUser(), UserDTO.class));
+            return storeDto;
+        }).collect(Collectors.toList());
+
     }
 }
