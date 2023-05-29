@@ -49,7 +49,9 @@ public class PartService {
             throw new ApplicationException(new StatusResponse(NO_PART_ID.getCode(), NO_PART_ID.getKey(), NO_PART_ID.getMessage()));
 
         validatePartAndID(dto.getPartName(), dto.getId());
-
+        if (part.get().getPicture() != null)
+            dto.setPicture(part.get().getPicture());
+        
         Part savedPart = partRepo.save(ObjectMapperUtils.map(dto, Part.class));
         if (!file.isEmpty())
             savedPart.setPicture(ImageUtil.compressImage(file.getBytes()));

@@ -50,7 +50,7 @@ public class UserService {
     public void updateUser(UserDTO userDTO, MultipartFile file) throws IOException {
 
         Optional<User> userById = userRepo.findById(userDTO.getId());
-        if ( userById.isEmpty())
+        if (userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
 
         validateUserNameAndID(userDTO.getUserName(), userDTO.getId());
@@ -59,6 +59,9 @@ public class UserService {
             if (!userRepo.existsByPasswordAndId(userDTO.getOldPassword(), userDTO.getId()))
                 throw new ApplicationException(new StatusResponse(PASSWORD_INCORRECT.getCode(), PASSWORD_INCORRECT.getKey(), PASSWORD_INCORRECT.getMessage()));
         }
+
+        if (userById.get().getAvatar() != null)
+            userDTO.setAvatar(userById.get().getAvatar());
         User savedUser = userRepo.save(ObjectMapperUtils.map(userDTO, User.class));
 
         if (!file.isEmpty())
@@ -69,7 +72,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         Optional<User> userById = userRepo.findById(id);
-        if ( userById.isEmpty())
+        if (userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
 
         userRepo.deleteById(userById.get().getId());
