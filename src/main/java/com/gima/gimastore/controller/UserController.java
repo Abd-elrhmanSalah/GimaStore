@@ -8,9 +8,7 @@ import com.gima.gimastore.util.Utils;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -109,11 +107,9 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getUsersById(@PathVariable Long id) {
         try {
-//            UserDTO userById = userService.getUserById(id);
-//
-//            return ResponseEntity.ok()
-//                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + userById.getUserName() + "\"")
-//
+
+//            return ResponseEntity.status(HttpStatus.OK)
+//                    .contentType(MediaType.APPLICATION_JSON)
 //                    .body(userById);
             return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
         } catch (ApplicationException e) {
@@ -127,6 +123,7 @@ public class UserController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/getByRoleId/{id}")
     public ResponseEntity<?> getUsersByRole(@PathVariable Long id) {
         try {

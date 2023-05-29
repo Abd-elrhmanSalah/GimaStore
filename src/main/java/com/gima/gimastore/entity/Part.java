@@ -21,6 +21,10 @@ public class Part {
     @Column(name = "CURRENT_COST")
     private BigDecimal currentCost;
 
+    @Lob
+    @Column(name = "PICTURE", length = 1000)
+    private byte[] picture;
+
     public Long getId() {
         return id;
     }
@@ -43,5 +47,13 @@ public class Part {
 
     public void setCurrentCost(BigDecimal currentAmount) {
         this.currentCost = currentAmount;
+    }
+
+    public byte[] getPicture() {
+        return picture;
+    }
+
+    public void setPicture(byte[] picture) {
+        this.picture = picture;
     }
 }

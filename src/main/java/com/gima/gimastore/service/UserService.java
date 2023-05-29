@@ -7,6 +7,7 @@ import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.UserDTO;
 import com.gima.gimastore.repository.RoleRepository;
 import com.gima.gimastore.repository.UserRepository;
+import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.zip.DataFormatException;
 
 import static com.gima.gimastore.constant.ResponseCodes.*;
 
@@ -31,7 +33,7 @@ public class UserService {
         this.roleRepo = roleRepo;
     }
 
-    public UserDTO addUser(UserDTO userDTO, MultipartFile file) throws IOException {
+    public void addUser(UserDTO userDTO, MultipartFile file) throws IOException {
 
         validateUserName(userDTO.getUserName());
         User map = ObjectMapperUtils.map(userDTO, User.class);
@@ -39,13 +41,13 @@ public class UserService {
         map.setRole(userDTO.getRole());
         User savedUser = userRepo.save(map);
         if (!file.isEmpty())
-            System.out.println("");
-//            savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
+            savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
 
-        return ObjectMapperUtils.map(userRepo.save(savedUser), UserDTO.class);
+        userRepo.save(savedUser);
+
     }
 
-    public UserDTO updateUser(UserDTO userDTO, MultipartFile file) throws IOException {
+    public void updateUser(UserDTO userDTO, MultipartFile file) throws IOException {
 
         Optional<User> userById = userRepo.findById(userDTO.getId());
         if (Objects.isNull(userById) || userById.isEmpty())
@@ -60,10 +62,9 @@ public class UserService {
         User savedUser = userRepo.save(ObjectMapperUtils.map(userDTO, User.class));
 
         if (!file.isEmpty())
-            System.out.println("");
-//            savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
+            savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
 
-        return ObjectMapperUtils.map(userRepo.save(savedUser), UserDTO.class);
+        userRepo.save(savedUser);
     }
 
     public void deleteUser(Long id) {
@@ -76,28 +77,31 @@ public class UserService {
     }
 
     public List<UserDTO> getAllUsers() {
+
         return userRepo.findAll().stream().map(user -> {
-            return ObjectMapperUtils.map(user, UserDTO.class);
+            UserDTO userDto = ObjectMapperUtils.map(user, UserDTO.class);
+            if (!Objects.isNull(user.getAvatar())) {
+                try {
+                    userDto.setAvatar(ImageUtil.decompressImage(user.getAvatar()));
+                } catch (DataFormatException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return userDto;
         }).collect(Collectors.toList());
     }
 
-    public UserDTO getUserById(Long id) throws IOException {
+    public UserDTO getUserById(Long id) throws IOException, DataFormatException {
         Optional<User> userById = userRepo.findById(id);
         if (Objects.isNull(userById) || userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
 
         UserDTO userDto = ObjectMapperUtils.map(userById.get(), UserDTO.class);
-        if (!Objects.isNull(userById.get().getAvatar())) {
-////            byte[] encodedBytes = Base64.getEncoder().encode(userById.get().getAvatar().getContent());
-////            byte[] bytes = Base64.getDecoder().decode(userById.get().getAvatar());
-////            Image imagesObj = userById.get().getAvatar();
-//
-//            ByteArrayInputStream inStreambj = new ByteArrayInputStream(userById.get().getAvatar());
-//            BufferedImage newImage = ImageIO.read(inStreambj);
-            userDto.setAvatar(userById.get().getAvatar());
-        }
+        if (!Objects.isNull(userById.get().getAvatar()))
+            userDto.setAvatar(ImageUtil.decompressImage(userById.get().getAvatar()));
 
-//        userDto.setAvatar(ImageUtil.decompressImage(userById.get().getAvatar()));
         return userDto;
     }
 

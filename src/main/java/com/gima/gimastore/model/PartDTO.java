@@ -8,6 +8,8 @@ public class PartDTO {
     private String partName;
     private BigDecimal currentCost;
 
+    private byte[] picture;
+
     public Long getId() {
         return id;
     }
@@ -30,5 +32,13 @@ public class PartDTO {
 
     public void setCurrentCost(BigDecimal currentCost) {
         this.currentCost = currentCost;
+    }
+
+    public byte[] getPicture() {
+        return picture;
+    }
+
+    public void setPicture(byte[] picture) {
+        this.picture = picture;
     }
 }

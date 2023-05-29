@@ -1,6 +1,7 @@
 package com.gima.gimastore.entity;
 
 
+import lombok.Builder;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Nationalized;
