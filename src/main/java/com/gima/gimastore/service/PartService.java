@@ -108,8 +108,6 @@ public class PartService {
 
     private void validatePartAndID(String partName, Long partId) {
         if (!partRepo.findById(partId).get().getPartName().equals(partName))
-            if (partRepo.existsByPartName(partName))
-                throw new ApplicationException(new StatusResponse(REPEATED_PARTNAME.getCode(), REPEATED_PARTNAME.getKey(), REPEATED_PARTNAME.getMessage()));
-
+            validatePartName(partName);
     }
 }

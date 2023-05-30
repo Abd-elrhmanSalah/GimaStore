@@ -10,7 +10,6 @@ import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.gima.gimastore.constant.ResponseCodes.NO_SUPPLIER_ID;
@@ -72,8 +71,6 @@ public class SupplierService implements CommonRepo<SupplierDTO> {
 
     private void validateSupplierNameAndID(String supplierName, Long supplierId) {
         if (!supplierRepo.findById(supplierId).get().getSupplierName().equals(supplierName))
-            if (supplierRepo.existsBySupplierName(supplierName))
-                throw new ApplicationException(new StatusResponse(REPEATED_SUPPLIERNAME.getCode(), REPEATED_SUPPLIERNAME.getKey(), REPEATED_SUPPLIERNAME.getMessage()));
-
+            validateSupplierName(supplierName);
     }
 }

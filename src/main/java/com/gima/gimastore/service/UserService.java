@@ -132,9 +132,7 @@ public class UserService {
 
     private void validateUserNameAndID(String username, Long userId) {
         if (!userRepo.findById(userId).get().getUserName().equals(username))
-            if (userRepo.existsByUserName(username))
-                throw new ApplicationException(new StatusResponse(REPEATED_USERNAME.getCode(), REPEATED_USERNAME.getKey(), REPEATED_USERNAME.getMessage()));
-
+            validateUserName(username);
     }
 }
 

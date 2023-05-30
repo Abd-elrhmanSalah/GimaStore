@@ -1,7 +1,6 @@
 package com.gima.gimastore.service;
 
 import com.gima.gimastore.entity.Store;
-import com.gima.gimastore.entity.Supplier;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
@@ -33,27 +32,33 @@ public class StoreService implements CommonRepo<StoreDTO> {
 
     @Override
     public void add(StoreDTO dto) {
-        insertUpdate(dto);
+        Store store = ObjectMapperUtils.map(dto, Store.class);
+
+        validateStoreName(store.getStoreName());
+        validateUser(dto);
+
+        if (storeRepo.existsByUser(store.getUser()))
+            throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
+
+        store.setUser(new User(dto.getUserDTO().getId()));
+        storeRepo.save(store);
     }
 
     @Override
     public void update(StoreDTO dto) {
-        insertUpdate(dto);
-    }
 
-    private void insertUpdate(StoreDTO dto) {
-        Optional<User> byId = userRepo.findById(dto.getUserDTO().getId());
-        if (byId.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_STORE_ID.getMessage()));
+        validateStoreNameAndID(dto.getStoreName(), dto.getId());
+        validateUser(dto);
 
-
-        if (storeRepo.existsByUser(byId.get()))
-            throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
+        if (dto.getUserDTO().getId() != findById(dto.getId()).getUserDTO().getId())
+            if (storeRepo.existsByUser(ObjectMapperUtils.map(dto.getUserDTO(), User.class)))
+                throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
 
         Store store = ObjectMapperUtils.map(dto, Store.class);
         store.setUser(new User(dto.getUserDTO().getId()));
         storeRepo.save(store);
     }
+
 
     @Override
     public void delete(Long id) {
@@ -84,6 +89,24 @@ public class StoreService implements CommonRepo<StoreDTO> {
                 storeDto.setUserDTO(ObjectMapperUtils.map(store.getUser(), UserDTO.class));
             return storeDto;
         }).collect(Collectors.toList());
+
+    }
+
+    private void validateStoreName(String storeName) {
+        if (storeRepo.existsByStoreName(storeName))
+            throw new ApplicationException(new StatusResponse(REPEATED_STORENAME.getCode(), REPEATED_STORENAME.getKey(), REPEATED_STORENAME.getMessage()));
+
+    }
+
+    private void validateStoreNameAndID(String storeName, Long storeId) {
+        if (!storeRepo.findById(storeId).get().getStoreName().equals(storeName))
+            validateStoreName(storeName);
+    }
+
+    private void validateUser(StoreDTO dto) {
+        Optional<User> byId = userRepo.findById(dto.getUserDTO().getId());
+        if (byId.isEmpty())
+            throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_STORE_ID.getMessage()));
 
     }
 }

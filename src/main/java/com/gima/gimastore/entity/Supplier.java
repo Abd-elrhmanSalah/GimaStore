@@ -5,7 +5,7 @@ import org.hibernate.annotations.Nationalized;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PART")
+@Table(name = "SUPPLIER")
 public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

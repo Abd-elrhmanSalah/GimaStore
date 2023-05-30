@@ -32,6 +32,7 @@ public class UserDTO implements Serializable {
     @JsonDeserialize
     private String oldPassword;
 
+    private Boolean isLocked;
 
     public UserDTO() {
     }
@@ -106,5 +107,13 @@ public class UserDTO implements Serializable {
 
     public void setOldPassword(String oldPassword) {
         this.oldPassword = oldPassword;
+    }
+
+    public Boolean getLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(Boolean locked) {
+        isLocked = locked;
     }
 }

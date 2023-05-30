@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.zip.DataFormatException;
 
 import static com.gima.gimastore.constant.ResponseCodes.LOGIN_FAILED;
+import static com.gima.gimastore.constant.ResponseCodes.LOGIN_USER_LOCKED;
 
 @Service
 public class LoginService {
@@ -29,6 +30,9 @@ public class LoginService {
         Optional<User> byUserNameAndPassword = userRepo.findByUserNameAndPassword(username, password);
         if (byUserNameAndPassword.isEmpty())
             throw new ApplicationException(new StatusResponse(LOGIN_FAILED.getCode(), LOGIN_FAILED.getKey(), LOGIN_FAILED.getMessage()));
+
+        if (byUserNameAndPassword.get().getLocked() == false)
+            throw new ApplicationException(new StatusResponse(LOGIN_USER_LOCKED.getCode(), LOGIN_USER_LOCKED.getKey(), LOGIN_USER_LOCKED.getMessage()));
 
         UserDTO userDto = ObjectMapperUtils.map(byUserNameAndPassword.get(), UserDTO.class);
         if (!Objects.isNull(byUserNameAndPassword.get().getAvatar()))

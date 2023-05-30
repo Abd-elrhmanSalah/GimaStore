@@ -1,12 +1,12 @@
 package com.gima.gimastore.entity;
 
 
-import lombok.Builder;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -45,6 +45,10 @@ public class User implements Serializable {
     @Column(name = "AVATAR", length = 1000)
     private byte[] avatar;
 
+    @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 1")
+    @NotNull
+    private Boolean isLocked;
+
     public User() {
     }
 
@@ -52,15 +56,6 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public User(Long id, String userName, String password, String firstName, String lastName, Role role, byte[] avatar) {
-        this.id = id;
-        this.userName = userName;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.role = role;
-        this.avatar = avatar;
-    }
 
     public Long getId() {
         return id;
@@ -116,5 +111,13 @@ public class User implements Serializable {
 
     public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
+    }
+
+    public Boolean getLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(Boolean locked) {
+        isLocked = locked;
     }
 }
