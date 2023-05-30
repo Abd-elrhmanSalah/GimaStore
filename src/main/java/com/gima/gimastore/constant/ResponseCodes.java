@@ -17,18 +17,12 @@ public enum ResponseCodes {
     NO_SUPPLIER_ID("010", "SupplierId Error", "لايوجد مورد بهذا الID"),
     REPEATED_SUPPLIERNAME("011", "SupplierName Error", "اسم المورد موجود بالفعل"),
 
-    CREDITBUDGET_CATEGOR("006", "CreditBudget Category Error", "CreditBudget Category code not exist"),
+    USER_EXIST_IN_STORE("012", "User and Store Erro", "لا يمكن حذف هذا المستخدم لأنه مرتبط بمخزن"),
     CREDITBUDGET_TYPE("007", "CreditBudget Type Error", "CreditBudget Type code not exist"),
 
     DEPIT_CATEGORY_AND_TYPE("008", "DebitBudget CategoryAndType Error", "Debit Budget Category code and  type not exist"),
     CREDIT_CATEGORY_AND_TYPE("009", "CreditBudget CategoryAndType Error", "Credit Budget Category code and  type not exist"),
-    DEBIT_ACCOUNT_NUMBER("010", "Debit Account Error", "Debit account number not exist"),
-    CREDIT_ACCOUNT_NUMBER("011", "Debit Account Error", "Credit account number not exist"),
-    NO_DEBIT_ACCOUNT("012", "Debit Account Error", "Can't find Debit account"),
-    NO_CREDIT_ACCOUNT("013", "Credit Accounts Error", "Can't find Credit account"),
-    NO_DEBIT_NO_CREDIT("014", "Accounts Error", "Can't find accounts numbers"),
-    FETCH_AVAILABLE_BALANCE("015", "Fetch AvailableBalance Error", "Can't fetch available balance with this debit account and this budgetCategory"),
-    BALANCE_NOT_AVAILABLE("016", "BalanceNotAvailable Error", "Balance Not Available availableBalance is : "),
+
     RECONCILIATION_NOT_MATCHE("017", "Reconciliation NotMatched Error", "Reconciliation NotMatched can't accepted"),
     INTERNAL_SERVER_ERROR("018", "Internal Server Error", "Internal Server Error"),
     STATUSECODE("019", "Status  Error", "Status Code unknown"),

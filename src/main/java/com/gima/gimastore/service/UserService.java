@@ -6,6 +6,7 @@ import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.UserDTO;
 import com.gima.gimastore.repository.RoleRepository;
+import com.gima.gimastore.repository.StoreRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
@@ -27,10 +28,12 @@ public class UserService {
 
     private UserRepository userRepo;
     private RoleRepository roleRepo;
+    private StoreRepository storeRepo;
 
-    public UserService(UserRepository userRepo, RoleRepository roleRepo) {
+    public UserService(UserRepository userRepo, RoleRepository roleRepo, StoreRepository storeRepo) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
+        this.storeRepo = storeRepo;
     }
 
     public void addUser(UserDTO userDTO, MultipartFile file) throws IOException {
@@ -74,6 +77,10 @@ public class UserService {
         Optional<User> userById = userRepo.findById(id);
         if (userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
+
+        if (userById.get().getRole().getId() == 3)
+            if (storeRepo.existsByUser(userById.get()))
+                throw new ApplicationException(new StatusResponse(USER_EXIST_IN_STORE.getCode(), USER_EXIST_IN_STORE.getKey(), USER_EXIST_IN_STORE.getMessage()));
 
         userRepo.deleteById(userById.get().getId());
 
