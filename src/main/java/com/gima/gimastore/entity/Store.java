@@ -25,6 +25,10 @@ public class Store implements Serializable {
     @JoinColumn(name = "USER_ID")
     private User user;
 
+    @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
+    @NotNull
+    private Boolean isLocked;
+
 
     public Long getId() {
         return id;
@@ -48,5 +52,13 @@ public class Store implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Boolean getLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(Boolean locked) {
+        isLocked = locked;
     }
 }

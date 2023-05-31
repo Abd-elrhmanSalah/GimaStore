@@ -3,6 +3,7 @@ package com.gima.gimastore.entity;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Entity
@@ -24,6 +25,10 @@ public class Part {
     @Lob
     @Column(name = "PICTURE", length = 1000)
     private byte[] picture;
+
+    @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
+    @NotNull
+    private Boolean isLocked;
 
     public Long getId() {
         return id;
@@ -55,5 +60,13 @@ public class Part {
 
     public void setPicture(byte[] picture) {
         this.picture = picture;
+    }
+
+    public Boolean getLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(Boolean locked) {
+        isLocked = locked;
     }
 }

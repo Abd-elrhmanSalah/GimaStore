@@ -6,6 +6,7 @@ public class SupplierDTO {
     private String supplierName;
     private String phone;
     private String notes;
+    private Boolean isLocked;
 
     public Long getId() {
         return id;
@@ -37,5 +38,13 @@ public class SupplierDTO {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public Boolean getLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(Boolean locked) {
+        isLocked = locked;
     }
 }

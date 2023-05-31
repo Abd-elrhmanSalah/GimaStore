@@ -3,6 +3,7 @@ package com.gima.gimastore.entity;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "SUPPLIER")
@@ -22,6 +23,10 @@ public class Supplier {
     @Column(name = "NOTES")
     @Nationalized
     private String notes;
+
+    @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
+    @NotNull
+    private Boolean isLocked;
 
     public Long getId() {
         return id;
@@ -53,5 +58,13 @@ public class Supplier {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public Boolean getLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(Boolean locked) {
+        isLocked = locked;
     }
 }

@@ -7,8 +7,8 @@ public class PartDTO {
     private Long id;
     private String partName;
     private BigDecimal currentCost;
-
     private byte[] picture;
+    private Boolean isLocked;
 
     public Long getId() {
         return id;
@@ -40,5 +40,13 @@ public class PartDTO {
 
     public void setPicture(byte[] picture) {
         this.picture = picture;
+    }
+
+    public Boolean getLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(Boolean locked) {
+        isLocked = locked;
     }
 }

@@ -1,14 +1,16 @@
 package com.gima.gimastore.entity;
 
-//@Entity
-//@Table(name = "SUPPLY_PROCESS")
+import javax.persistence.*;
+
+@Entity
+@Table(name = "SUPPLY_PROCESS")
 public class SupplyProcess {
 
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "Id")
-//    private Long id;
-//
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id")
+    private Long id;
+
 //    @ManyToOne
 //    @JoinColumn(name = "SUPPLIER_ID")
 //    @Nationalized

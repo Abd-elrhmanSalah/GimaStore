@@ -7,6 +7,7 @@ public class StoreDTO {
     private Long id;
     private String storeName;
     private User user;
+    private Boolean isLocked;
 
     public Long getId() {
         return id;
@@ -30,5 +31,13 @@ public class StoreDTO {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Boolean getLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(Boolean locked) {
+        isLocked = locked;
     }
 }
