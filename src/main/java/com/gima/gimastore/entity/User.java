@@ -45,7 +45,7 @@ public class User implements Serializable {
     @Column(name = "AVATAR", length = 1000)
     private byte[] avatar;
 
-    @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 1")
+    @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
     @NotNull
     private Boolean isLocked;
 

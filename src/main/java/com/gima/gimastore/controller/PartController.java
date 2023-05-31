@@ -2,10 +2,8 @@ package com.gima.gimastore.controller;
 
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
-import com.gima.gimastore.model.PartDTO;
 import com.gima.gimastore.service.PartService;
 import com.gima.gimastore.util.Utils;
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -31,10 +29,8 @@ public class PartController {
     @PostMapping
     public ResponseEntity<?> addPart(@RequestPart String stringDto, @RequestPart("picture") MultipartFile file) {
         try {
-            Gson gson = new Gson();
-            PartDTO dto = gson.fromJson(stringDto, PartDTO.class);
 
-            partService.add(dto, file);
+            partService.add(Utils.formattedJsonToPartDTOObject(stringDto), file);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت إضافة الجزء" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
@@ -52,10 +48,9 @@ public class PartController {
     @PatchMapping
     public ResponseEntity<?> updatePart(@RequestPart String stringDto, @RequestPart("picture") MultipartFile file) {
         try {
-            Gson gson = new Gson();
-            PartDTO dto = gson.fromJson(stringDto, PartDTO.class);
 
-            partService.update(dto, file);
+
+            partService.update(Utils.formattedJsonToPartDTOObject(stringDto), file);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت تعديل الجزء" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
