@@ -20,7 +20,7 @@ public enum ResponseCodes {
     USER_EXIST_IN_STORE("012", "User and Store Erro", "لا يمكن حذف هذا المستخدم لأنه مرتبط بمخزن"),
     REPEATED_STORENAME("013", "StoreName Error", "اسم المخزن موجود بالفعل"),
     LOGIN_USER_LOCKED("014", "Locked Account Error", "هذا الحساب مغلق"),
-    CREDITBUDGET_TYPE("007", "CreditBudget Type Error", "CreditBudget Type code not exist"),
+    USER_ROLE_SUPERVISOR("015", "Supervisor Error", "هذا المستخدم ليس أمين مخزن"),
 
     DEPIT_CATEGORY_AND_TYPE("008", "DebitBudget CategoryAndType Error", "Debit Budget Category code and  type not exist"),
     CREDIT_CATEGORY_AND_TYPE("009", "CreditBudget CategoryAndType Error", "Credit Budget Category code and  type not exist"),

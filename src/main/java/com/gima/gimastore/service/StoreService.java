@@ -5,7 +5,6 @@ import com.gima.gimastore.entity.User;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.StoreDTO;
-import com.gima.gimastore.model.UserDTO;
 import com.gima.gimastore.repository.CommonRepo;
 import com.gima.gimastore.repository.StoreRepository;
 import com.gima.gimastore.repository.UserRepository;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.gima.gimastore.constant.ResponseCodes.*;
 
@@ -31,16 +29,16 @@ public class StoreService implements CommonRepo<StoreDTO> {
     }
 
     @Override
-    public void add(StoreDTO dto) {
-        Store store = ObjectMapperUtils.map(dto, Store.class);
+    public void add(StoreDTO storeDTOParam) {
 
-        validateStoreName(store.getStoreName());
-        validateUser(dto);
+        validateStoreName(storeDTOParam.getStoreName());
 
-        if (storeRepo.existsByUser(store.getUser()))
-            throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
+        validateUser(storeDTOParam);
 
-        store.setUser(new User(dto.getUserDTO().getId()));
+        Store store = ObjectMapperUtils.map(storeDTOParam, Store.class);
+
+        validateExistUserWithStore(store.getUser());
+
         storeRepo.save(store);
     }
 
@@ -48,14 +46,14 @@ public class StoreService implements CommonRepo<StoreDTO> {
     public void update(StoreDTO dto) {
 
         validateStoreNameAndID(dto.getStoreName(), dto.getId());
+
         validateUser(dto);
 
-        if (dto.getUserDTO().getId() != findById(dto.getId()).getUserDTO().getId())
-            if (storeRepo.existsByUser(ObjectMapperUtils.map(dto.getUserDTO(), User.class)))
-                throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
+        if (dto.getUser().getId() != storeRepo.findById(dto.getId()).get().getUser().getId())
+            validateExistUserWithStore(dto.getUser());
 
         Store store = ObjectMapperUtils.map(dto, Store.class);
-        store.setUser(new User(dto.getUserDTO().getId()));
+
         storeRepo.save(store);
     }
 
@@ -73,23 +71,17 @@ public class StoreService implements CommonRepo<StoreDTO> {
     @Override
     public StoreDTO findById(Long id) {
         Optional<Store> store = storeRepo.findById(id);
-        if (store.isEmpty() || Objects.isNull(store))
+        if (store.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_STORE_ID.getCode(), NO_STORE_ID.getKey(), NO_STORE_ID.getMessage()));
-        StoreDTO storedto = ObjectMapperUtils.map(store, StoreDTO.class);
-        storedto.setUserDTO(ObjectMapperUtils.map(store.get().getUser(), UserDTO.class));
+
+        StoreDTO storedto = ObjectMapperUtils.map(store.get(), StoreDTO.class);
+
         return storedto;
     }
 
     @Override
     public List<StoreDTO> findAll() {
-        List<Store> storeList = storeRepo.findAll();
-        return storeList.stream().map(store -> {
-            StoreDTO storeDto = ObjectMapperUtils.map(store, StoreDTO.class);
-            if (!Objects.isNull(store.getUser()))
-                storeDto.setUserDTO(ObjectMapperUtils.map(store.getUser(), UserDTO.class));
-            return storeDto;
-        }).collect(Collectors.toList());
-
+        return ObjectMapperUtils.mapAll(storeRepo.findAll(), StoreDTO.class);
     }
 
     private void validateStoreName(String storeName) {
@@ -104,9 +96,18 @@ public class StoreService implements CommonRepo<StoreDTO> {
     }
 
     private void validateUser(StoreDTO dto) {
-        Optional<User> byId = userRepo.findById(dto.getUserDTO().getId());
-        if (byId.isEmpty())
+        Optional<User> userById = userRepo.findById(dto.getUser().getId());
+        if (userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_STORE_ID.getMessage()));
+
+        if (userById.get().getRole().getId() != 3)
+            throw new ApplicationException(new StatusResponse(USER_ROLE_SUPERVISOR.getCode(), USER_ROLE_SUPERVISOR.getKey(), USER_ROLE_SUPERVISOR.getMessage()));
+
+    }
+
+    private void validateExistUserWithStore(User user) {
+        if (storeRepo.existsByUser(user))
+            throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
 
     }
 }

@@ -2,6 +2,8 @@ package com.gima.gimastore.util;
 
 import com.gima.gimastore.constant.ResponseCodes;
 import com.gima.gimastore.exception.StatusResponse;
+import com.gima.gimastore.model.UserDTO;
+import com.google.gson.Gson;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,6 +24,12 @@ public class Utils {
 
         response.setMessage(response.getMessage());
         return response;
+    }
+
+    public static UserDTO formattedJsonToUserDTOObject(String stringDTO) {
+        Gson gson = new Gson();
+        return gson.fromJson(stringDTO, UserDTO.class);
+
     }
 
 }

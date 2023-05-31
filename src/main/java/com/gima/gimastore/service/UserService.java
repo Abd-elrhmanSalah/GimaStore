@@ -4,15 +4,18 @@ import com.gima.gimastore.entity.Role;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
+import com.gima.gimastore.model.StoreDTO;
 import com.gima.gimastore.model.UserDTO;
 import com.gima.gimastore.repository.RoleRepository;
 import com.gima.gimastore.repository.StoreRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import com.google.gson.Gson;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -36,13 +39,12 @@ public class UserService {
         this.storeRepo = storeRepo;
     }
 
-    public void addUser(UserDTO userDTO, MultipartFile file) throws IOException {
+    public void addUser(UserDTO userDTOParam, MultipartFile file) throws IOException {
 
-        validateUserName(userDTO.getUserName());
-        User map = ObjectMapperUtils.map(userDTO, User.class);
-
-        map.setRole(userDTO.getRole());
+        validateUserName(userDTOParam.getUserName());
+        User map = ObjectMapperUtils.map(userDTOParam, User.class);
         User savedUser = userRepo.save(map);
+
         if (!file.isEmpty())
             savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
 
@@ -50,6 +52,7 @@ public class UserService {
 
     }
 
+    @Transactional
     public void updateUser(UserDTO userDTO, MultipartFile file) throws IOException {
 
         Optional<User> userById = userRepo.findById(userDTO.getId());
@@ -65,6 +68,7 @@ public class UserService {
 
         if (userById.get().getAvatar() != null)
             userDTO.setAvatar(userById.get().getAvatar());
+
         User savedUser = userRepo.save(ObjectMapperUtils.map(userDTO, User.class));
 
         if (!file.isEmpty())
@@ -109,8 +113,13 @@ public class UserService {
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
 
         UserDTO userDto = ObjectMapperUtils.map(userById.get(), UserDTO.class);
+
         if (!Objects.isNull(userById.get().getAvatar()))
             userDto.setAvatar(ImageUtil.decompressImage(userById.get().getAvatar()));
+
+        if (userById.get().getRole().getId() == 3)
+            if (storeRepo.existsByUser(userById.get()))
+                userDto.setStoreDTO(ObjectMapperUtils.map(storeRepo.findByUser(userById.get()), StoreDTO.class));
 
         return userDto;
     }
@@ -134,6 +143,8 @@ public class UserService {
         if (!userRepo.findById(userId).get().getUserName().equals(username))
             validateUserName(username);
     }
+
+
 }
 
 

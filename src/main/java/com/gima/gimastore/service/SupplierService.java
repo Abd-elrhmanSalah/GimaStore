@@ -24,38 +24,32 @@ public class SupplierService implements CommonRepo<SupplierDTO> {
     }
 
     @Override
-    public void add(SupplierDTO dto) {
-        validateSupplierName(dto.getSupplierName());
-        supplierRepo.save(ObjectMapperUtils.map(dto, Supplier.class));
+    public void add(SupplierDTO supplierDTOParam) {
+        validateSupplierName(supplierDTOParam.getSupplierName());
+        supplierRepo.save(ObjectMapperUtils.map(supplierDTOParam, Supplier.class));
     }
 
     @Override
-    public void update(SupplierDTO dto) {
-        Optional<Supplier> byId = supplierRepo.findById(dto.getId());
-        if (byId.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_SUPPLIER_ID.getCode(), NO_SUPPLIER_ID.getKey(), NO_SUPPLIER_ID.getMessage()));
+    public void update(SupplierDTO supplierDTOParam) {
+        validateExistSupplier(supplierDTOParam.getId());
 
-        validateSupplierNameAndID(dto.getSupplierName(), dto.getId());
-        supplierRepo.save(ObjectMapperUtils.map(dto, Supplier.class));
+        validateSupplierNameAndID(supplierDTOParam.getSupplierName(), supplierDTOParam.getId());
+
+        supplierRepo.save(ObjectMapperUtils.map(supplierDTOParam, Supplier.class));
 
     }
 
     @Override
     public void delete(Long id) {
-        Optional<Supplier> byId = supplierRepo.findById(id);
-        if (byId.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_SUPPLIER_ID.getCode(), NO_SUPPLIER_ID.getKey(), NO_SUPPLIER_ID.getMessage()));
-
+        validateExistSupplier(id);
         supplierRepo.deleteById(id);
 
     }
 
     @Override
     public SupplierDTO findById(Long id) {
-        Optional<Supplier> byId = supplierRepo.findById(id);
-        if (byId.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_SUPPLIER_ID.getCode(), NO_SUPPLIER_ID.getKey(), NO_SUPPLIER_ID.getMessage()));
-        return ObjectMapperUtils.map(byId.get(), SupplierDTO.class);
+        validateExistSupplier(id);
+        return ObjectMapperUtils.map(supplierRepo.findById(id).get(), SupplierDTO.class);
     }
 
     @Override
@@ -72,5 +66,12 @@ public class SupplierService implements CommonRepo<SupplierDTO> {
     private void validateSupplierNameAndID(String supplierName, Long supplierId) {
         if (!supplierRepo.findById(supplierId).get().getSupplierName().equals(supplierName))
             validateSupplierName(supplierName);
+    }
+
+    private void validateExistSupplier(Long id) {
+        Optional<Supplier> partById = supplierRepo.findById(id);
+        if (partById.isEmpty())
+            throw new ApplicationException(new StatusResponse(NO_SUPPLIER_ID.getCode(), NO_SUPPLIER_ID.getKey(), NO_SUPPLIER_ID.getMessage()));
+
     }
 }

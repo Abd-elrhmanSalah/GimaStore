@@ -2,10 +2,8 @@ package com.gima.gimastore.controller;
 
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
-import com.gima.gimastore.model.UserDTO;
 import com.gima.gimastore.service.UserService;
 import com.gima.gimastore.util.Utils;
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -30,10 +28,8 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> insertUser(@RequestPart String stringDto, @RequestPart("avatar") MultipartFile file) {
         try {
-            Gson gson = new Gson();
-            UserDTO dto = gson.fromJson(stringDto, UserDTO.class);
 
-            userService.addUser(dto, file);
+            userService.addUser(Utils.formattedJsonToUserDTOObject(stringDto), file);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت إضافة المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
@@ -52,10 +48,8 @@ public class UserController {
     @PatchMapping
     public ResponseEntity<?> updateUser(@RequestPart String stringDto, @RequestParam("avatar") MultipartFile file) {
         try {
-            Gson gson = new Gson();
-            UserDTO dto = gson.fromJson(stringDto, UserDTO.class);
 
-            userService.updateUser(dto, file);
+            userService.updateUser(Utils.formattedJsonToUserDTOObject(stringDto), file);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تعديل بيانات المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
@@ -73,7 +67,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
-            userService.deleteUser(id);
+//            userService.deleteUser(id);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم حذف المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {

@@ -3,7 +3,6 @@ package com.gima.gimastore.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.gima.gimastore.entity.Role;
-import com.sun.istack.NotNull;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -12,14 +11,14 @@ import java.io.Serializable;
 public class UserDTO implements Serializable {
 
     private Long id;
-    @NotNull
+
     private String userName;
-    @NotNull
+
     @Size(min = 6, message = "كلمة السر لا يجب ان تقل عن 6")
     private String password;
-    @NotNull
+
     private String firstName;
-    @NotNull
+
     private String lastName;
     private Role role;
 
@@ -33,6 +32,8 @@ public class UserDTO implements Serializable {
     private String oldPassword;
 
     private Boolean isLocked;
+
+    private StoreDTO storeDTO;
 
     public UserDTO() {
     }
@@ -115,5 +116,13 @@ public class UserDTO implements Serializable {
 
     public void setLocked(Boolean locked) {
         isLocked = locked;
+    }
+
+    public StoreDTO getStoreDTO() {
+        return storeDTO;
+    }
+
+    public void setStoreDTO(StoreDTO storeDTO) {
+        this.storeDTO = storeDTO;
     }
 }

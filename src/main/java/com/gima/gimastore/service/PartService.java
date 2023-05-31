@@ -30,11 +30,12 @@ public class PartService {
     }
 
 
-    public void add(PartDTO dto, MultipartFile file) throws IOException {
+    public void add(PartDTO partDTOParam, MultipartFile file) throws IOException {
 
-        validatePartName(dto.getPartName());
+        validatePartName(partDTOParam.getPartName());
 
-        Part savedPart = partRepo.save(ObjectMapperUtils.map(dto, Part.class));
+        Part savedPart = partRepo.save(ObjectMapperUtils.map(partDTOParam, Part.class));
+
         if (!file.isEmpty())
             savedPart.setPicture(ImageUtil.compressImage(file.getBytes()));
 
@@ -43,16 +44,17 @@ public class PartService {
     }
 
 
-    public void update(PartDTO dto, MultipartFile file) throws IOException {
-        Optional<Part> part = partRepo.findById(dto.getId());
-        if (Objects.isNull(part) || part.isEmpty())
+    public void update(PartDTO partDTOParam, MultipartFile file) throws IOException {
+        Optional<Part> partById = partRepo.findById(partDTOParam.getId());
+        if (partById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_PART_ID.getCode(), NO_PART_ID.getKey(), NO_PART_ID.getMessage()));
 
-        validatePartAndID(dto.getPartName(), dto.getId());
-        if (part.get().getPicture() != null)
-            dto.setPicture(part.get().getPicture());
+        validatePartAndID(partDTOParam.getPartName(), partDTOParam.getId());
 
-        Part savedPart = partRepo.save(ObjectMapperUtils.map(dto, Part.class));
+        if (partById.get().getPicture() != null)
+            partDTOParam.setPicture(partById.get().getPicture());
+
+        Part savedPart = partRepo.save(ObjectMapperUtils.map(partDTOParam, Part.class));
         if (!file.isEmpty())
             savedPart.setPicture(ImageUtil.compressImage(file.getBytes()));
 
@@ -61,8 +63,8 @@ public class PartService {
 
 
     public void delete(Long id) {
-        Optional<Part> part = partRepo.findById(id);
-        if (Objects.isNull(part) || part.isEmpty())
+        Optional<Part> partById = partRepo.findById(id);
+        if (partById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_PART_ID.getCode(), NO_PART_ID.getKey(), NO_PART_ID.getMessage()));
 
         partRepo.deleteById(id);
@@ -70,13 +72,13 @@ public class PartService {
 
 
     public PartDTO findById(Long id) throws DataFormatException, IOException {
-        Optional<Part> part = partRepo.findById(id);
-        if (Objects.isNull(part) || part.isEmpty())
+        Optional<Part> partById = partRepo.findById(id);
+        if (partById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_PART_ID.getCode(), NO_PART_ID.getKey(), NO_PART_ID.getMessage()));
 
-        PartDTO partDto = ObjectMapperUtils.map(part.get(), PartDTO.class);
-        if (!Objects.isNull(part.get().getPicture()))
-            partDto.setPicture(ImageUtil.decompressImage(part.get().getPicture()));
+        PartDTO partDto = ObjectMapperUtils.map(partById.get(), PartDTO.class);
+        if (!Objects.isNull(partById.get().getPicture()))
+            partDto.setPicture(ImageUtil.decompressImage(partById.get().getPicture()));
 
         return partDto;
     }
