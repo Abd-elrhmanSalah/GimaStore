@@ -101,7 +101,7 @@ public class StoreService implements CommonRepo<StoreDTO> {
     }
 
     private void validateExistUserWithStore(User user) {
-        if (storeRepo.existsByUser(user) && storeRepo.findByUser(user).getLocked() == false)
+        if (storeRepo.existsByUser(user) && storeRepo.findByUser(user).getLocked() == true)
             throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
 
     }
