@@ -2,10 +2,7 @@ package com.gima.gimastore.model;
 
 import com.gima.gimastore.entity.Supplier;
 import com.gima.gimastore.entity.User;
-import org.hibernate.annotations.Nationalized;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.sql.Date;
 
@@ -17,6 +14,7 @@ public class SupplyProcessDTO implements Serializable {
     private Date creationDate;
     private String notes;
     private Boolean isLocked;
+    private String billId;
 
     public Long getId() {
         return id;
@@ -64,5 +62,13 @@ public class SupplyProcessDTO implements Serializable {
 
     public void setLocked(Boolean locked) {
         isLocked = locked;
+    }
+
+    public String getBillId() {
+        return billId;
+    }
+
+    public void setBillId(String billId) {
+        this.billId = billId;
     }
 }

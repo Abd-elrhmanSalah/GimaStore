@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "SUPPLY_PROCESS")
@@ -33,10 +34,15 @@ public class SupplyProcess implements Serializable {
     @Nationalized
     private String notes;
 
+    @Column(name = "BILL_ID")
+    private String billId;
 
     @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
     @NotNull
     private Boolean isLocked;
+
+    @OneToMany(mappedBy = "supplyProcess")
+    private List<SupplyProcessParts> supplyProcessPartsList;
 
     public Long getId() {
         return id;
@@ -84,5 +90,13 @@ public class SupplyProcess implements Serializable {
 
     public void setLocked(Boolean locked) {
         isLocked = locked;
+    }
+
+    public String getBillId() {
+        return billId;
+    }
+
+    public void setBillId(String billId) {
+        this.billId = billId;
     }
 }
