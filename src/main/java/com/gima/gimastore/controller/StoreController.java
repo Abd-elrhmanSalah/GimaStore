@@ -67,7 +67,7 @@ public class StoreController {
     public ResponseEntity<?> deleteStore(@PathVariable Long id) {
         try {
             storeService.delete(id);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت حذف المخزن" + SUCCESS.getMessage()), HttpStatus.OK);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت تعطيل المخزن" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

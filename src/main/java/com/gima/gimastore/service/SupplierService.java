@@ -56,7 +56,7 @@ public class SupplierService implements CommonRepo<SupplierDTO> {
 
     @Override
     public List<SupplierDTO> findAll() {
-        return ObjectMapperUtils.mapAll(supplierRepo.findAll().stream().filter(sup -> !sup.getLocked()).collect(Collectors.toList()), SupplierDTO.class);
+        return ObjectMapperUtils.mapAll(supplierRepo.findAll(), SupplierDTO.class);
     }
 
     private void validateSupplierName(String supplierName) {

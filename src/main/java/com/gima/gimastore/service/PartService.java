@@ -94,7 +94,7 @@ public class PartService {
                 }
             }
             return partDto;
-        }).filter(part -> !part.getLocked()).collect(Collectors.toList());
+        }).collect(Collectors.toList());
 
     }
 
