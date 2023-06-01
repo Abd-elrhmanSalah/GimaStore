@@ -9,7 +9,7 @@ import java.sql.Date;
 public class SupplyProcessDTO implements Serializable {
 
     private Long id;
-    private Supplier supplier;
+    private SupplierDTO supplier;
     private User createdBy;
     private Date creationDate;
     private String notes;
@@ -24,11 +24,11 @@ public class SupplyProcessDTO implements Serializable {
         this.id = id;
     }
 
-    public Supplier getSupplier() {
+    public SupplierDTO getSupplier() {
         return supplier;
     }
 
-    public void setSupplier(Supplier supplier) {
+    public void setSupplier(SupplierDTO supplier) {
         this.supplier = supplier;
     }
 

@@ -1,6 +1,8 @@
 package com.gima.gimastore.model;
 
-public class SupplierDTO {
+import java.io.Serializable;
+
+public class SupplierDTO implements Serializable {
 
     private Long id;
     private String supplierName;

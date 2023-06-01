@@ -1,11 +1,16 @@
 package com.gima.gimastore.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -28,7 +33,9 @@ public class SupplyProcess implements Serializable {
     private User createdBy;
 
     @Column(name = "CREATION_DATE")
-    private Date creationDate;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime creationDate;
 
     @Column(name = "NOTES")
     @Nationalized
@@ -68,12 +75,20 @@ public class SupplyProcess implements Serializable {
         this.createdBy = createdBy;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public List<SupplyProcessParts> getSupplyProcessPartsList() {
+        return supplyProcessPartsList;
+    }
+
+    public void setSupplyProcessPartsList(List<SupplyProcessParts> supplyProcessPartsList) {
+        this.supplyProcessPartsList = supplyProcessPartsList;
     }
 
     public String getNotes() {

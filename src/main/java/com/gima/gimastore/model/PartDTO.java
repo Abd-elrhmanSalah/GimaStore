@@ -1,8 +1,9 @@
 package com.gima.gimastore.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class PartDTO {
+public class PartDTO implements Serializable {
 
     private Long id;
     private String partName;

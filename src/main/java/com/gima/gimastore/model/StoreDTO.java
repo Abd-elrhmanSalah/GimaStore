@@ -2,7 +2,9 @@ package com.gima.gimastore.model;
 
 import com.gima.gimastore.entity.User;
 
-public class StoreDTO {
+import java.io.Serializable;
+
+public class StoreDTO implements Serializable {
 
     private Long id;
     private String storeName;
