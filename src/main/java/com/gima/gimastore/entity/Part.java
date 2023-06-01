@@ -4,11 +4,12 @@ import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "PART")
-public class Part {
+public class Part implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

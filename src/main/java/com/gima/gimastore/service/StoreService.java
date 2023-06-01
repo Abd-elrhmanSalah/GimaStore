@@ -12,8 +12,8 @@ import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.gima.gimastore.constant.ResponseCodes.*;
 
@@ -60,20 +60,15 @@ public class StoreService implements CommonRepo<StoreDTO> {
 
     @Override
     public void delete(Long id) {
-        Optional<Store> byId = storeRepo.findById(id);
-        if (Objects.isNull(byId))
-            throw new ApplicationException(new StatusResponse(NO_STORE_ID.getCode(), NO_STORE_ID.getKey(), NO_STORE_ID.getMessage()));
-
-        storeRepo.deleteById(id);
+        Optional<Store> store = validateExistStore(id);
+        store.get().setLocked(true);
+        storeRepo.save(store.get());
 
     }
 
     @Override
     public StoreDTO findById(Long id) {
-        Optional<Store> store = storeRepo.findById(id);
-        if (store.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_STORE_ID.getCode(), NO_STORE_ID.getKey(), NO_STORE_ID.getMessage()));
-
+        Optional<Store> store = validateExistStore(id);
         StoreDTO storedto = ObjectMapperUtils.map(store.get(), StoreDTO.class);
 
         return storedto;
@@ -81,7 +76,7 @@ public class StoreService implements CommonRepo<StoreDTO> {
 
     @Override
     public List<StoreDTO> findAll() {
-        return ObjectMapperUtils.mapAll(storeRepo.findAll(), StoreDTO.class);
+        return ObjectMapperUtils.mapAll(storeRepo.findAll().stream().filter(store -> !store.getLocked()).collect(Collectors.toList()), StoreDTO.class);
     }
 
     private void validateStoreName(String storeName) {
@@ -95,19 +90,26 @@ public class StoreService implements CommonRepo<StoreDTO> {
             validateStoreName(storeName);
     }
 
-    private void validateUser(StoreDTO dto) {
+    private Optional<User> validateUser(StoreDTO dto) {
         Optional<User> userById = userRepo.findById(dto.getUser().getId());
         if (userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_STORE_ID.getMessage()));
 
         if (userById.get().getRole().getId() != 3)
             throw new ApplicationException(new StatusResponse(USER_ROLE_SUPERVISOR.getCode(), USER_ROLE_SUPERVISOR.getKey(), USER_ROLE_SUPERVISOR.getMessage()));
-
+        return userById;
     }
 
     private void validateExistUserWithStore(User user) {
         if (storeRepo.existsByUser(user))
             throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
 
+    }
+
+    private Optional<Store> validateExistStore(Long id) {
+        Optional<Store> storeById = storeRepo.findById(id);
+        if (storeById.isEmpty())
+            throw new ApplicationException(new StatusResponse(NO_STORE_ID.getCode(), NO_STORE_ID.getKey(), NO_STORE_ID.getMessage()));
+        return storeById;
     }
 }

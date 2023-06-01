@@ -33,8 +33,6 @@ public class UserDTO implements Serializable {
 
     private Boolean isLocked;
 
-    private StoreDTO storeDTO;
-
     public UserDTO() {
     }
 
@@ -118,11 +116,4 @@ public class UserDTO implements Serializable {
         isLocked = locked;
     }
 
-    public StoreDTO getStoreDTO() {
-        return storeDTO;
-    }
-
-    public void setStoreDTO(StoreDTO storeDTO) {
-        this.storeDTO = storeDTO;
-    }
 }

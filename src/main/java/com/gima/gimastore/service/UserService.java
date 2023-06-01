@@ -4,14 +4,12 @@ import com.gima.gimastore.entity.Role;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
-import com.gima.gimastore.model.StoreDTO;
 import com.gima.gimastore.model.UserDTO;
 import com.gima.gimastore.repository.RoleRepository;
 import com.gima.gimastore.repository.StoreRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
-import com.google.gson.Gson;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -85,8 +83,8 @@ public class UserService {
         if (userById.get().getRole().getId() == 3)
             if (storeRepo.existsByUser(userById.get()))
                 throw new ApplicationException(new StatusResponse(USER_EXIST_IN_STORE.getCode(), USER_EXIST_IN_STORE.getKey(), USER_EXIST_IN_STORE.getMessage()));
-
-        userRepo.deleteById(userById.get().getId());
+        userById.get().setLocked(true);
+        userRepo.save(userById.get());
 
     }
 
@@ -116,10 +114,6 @@ public class UserService {
 
         if (!Objects.isNull(userById.get().getAvatar()))
             userDto.setAvatar(ImageUtil.decompressImage(userById.get().getAvatar()));
-
-        if (userById.get().getRole().getId() == 3)
-            if (storeRepo.existsByUser(userById.get()))
-                userDto.setStoreDTO(ObjectMapperUtils.map(storeRepo.findByUser(userById.get()), StoreDTO.class));
 
         return userDto;
     }

@@ -45,10 +45,8 @@ public class PartService {
 
 
     public void update(PartDTO partDTOParam, MultipartFile file) throws IOException {
-        Optional<Part> partById = partRepo.findById(partDTOParam.getId());
-        if (partById.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_PART_ID.getCode(), NO_PART_ID.getKey(), NO_PART_ID.getMessage()));
 
+        Optional<Part> partById = validateExistPart(partDTOParam.getId());
         validatePartAndID(partDTOParam.getPartName(), partDTOParam.getId());
 
         if (partById.get().getPicture() != null)
@@ -63,11 +61,9 @@ public class PartService {
 
 
     public void delete(Long id) {
-        Optional<Part> partById = partRepo.findById(id);
-        if (partById.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_PART_ID.getCode(), NO_PART_ID.getKey(), NO_PART_ID.getMessage()));
-
-        partRepo.deleteById(id);
+        Optional<Part> partById = validateExistPart(id);
+        partById.get().setLocked(true);
+        partRepo.save(partById.get());
     }
 
 
@@ -98,7 +94,7 @@ public class PartService {
                 }
             }
             return partDto;
-        }).collect(Collectors.toList());
+        }).filter(part -> !part.getLocked()).collect(Collectors.toList());
 
     }
 
@@ -111,5 +107,12 @@ public class PartService {
     private void validatePartAndID(String partName, Long partId) {
         if (!partRepo.findById(partId).get().getPartName().equals(partName))
             validatePartName(partName);
+    }
+
+    private Optional<Part> validateExistPart(Long id) {
+        Optional<Part> partById = partRepo.findById(id);
+        if (partById.isEmpty())
+            throw new ApplicationException(new StatusResponse(NO_PART_ID.getCode(), NO_PART_ID.getKey(), NO_PART_ID.getMessage()));
+        return partById;
     }
 }

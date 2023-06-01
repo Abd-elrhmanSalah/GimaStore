@@ -1,5 +1,7 @@
-package com.gima.gimastore.entity;
+package com.gima.gimastore.model;
 
+import com.gima.gimastore.entity.Supplier;
+import com.gima.gimastore.entity.User;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
@@ -7,35 +9,13 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.sql.Date;
 
-@Entity
-@Table(name = "SUPPLY_PROCESS")
-public class SupplyProcess implements Serializable {
+public class SupplyProcessDTO implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id")
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "SUPPLIER_ID")
-    @Nationalized
     private Supplier supplier;
-
-    @ManyToOne
-    @JoinColumn(name = "USER_ID")
-    @Nationalized
     private User createdBy;
-
-    @Column(name = "CREATION_DATE")
     private Date creationDate;
-
-    @Column(name = "NOTES")
-    @Nationalized
     private String notes;
-
-
-    @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
-    @NotNull
     private Boolean isLocked;
 
     public Long getId() {

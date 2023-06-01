@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.gima.gimastore.constant.ResponseCodes.NO_SUPPLIER_ID;
 import static com.gima.gimastore.constant.ResponseCodes.REPEATED_SUPPLIERNAME;
@@ -41,8 +42,9 @@ public class SupplierService implements CommonRepo<SupplierDTO> {
 
     @Override
     public void delete(Long id) {
-        validateExistSupplier(id);
-        supplierRepo.deleteById(id);
+        Optional<Supplier> partById = validateExistSupplier(id);
+        partById.get().setLocked(true);
+        supplierRepo.save(partById.get());
 
     }
 
@@ -54,7 +56,7 @@ public class SupplierService implements CommonRepo<SupplierDTO> {
 
     @Override
     public List<SupplierDTO> findAll() {
-        return ObjectMapperUtils.mapAll(supplierRepo.findAll(), SupplierDTO.class);
+        return ObjectMapperUtils.mapAll(supplierRepo.findAll().stream().filter(sup -> !sup.getLocked()).collect(Collectors.toList()), SupplierDTO.class);
     }
 
     private void validateSupplierName(String supplierName) {
@@ -68,10 +70,11 @@ public class SupplierService implements CommonRepo<SupplierDTO> {
             validateSupplierName(supplierName);
     }
 
-    private void validateExistSupplier(Long id) {
+    private Optional<Supplier> validateExistSupplier(Long id) {
         Optional<Supplier> partById = supplierRepo.findById(id);
         if (partById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_SUPPLIER_ID.getCode(), NO_SUPPLIER_ID.getKey(), NO_SUPPLIER_ID.getMessage()));
 
+        return partById;
     }
 }

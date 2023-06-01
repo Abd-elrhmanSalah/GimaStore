@@ -67,7 +67,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
-//            userService.deleteUser(id);
+            userService.deleteUser(id);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم حذف المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
