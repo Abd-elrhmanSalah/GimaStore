@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.gima.gimastore.constant.ResponseCodes.*;
 
@@ -76,12 +75,12 @@ public class StoreService implements CommonRepo<StoreDTO> {
 
     @Override
     public List<StoreDTO> findAll() {
-        return ObjectMapperUtils.mapAll(storeRepo.findAll().stream().filter(store -> !store.getLocked()).collect(Collectors.toList()), StoreDTO.class);
+        return ObjectMapperUtils.mapAll(storeRepo.findAll(), StoreDTO.class);
     }
 
     private void validateStoreName(String storeName) {
         if (storeRepo.existsByStoreName(storeName))
-            if (storeRepo.findByStoreName(storeName).getLocked() == false)
+//            if (storeRepo.findByStoreName(storeName).getLocked() == false)
                 throw new ApplicationException(new StatusResponse(REPEATED_STORENAME.getCode(), REPEATED_STORENAME.getKey(), REPEATED_STORENAME.getMessage()));
 
     }
@@ -102,9 +101,12 @@ public class StoreService implements CommonRepo<StoreDTO> {
     }
 
     private void validateExistUserWithStore(User user) {
-        if (storeRepo.existsByUser(user) && storeRepo.findByUser(user).getLocked() == false)
-            throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
-
+        if (storeRepo.existsByUser(user)) {
+//            Optional<Store> s = storeRepo.findByUserAndIsLocked(user, true);
+//            if (!s.isEmpty())
+//                if (!s.get().getLocked())
+                    throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
+        }
     }
 
     private Optional<Store> validateExistStore(Long id) {

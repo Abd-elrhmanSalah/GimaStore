@@ -1,12 +1,17 @@
 package com.gima.gimastore.service;
 
+import com.gima.gimastore.entity.SupplyProcess;
+import com.gima.gimastore.model.PartRequest;
+import com.gima.gimastore.model.SupplyProcessDTO;
 import com.gima.gimastore.model.SupplyProcessRequest;
 import com.gima.gimastore.repository.CommonRepo;
 import com.gima.gimastore.repository.SupplyProcessPartsRepository;
 import com.gima.gimastore.repository.SupplyProcessRepository;
+import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class SupplyProcessService implements CommonRepo<SupplyProcessRequest> {
@@ -22,8 +27,11 @@ public class SupplyProcessService implements CommonRepo<SupplyProcessRequest> {
 
     @Override
     public void add(SupplyProcessRequest request) {
-
-
+        SupplyProcessDTO supplyProcessDTO = request.getSupplyProcess();
+        SupplyProcess supplyProcess= ObjectMapperUtils.map(supplyProcessDTO,SupplyProcess.class);
+        supplyProcessRepo.save(supplyProcess);
+        Set<PartRequest> partList = request.getPartList();
+//        partList.
 
     }
 
