@@ -123,7 +123,7 @@ public class UserService {
         if (role.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_ROLE_ID.getCode(), NO_ROLE_ID.getKey(), NO_ROLE_ID.getMessage()));
 
-        List<User> users = userRepo.findByRole(ObjectMapperUtils.map(role.get(), Role.class));
+        List<User> users = userRepo.findByRole(ObjectMapperUtils.map(role.get(), Role.class)).stream().filter(user -> !user.getLocked()).collect(Collectors.toList());
         return ObjectMapperUtils.mapAll(users, UserDTO.class);
     }
 

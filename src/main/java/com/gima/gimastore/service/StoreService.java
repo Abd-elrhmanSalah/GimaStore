@@ -81,6 +81,7 @@ public class StoreService implements CommonRepo<StoreDTO> {
 
     private void validateStoreName(String storeName) {
         if (storeRepo.existsByStoreName(storeName))
+            if(storeRepo.findByStoreName(storeName).getLocked() == false)
             throw new ApplicationException(new StatusResponse(REPEATED_STORENAME.getCode(), REPEATED_STORENAME.getKey(), REPEATED_STORENAME.getMessage()));
 
     }
