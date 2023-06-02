@@ -37,27 +37,18 @@ public class SupplyProcessService {
 
 
     public void add(SupplyProcessRequest request, MultipartFile file) throws IOException {
-        SupplyProcessDTO supplyProcessDTO = request.getSupplyProcess();
-        SupplyProcess supplyProcess = ObjectMapperUtils.map(supplyProcessDTO, SupplyProcess.class);
-//        supplyProcess.setCreationDate(LocalDateTime.now());
+        SupplyProcess savedSupplyProcess = saveAndUpdateSupplyProcess(request, file);
 
-        if (!file.isEmpty())
-            supplyProcess.setPicture(ImageUtil.compressImage(file.getBytes()));
-
-        SupplyProcess savedSupplyProcess = supplyProcessRepo.save(supplyProcess);
-////////////////////////////////////////////////////////////////////////////////
-        request.getPartList().stream().forEach(partRequest -> {
-            SupplyProcessPart supPart = new SupplyProcessPart();
-            supPart.setSupplyProcess(savedSupplyProcess);
-            supPart.setPart(ObjectMapperUtils.map(partRequest.getPart(), Part.class));
-            supPart.setAmount(partRequest.getAmount());
-            supPart.setCost(partRequest.getCost());
-            supplyProcessPartsRepo.save(supPart);
-        });
+        savePartsList(request, savedSupplyProcess);
 
     }
 
-    public void update(SupplyProcessRequest request) {
+    @Transactional
+    public void update(SupplyProcessRequest request, MultipartFile file) throws IOException {
+        SupplyProcess savedSupplyProcess = saveAndUpdateSupplyProcess(request, file);
+
+        supplyProcessPartsRepo.deleteAllBySupplyProcess(savedSupplyProcess);
+        savePartsList(request, savedSupplyProcess);
 
     }
 
@@ -74,7 +65,7 @@ public class SupplyProcessService {
         SupplyProcessWithPartsResponse response = new SupplyProcessWithPartsResponse(new SupplyProcessPartsDTO());
 
         SupplyProcessDTO map = ObjectMapperUtils.map(supplyProcessById, SupplyProcessDTO.class);
-        if ( map.getPicture() != null)
+        if (map.getPicture() != null)
             map.setPicture(ImageUtil.decompressImage(supplyProcessById.getPicture()));
 
         response.getSupplyProcessParts().setSupplyProcess(map);
@@ -86,10 +77,10 @@ public class SupplyProcessService {
             PartRequest partRequest = new PartRequest();
 
             PartDTO partDto = ObjectMapperUtils.map(supplyProcessPart.getPart(), PartDTO.class);
-            if ( supplyProcessPart.getPart().getPicture() != null) {
+            if (supplyProcessPart.getPart().getPicture() != null) {
                 try {
                     partDto.setPicture(ImageUtil.decompressImage(supplyProcessPart.getPart().getPicture()));
-                } catch (DataFormatException |IOException e) {
+                } catch (DataFormatException | IOException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -125,5 +116,26 @@ public class SupplyProcessService {
             throw new ApplicationException(new StatusResponse(NO_SUPPLYPROCESS_ID.getCode(), NO_SUPPLYPROCESS_ID.getKey(), NO_SUPPLYPROCESS_ID.getMessage()));
 
         return supplyById.get();
+    }
+
+    private SupplyProcess saveAndUpdateSupplyProcess(SupplyProcessRequest request, MultipartFile file) throws IOException {
+        SupplyProcessDTO supplyProcessDTO = request.getSupplyProcess();
+        SupplyProcess supplyProcess = ObjectMapperUtils.map(supplyProcessDTO, SupplyProcess.class);
+
+        if (!file.isEmpty())
+            supplyProcess.setPicture(ImageUtil.compressImage(file.getBytes()));
+        return supplyProcessRepo.save(supplyProcess);
+    }
+
+    private void savePartsList(SupplyProcessRequest request, SupplyProcess savedSupplyProcess) {
+        request.getPartList().stream().forEach(partRequest -> {
+            SupplyProcessPart supPart = new SupplyProcessPart();
+            supPart.setSupplyProcess(savedSupplyProcess);
+            supPart.setPart(ObjectMapperUtils.map(partRequest.getPart(), Part.class));
+            supPart.setAmount(partRequest.getAmount());
+            supPart.setCost(partRequest.getCost());
+            supplyProcessPartsRepo.save(supPart);
+        });
+
     }
 }

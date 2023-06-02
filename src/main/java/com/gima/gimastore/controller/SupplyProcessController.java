@@ -42,24 +42,24 @@ public class SupplyProcessController {
         }
     }
 
-//    @PatchMapping
-//    public ResponseEntity<?> updateSupplier(@Valid @RequestBody SupplierDTO dto) {
-//        try {
-//            supplierService.update(dto);
-//            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت تعديل المورد" + SUCCESS.getMessage()), HttpStatus.OK);
-//
-//        } catch (ApplicationException e) {
-//            logger.error(e.getMessage(), e);
-//            e.printStackTrace();
-//            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
-//        } catch (Exception ex) {
-//            logger.error(ex.getMessage(), ex);
-//            ex.printStackTrace();
-//            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
-//                    HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//
+    @PatchMapping
+    public ResponseEntity<?> updateSupplyProcess(@RequestPart String stringDto, @RequestPart("picture") MultipartFile file) {
+        try {
+            supplyProcessService.update(Utils.formattedJsonToSupplyProcessRequestObject(stringDto), file);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت تعديل التوريد" + SUCCESS.getMessage()), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSupplyProcess(@PathVariable Long id) {
         try {
