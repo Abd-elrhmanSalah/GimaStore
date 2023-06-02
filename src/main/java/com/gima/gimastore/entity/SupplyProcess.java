@@ -10,8 +10,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "SUPPLY_PROCESS")
@@ -48,6 +46,10 @@ public class SupplyProcess implements Serializable {
     @NotNull
     private Boolean isLocked;
 
+    @Lob
+    @Column(name = "PICTURE", length = 1000)
+    private byte[] picture;
+
     public Long getId() {
         return id;
     }
@@ -81,7 +83,6 @@ public class SupplyProcess implements Serializable {
     }
 
 
-
     public String getNotes() {
         return notes;
     }
@@ -104,5 +105,13 @@ public class SupplyProcess implements Serializable {
 
     public void setBillId(String billId) {
         this.billId = billId;
+    }
+
+    public byte[] getPicture() {
+        return picture;
+    }
+
+    public void setPicture(byte[] picture) {
+        this.picture = picture;
     }
 }

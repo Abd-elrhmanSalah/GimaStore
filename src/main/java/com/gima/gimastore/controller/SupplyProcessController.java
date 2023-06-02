@@ -31,7 +31,7 @@ public class SupplyProcessController {
     public ResponseEntity<?> addSupplier(@Valid @RequestBody SupplyProcessRequest request) {
         try {
             supplyProcessService.add(request);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت التوريد بنجاح " + SUCCESS.getMessage()), HttpStatus.OK);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم التوريد  " + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
