@@ -60,23 +60,23 @@ public class SupplyProcessController {
 //        }
 //    }
 //
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<?> deleteSupplier(@PathVariable Long id) {
-//        try {
-//            supplierService.delete(id);
-//            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت حذف المورد" + SUCCESS.getMessage()), HttpStatus.OK);
-//
-//        } catch (ApplicationException e) {
-//            logger.error(e.getMessage(), e);
-//            e.printStackTrace();
-//            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
-//        } catch (Exception ex) {
-//            logger.error(ex.getMessage(), ex);
-//            ex.printStackTrace();
-//            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
-//                    HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteSupplyProcess(@PathVariable Long id) {
+        try {
+            supplyProcessService.deleteSupplyProcessById(id);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت حذف الفاتورة" + SUCCESS.getMessage()), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping
     public ResponseEntity<?> getAllSupplyProcess() {

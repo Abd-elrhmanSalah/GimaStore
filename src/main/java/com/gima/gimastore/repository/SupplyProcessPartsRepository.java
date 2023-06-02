@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface SupplyProcessPartsRepository extends JpaRepository<SupplyProcessPart, Long> {
     List<SupplyProcessPart> findBySupplyProcess(SupplyProcess supplyProcess);
+
+    void deleteAllBySupplyProcess(SupplyProcess supplyProcess);
 }

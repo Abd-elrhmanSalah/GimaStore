@@ -15,6 +15,7 @@ import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -59,18 +60,19 @@ public class SupplyProcessService {
 
     }
 
-    public void delete(Long id) {
-
+    @Transactional
+    public void deleteSupplyProcessById(Long supplyProcessId) {
+        validateSupplyProcessId(supplyProcessId);
+  
+        supplyProcessPartsRepo.deleteAllBySupplyProcess(supplyProcessRepo.findById(supplyProcessId).get());
+        supplyProcessRepo.deleteById(supplyProcessId);
     }
 
     public SupplyProcessWithPartsResponse findSupplyProcessById(Long supplyProcessId) {
-        Optional<SupplyProcess> supplyById = supplyProcessRepo.findById(supplyProcessId);
-        if (supplyById.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_SUPPLYPROCESS_ID.getCode(), NO_SUPPLYPROCESS_ID.getKey(), NO_SUPPLYPROCESS_ID.getMessage()));
-
+        SupplyProcess supplyProcessById = validateSupplyProcessId(supplyProcessId);
         SupplyProcessWithPartsResponse response = new SupplyProcessWithPartsResponse(new SupplyProcessPartsDTO());
 
-        response.getSupplyProcessParts().setSupplyProcess(ObjectMapperUtils.map(supplyById.get(), SupplyProcessDTO.class));
+        response.getSupplyProcessParts().setSupplyProcess(ObjectMapperUtils.map(supplyProcessById, SupplyProcessDTO.class));
         List<SupplyProcessPart> supplyProcessPartList = supplyProcessPartsRepo.findBySupplyProcess(ObjectMapperUtils.map(response.getSupplyProcessParts().getSupplyProcess(), SupplyProcess.class));
 
         supplyProcessPartList.forEach(supplyProcessPart -> {
@@ -98,5 +100,13 @@ public class SupplyProcessService {
         }).collect(Collectors.toList());
 
         return response;
+    }
+
+    private SupplyProcess validateSupplyProcessId(Long supplyProcessId) {
+        Optional<SupplyProcess> supplyById = supplyProcessRepo.findById(supplyProcessId);
+        if (supplyById.isEmpty())
+            throw new ApplicationException(new StatusResponse(NO_SUPPLYPROCESS_ID.getCode(), NO_SUPPLYPROCESS_ID.getKey(), NO_SUPPLYPROCESS_ID.getMessage()));
+
+        return supplyById.get();
     }
 }
