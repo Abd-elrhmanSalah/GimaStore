@@ -9,7 +9,7 @@ public class PartRequest implements Serializable {
     private PartDTO part;
     private BigDecimal cost;
     private Integer amount;
-
+private Boolean isDist;
     public PartRequest() {
     }
 
@@ -41,5 +41,13 @@ public class PartRequest implements Serializable {
 
     public void setAmount(Integer amount) {
         this.amount = amount;
+    }
+
+    public Boolean getDist() {
+        return isDist;
+    }
+
+    public void setDist(Boolean dist) {
+        isDist = dist;
     }
 }

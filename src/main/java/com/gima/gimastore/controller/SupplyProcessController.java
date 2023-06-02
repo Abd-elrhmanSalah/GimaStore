@@ -11,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
 
 @RestController
@@ -28,7 +26,7 @@ public class SupplyProcessController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addSupplier(@Valid @RequestBody SupplyProcessRequest request) {
+    public ResponseEntity<?> addSupplier(@ModelAttribute SupplyProcessRequest request) {
         try {
             supplyProcessService.add(request);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم التوريد  " + SUCCESS.getMessage()), HttpStatus.OK);

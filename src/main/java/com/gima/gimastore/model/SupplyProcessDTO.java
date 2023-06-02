@@ -1,6 +1,5 @@
 package com.gima.gimastore.model;
 
-import com.gima.gimastore.entity.Supplier;
 import com.gima.gimastore.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,8 +15,9 @@ public class SupplyProcessDTO implements Serializable {
     private String notes;
     private Boolean isLocked;
     private String billId;
-
     private MultipartFile file;
+
+    private Boolean isFullDist;
 
     public Long getId() {
         return id;
@@ -81,5 +81,13 @@ public class SupplyProcessDTO implements Serializable {
 
     public void setFile(MultipartFile file) {
         this.file = file;
+    }
+
+    public Boolean getFullDist() {
+        return isFullDist;
+    }
+
+    public void setFullDist(Boolean fullDist) {
+        isFullDist = fullDist;
     }
 }
