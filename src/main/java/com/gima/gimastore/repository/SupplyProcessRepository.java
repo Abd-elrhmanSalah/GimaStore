@@ -1,6 +1,6 @@
 package com.gima.gimastore.repository;
 
-import com.gima.gimastore.entity.SupplyProcess;
+import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,9 +1,11 @@
-package com.gima.gimastore.entity;
+package com.gima.gimastore.entity.supplyProcess;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.gima.gimastore.entity.Supplier;
+import com.gima.gimastore.entity.User;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
@@ -32,8 +34,8 @@ public class SupplyProcess implements Serializable {
     private User createdBy;
 
     @Column(name = "CREATION_DATE")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//    @JsonSerialize(using = LocalDateTimeSerializer.class)
+//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private Date creationDate;
 
     @Column(name = "NOTES")
@@ -50,6 +52,10 @@ public class SupplyProcess implements Serializable {
     @Lob
     @Column(name = "PICTURE", length = 1000)
     private byte[] picture;
+
+    @Column(name = "IS_FULL_DIST", columnDefinition = "BIT DEFAULT 0")
+    @NotNull
+    private Boolean isFullDist;
 
     public Long getId() {
         return id;
@@ -114,5 +120,13 @@ public class SupplyProcess implements Serializable {
 
     public void setPicture(byte[] picture) {
         this.picture = picture;
+    }
+
+    public Boolean getFullDist() {
+        return isFullDist;
+    }
+
+    public void setFullDist(Boolean fullDist) {
+        isFullDist = fullDist;
     }
 }

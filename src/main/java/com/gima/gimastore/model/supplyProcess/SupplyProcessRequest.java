@@ -1,6 +1,6 @@
-package com.gima.gimastore.model;
+package com.gima.gimastore.model.supplyProcess;
 
-import com.gima.gimastore.entity.SupplyProcess;
+import com.gima.gimastore.model.PartRequest;
 
 import java.io.Serializable;
 import java.util.Set;

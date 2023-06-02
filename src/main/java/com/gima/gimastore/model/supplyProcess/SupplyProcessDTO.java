@@ -1,6 +1,7 @@
-package com.gima.gimastore.model;
+package com.gima.gimastore.model.supplyProcess;
 
 import com.gima.gimastore.entity.User;
+import com.gima.gimastore.model.SupplierDTO;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

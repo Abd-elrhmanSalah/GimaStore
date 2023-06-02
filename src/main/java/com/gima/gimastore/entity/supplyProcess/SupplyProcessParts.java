@@ -1,16 +1,31 @@
-package com.gima.gimastore.model;
+package com.gima.gimastore.entity.supplyProcess;
 
 import com.gima.gimastore.entity.Part;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class SupplyProcessPartsDTO implements Serializable {
-
+@Entity
+@Table(name = "SUPPLY_PROCESS_PARTS")
+public class SupplyProcessParts implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id")
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "PART_ID")
     private Part part;
-    private SupplyProcessDTO supplyProcess;
+
+    @ManyToOne
+    @JoinColumn(name = "SUPPLY_PROCESS_ID")
+    private SupplyProcess supplyProcess;
+
+    @Column(name = "COST")
     private BigDecimal cost;
+
+    @Column(name = "AMOUNT")
     private Integer amount;
 
     public Long getId() {
@@ -29,11 +44,11 @@ public class SupplyProcessPartsDTO implements Serializable {
         this.part = part;
     }
 
-    public SupplyProcessDTO getSupplyProcess() {
+    public SupplyProcess getSupplyProcess() {
         return supplyProcess;
     }
 
-    public void setSupplyProcess(SupplyProcessDTO supplyProcess) {
+    public void setSupplyProcess(SupplyProcess supplyProcess) {
         this.supplyProcess = supplyProcess;
     }
 
