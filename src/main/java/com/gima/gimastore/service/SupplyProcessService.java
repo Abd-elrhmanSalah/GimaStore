@@ -86,8 +86,13 @@ public class SupplyProcessService {
             PartRequest partRequest = new PartRequest();
 
             PartDTO partDto = ObjectMapperUtils.map(supplyProcessPart.getPart(), PartDTO.class);
-            if ( supplyProcessPart.getPart().getPicture() != null)
-                partDto.setPicture(supplyProcessPart.getPart().getPicture());
+            if ( supplyProcessPart.getPart().getPicture() != null) {
+                try {
+                    partDto.setPicture(ImageUtil.decompressImage(supplyProcessPart.getPart().getPicture()));
+                } catch (DataFormatException |IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             partRequest.setPart(partDto);
 
             partRequest.setAmount(supplyProcessPart.getAmount());
