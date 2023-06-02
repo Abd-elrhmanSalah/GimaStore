@@ -1,7 +1,5 @@
 package com.gima.gimastore.model;
 
-import com.gima.gimastore.entity.Part;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -9,7 +7,9 @@ public class PartRequest implements Serializable {
     private PartDTO part;
     private BigDecimal cost;
     private Integer amount;
-private Boolean isDist;
+    private Boolean isFullDist;
+    private Boolean isPartialDist;
+
     public PartRequest() {
     }
 
@@ -43,11 +43,19 @@ private Boolean isDist;
         this.amount = amount;
     }
 
-    public Boolean getDist() {
-        return isDist;
+    public Boolean getFullDist() {
+        return isFullDist;
     }
 
-    public void setDist(Boolean dist) {
-        isDist = dist;
+    public void setFullDist(Boolean fullDist) {
+        isFullDist = fullDist;
+    }
+
+    public Boolean getPartialDist() {
+        return isPartialDist;
+    }
+
+    public void setPartialDist(Boolean partialDist) {
+        isPartialDist = partialDist;
     }
 }

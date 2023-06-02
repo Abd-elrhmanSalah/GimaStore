@@ -2,10 +2,12 @@ package com.gima.gimastore.service;
 
 import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
-import com.gima.gimastore.entity.supplyProcess.SupplyProcessParts;
-import com.gima.gimastore.model.supplyProcess.SupplyProcessDTO;
-import com.gima.gimastore.model.supplyProcess.SupplyProcessRequest;
-import com.gima.gimastore.model.supplyProcess.SupplyProcessResponse;
+import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
+import com.gima.gimastore.exception.ApplicationException;
+import com.gima.gimastore.exception.StatusResponse;
+import com.gima.gimastore.model.PartDTO;
+import com.gima.gimastore.model.PartRequest;
+import com.gima.gimastore.model.supplyProcess.*;
 import com.gima.gimastore.repository.SupplyProcessPartsRepository;
 import com.gima.gimastore.repository.SupplyProcessRepository;
 import com.gima.gimastore.util.ImageUtil;
@@ -14,7 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.gima.gimastore.constant.ResponseCodes.NO_SUPPLYPROCESS_ID;
 
 @Service
 public class SupplyProcessService {
@@ -39,7 +45,7 @@ public class SupplyProcessService {
         SupplyProcess savedSupplyProcess = supplyProcessRepo.save(supplyProcess);
 ////////////////////////////////////////////////////////////////////////////////
         request.getPartList().stream().forEach(partRequest -> {
-            SupplyProcessParts supPart = new SupplyProcessParts();
+            SupplyProcessPart supPart = new SupplyProcessPart();
             supPart.setSupplyProcess(savedSupplyProcess);
             supPart.setPart(ObjectMapperUtils.map(partRequest.getPart(), Part.class));
             supPart.setAmount(partRequest.getAmount());
@@ -57,8 +63,29 @@ public class SupplyProcessService {
 
     }
 
-    public SupplyProcessRequest findSupplyProcessById(Long supplyProcessId) {
-        return null;
+    public SupplyProcessWithPartsResponse findSupplyProcessById(Long supplyProcessId) {
+        Optional<SupplyProcess> supplyById = supplyProcessRepo.findById(supplyProcessId);
+        if (supplyById.isEmpty())
+            throw new ApplicationException(new StatusResponse(NO_SUPPLYPROCESS_ID.getCode(), NO_SUPPLYPROCESS_ID.getKey(), NO_SUPPLYPROCESS_ID.getMessage()));
+
+        SupplyProcessWithPartsResponse response = new SupplyProcessWithPartsResponse(new SupplyProcessPartsDTO());
+
+        response.getSupplyProcessParts().setSupplyProcess(ObjectMapperUtils.map(supplyById.get(), SupplyProcessDTO.class));
+        List<SupplyProcessPart> supplyProcessPartList = supplyProcessPartsRepo.findBySupplyProcess(ObjectMapperUtils.map(response.getSupplyProcessParts().getSupplyProcess(), SupplyProcess.class));
+
+        supplyProcessPartList.forEach(supplyProcessPart -> {
+
+            PartRequest partRequest = new PartRequest();
+            partRequest.setPart(ObjectMapperUtils.map(supplyProcessPart.getPart(), PartDTO.class));
+            partRequest.setAmount(supplyProcessPart.getAmount());
+            partRequest.setCost(supplyProcessPart.getCost());
+            partRequest.setFullDist(supplyProcessPart.getFullDist());
+            partRequest.setPartialDist(supplyProcessPart.getPartialDist());
+            response.getSupplyProcessParts().getParts().add(partRequest);
+
+        });
+
+        return response;
     }
 
     public SupplyProcessResponse findAllSupplyProcess() {

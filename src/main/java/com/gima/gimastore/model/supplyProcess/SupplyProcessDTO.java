@@ -4,7 +4,6 @@ import com.gima.gimastore.entity.User;
 import com.gima.gimastore.model.SupplierDTO;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 public class SupplyProcessDTO implements Serializable {
@@ -17,6 +16,8 @@ public class SupplyProcessDTO implements Serializable {
     private Boolean isLocked = false;
     private String billId;
     private Boolean isFullDist;
+
+    private byte[] picture;
 
     public Long getId() {
         return id;
@@ -80,5 +81,13 @@ public class SupplyProcessDTO implements Serializable {
 
     public void setFullDist(Boolean fullDist) {
         isFullDist = fullDist;
+    }
+
+    public byte[] getPicture() {
+        return picture;
+    }
+
+    public void setPicture(byte[] picture) {
+        this.picture = picture;
     }
 }

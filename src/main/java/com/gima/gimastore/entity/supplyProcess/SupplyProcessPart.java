@@ -3,12 +3,13 @@ package com.gima.gimastore.entity.supplyProcess;
 import com.gima.gimastore.entity.Part;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "SUPPLY_PROCESS_PARTS")
-public class SupplyProcessParts implements Serializable {
+public class SupplyProcessPart implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id")
@@ -26,7 +27,16 @@ public class SupplyProcessParts implements Serializable {
     private BigDecimal cost;
 
     @Column(name = "AMOUNT")
+
     private Integer amount;
+
+    @Column(name = "IS_FULL_DIST", columnDefinition = "BIT DEFAULT 0")
+    @NotNull
+    private Boolean isFullDist;
+
+    @Column(name = "IS_PARTIAL_DIST", columnDefinition = "BIT DEFAULT 0")
+    @NotNull
+    private Boolean isPartialDist;
 
     public Long getId() {
         return id;
@@ -66,5 +76,21 @@ public class SupplyProcessParts implements Serializable {
 
     public void setAmount(Integer amount) {
         this.amount = amount;
+    }
+
+    public Boolean getFullDist() {
+        return isFullDist;
+    }
+
+    public void setFullDist(Boolean fullDist) {
+        isFullDist = fullDist;
+    }
+
+    public Boolean getPartialDist() {
+        return isPartialDist;
+    }
+
+    public void setPartialDist(Boolean partialDist) {
+        isPartialDist = partialDist;
     }
 }

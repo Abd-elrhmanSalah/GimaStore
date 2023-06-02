@@ -1,25 +1,16 @@
 package com.gima.gimastore.model.supplyProcess;
 
-import com.gima.gimastore.entity.Part;
+import com.gima.gimastore.model.PartRequest;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SupplyProcessPartsDTO implements Serializable {
 
     private SupplyProcessDTO supplyProcess;
-    private Part part;
+    private List<PartRequest> parts = new ArrayList<>();
 
-    private BigDecimal cost;
-    private Integer amount;
-
-    public Part getPart() {
-        return part;
-    }
-
-    public void setPart(Part part) {
-        this.part = part;
-    }
 
     public SupplyProcessDTO getSupplyProcess() {
         return supplyProcess;
@@ -29,19 +20,11 @@ public class SupplyProcessPartsDTO implements Serializable {
         this.supplyProcess = supplyProcess;
     }
 
-    public BigDecimal getCost() {
-        return cost;
+    public List<PartRequest> getParts() {
+        return parts;
     }
 
-    public void setCost(BigDecimal cost) {
-        this.cost = cost;
-    }
-
-    public Integer getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Integer amount) {
-        this.amount = amount;
+    public void setParts(List<PartRequest> parts) {
+        this.parts = parts;
     }
 }

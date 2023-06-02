@@ -22,7 +22,7 @@ public enum ResponseCodes {
     LOGIN_USER_LOCKED("014", "Locked Account Error", "هذا الحساب مغلق"),
     USER_ROLE_SUPERVISOR("015", "Supervisor Error", "هذا المستخدم ليس أمين مخزن"),
 
-    DEPIT_CATEGORY_AND_TYPE("008", "DebitBudget CategoryAndType Error", "Debit Budget Category code and  type not exist"),
+    NO_SUPPLYPROCESS_ID("016", "SupplyProcessId Error", "لا يوجد توريد بهذا الID"),
     CREDIT_CATEGORY_AND_TYPE("009", "CreditBudget CategoryAndType Error", "Credit Budget Category code and  type not exist"),
 
     RECONCILIATION_NOT_MATCHE("017", "Reconciliation NotMatched Error", "Reconciliation NotMatched can't accepted"),
