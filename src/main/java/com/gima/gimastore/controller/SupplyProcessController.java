@@ -2,7 +2,6 @@ package com.gima.gimastore.controller;
 
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
-import com.gima.gimastore.model.SupplyProcessRequest;
 import com.gima.gimastore.service.SupplyProcessService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
@@ -10,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
 
@@ -26,9 +26,9 @@ public class SupplyProcessController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addSupplier(@ModelAttribute SupplyProcessRequest request) {
+    public ResponseEntity<?> addSupplier(@RequestPart String stringDto, @RequestPart("picture") MultipartFile file) {
         try {
-            supplyProcessService.add(request);
+            supplyProcessService.add(Utils.formattedJsonToSupplyProcessRequestObject(stringDto), file);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم التوريد  " + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
@@ -38,8 +38,7 @@ public class SupplyProcessController {
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
             ex.printStackTrace();
-            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

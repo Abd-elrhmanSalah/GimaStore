@@ -1,22 +1,20 @@
 package com.gima.gimastore.model;
 
 import com.gima.gimastore.entity.User;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 public class SupplyProcessDTO implements Serializable {
 
     private Long id;
     private SupplierDTO supplier;
     private User createdBy;
-    private Date creationDate;
+    private Date creationDate = new Date();
     private String notes;
-    private Boolean isLocked;
+    private Boolean isLocked = false;
     private String billId;
-    private MultipartFile file;
-
     private Boolean isFullDist;
 
     public Long getId() {
@@ -73,14 +71,6 @@ public class SupplyProcessDTO implements Serializable {
 
     public void setBillId(String billId) {
         this.billId = billId;
-    }
-
-    public MultipartFile getFile() {
-        return file;
-    }
-
-    public void setFile(MultipartFile file) {
-        this.file = file;
     }
 
     public Boolean getFullDist() {

@@ -5,19 +5,19 @@ import com.gima.gimastore.entity.SupplyProcess;
 import com.gima.gimastore.entity.SupplyProcessParts;
 import com.gima.gimastore.model.SupplyProcessDTO;
 import com.gima.gimastore.model.SupplyProcessRequest;
-import com.gima.gimastore.repository.CommonRepo;
 import com.gima.gimastore.repository.SupplyProcessPartsRepository;
 import com.gima.gimastore.repository.SupplyProcessRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class SupplyProcessService implements CommonRepo<SupplyProcessRequest> {
+public class SupplyProcessService {
 
     private SupplyProcessRepository supplyProcessRepo;
     private SupplyProcessPartsRepository supplyProcessPartsRepo;
@@ -28,14 +28,13 @@ public class SupplyProcessService implements CommonRepo<SupplyProcessRequest> {
     }
 
 
-    @Override
-    public void add(SupplyProcessRequest request) throws IOException {
+    public void add(SupplyProcessRequest request, MultipartFile file) throws IOException {
         SupplyProcessDTO supplyProcessDTO = request.getSupplyProcess();
         SupplyProcess supplyProcess = ObjectMapperUtils.map(supplyProcessDTO, SupplyProcess.class);
-        supplyProcess.setCreationDate(LocalDateTime.now());
+//        supplyProcess.setCreationDate(LocalDateTime.now());
 
-        if (!supplyProcessDTO.getFile().isEmpty())
-            supplyProcess.setPicture(ImageUtil.compressImage(supplyProcessDTO.getFile().getBytes()));
+        if (!file.isEmpty())
+            supplyProcess.setPicture(ImageUtil.compressImage(file.getBytes()));
 
         SupplyProcess savedSupplyProcess = supplyProcessRepo.save(supplyProcess);
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,22 +49,18 @@ public class SupplyProcessService implements CommonRepo<SupplyProcessRequest> {
 
     }
 
-    @Override
     public void update(SupplyProcessRequest request) {
 
     }
 
-    @Override
     public void delete(Long id) {
 
     }
 
-    @Override
     public SupplyProcessRequest findById(Long id) {
         return null;
     }
 
-    @Override
     public List<SupplyProcessRequest> findAll() {
         return null;
     }

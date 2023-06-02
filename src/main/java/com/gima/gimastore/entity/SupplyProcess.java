@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "SUPPLY_PROCESS")
@@ -33,7 +34,7 @@ public class SupplyProcess implements Serializable {
     @Column(name = "CREATION_DATE")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime creationDate;
+    private Date creationDate;
 
     @Column(name = "NOTES")
     @Nationalized
@@ -74,11 +75,11 @@ public class SupplyProcess implements Serializable {
         this.createdBy = createdBy;
     }
 
-    public LocalDateTime getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(LocalDateTime creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
