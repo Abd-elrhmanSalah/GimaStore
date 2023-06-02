@@ -48,9 +48,6 @@ public class SupplyProcess implements Serializable {
     @NotNull
     private Boolean isLocked;
 
-    @OneToMany(mappedBy = "supplyProcess")
-    private List<SupplyProcessParts> supplyProcessPartsList;
-
     public Long getId() {
         return id;
     }
@@ -83,13 +80,7 @@ public class SupplyProcess implements Serializable {
         this.creationDate = creationDate;
     }
 
-    public List<SupplyProcessParts> getSupplyProcessPartsList() {
-        return supplyProcessPartsList;
-    }
 
-    public void setSupplyProcessPartsList(List<SupplyProcessParts> supplyProcessPartsList) {
-        this.supplyProcessPartsList = supplyProcessPartsList;
-    }
 
     public String getNotes() {
         return notes;

@@ -1,6 +1,8 @@
 package com.gima.gimastore.service;
 
+import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.SupplyProcess;
+import com.gima.gimastore.entity.SupplyProcessParts;
 import com.gima.gimastore.model.PartRequest;
 import com.gima.gimastore.model.SupplyProcessDTO;
 import com.gima.gimastore.model.SupplyProcessRequest;
@@ -10,6 +12,7 @@ import com.gima.gimastore.repository.SupplyProcessRepository;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -29,9 +32,18 @@ public class SupplyProcessService implements CommonRepo<SupplyProcessRequest> {
     public void add(SupplyProcessRequest request) {
         SupplyProcessDTO supplyProcessDTO = request.getSupplyProcess();
         SupplyProcess supplyProcess= ObjectMapperUtils.map(supplyProcessDTO,SupplyProcess.class);
-        supplyProcessRepo.save(supplyProcess);
-        Set<PartRequest> partList = request.getPartList();
-//        partList.
+        supplyProcess.setCreationDate(LocalDateTime.now());
+        
+        SupplyProcess savedSupplyProcess = supplyProcessRepo.save(supplyProcess);
+////////////////////////////////////////////////////////////////////////////////
+        request.getPartList().stream().forEach(partRequest -> {
+            SupplyProcessParts supPart = new SupplyProcessParts();
+            supPart.setSupplyProcess(savedSupplyProcess);
+            supPart.setPart(ObjectMapperUtils.map(partRequest.getPart(), Part.class));
+            supPart.setAmount(partRequest.getAmount());
+            supPart.setCost(partRequest.getCost());
+            supplyProcessPartsRepo.save(supPart);
+        });
 
     }
 

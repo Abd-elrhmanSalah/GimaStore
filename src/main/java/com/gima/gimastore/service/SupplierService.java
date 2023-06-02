@@ -27,7 +27,8 @@ public class SupplierService implements CommonRepo<SupplierDTO> {
     @Override
     public void add(SupplierDTO supplierDTOParam) {
         validateSupplierName(supplierDTOParam.getSupplierName());
-        supplierRepo.save(ObjectMapperUtils.map(supplierDTOParam, Supplier.class));
+        Supplier map = ObjectMapperUtils.map(supplierDTOParam, Supplier.class);
+        supplierRepo.save(map);
     }
 
     @Override
