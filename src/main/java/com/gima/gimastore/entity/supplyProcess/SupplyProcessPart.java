@@ -32,11 +32,11 @@ public class SupplyProcessPart implements Serializable {
 
     @Column(name = "IS_FULL_DIST", columnDefinition = "BIT DEFAULT 0")
     @NotNull
-    private Boolean isFullDist;
+    private Boolean isFullDist=false;
 
     @Column(name = "IS_PARTIAL_DIST", columnDefinition = "BIT DEFAULT 0")
     @NotNull
-    private Boolean isPartialDist;
+    private Boolean isPartialDist=false;
 
     public Long getId() {
         return id;

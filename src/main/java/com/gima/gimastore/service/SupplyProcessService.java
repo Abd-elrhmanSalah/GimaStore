@@ -74,7 +74,8 @@ public class SupplyProcessService {
         SupplyProcessWithPartsResponse response = new SupplyProcessWithPartsResponse(new SupplyProcessPartsDTO());
 
         SupplyProcessDTO map = ObjectMapperUtils.map(supplyProcessById, SupplyProcessDTO.class);
-        map.setPicture(ImageUtil.decompressImage(supplyProcessById.getPicture()));
+        if ( map.getPicture() != null)
+            map.setPicture(ImageUtil.decompressImage(supplyProcessById.getPicture()));
 
         response.getSupplyProcessParts().setSupplyProcess(map);
 
@@ -85,7 +86,8 @@ public class SupplyProcessService {
             PartRequest partRequest = new PartRequest();
 
             PartDTO partDto = ObjectMapperUtils.map(supplyProcessPart.getPart(), PartDTO.class);
-            partDto.setPicture(supplyProcessPart.getPart().getPicture());
+            if ( supplyProcessPart.getPart().getPicture() != null)
+                partDto.setPicture(supplyProcessPart.getPart().getPicture());
             partRequest.setPart(partDto);
 
             partRequest.setAmount(supplyProcessPart.getAmount());
