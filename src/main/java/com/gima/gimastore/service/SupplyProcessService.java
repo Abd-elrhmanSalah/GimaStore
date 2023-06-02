@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.zip.DataFormatException;
 
 import static com.gima.gimastore.constant.ResponseCodes.NO_SUPPLYPROCESS_ID;
 
@@ -63,26 +64,35 @@ public class SupplyProcessService {
     @Transactional
     public void deleteSupplyProcessById(Long supplyProcessId) {
         validateSupplyProcessId(supplyProcessId);
-  
+
         supplyProcessPartsRepo.deleteAllBySupplyProcess(supplyProcessRepo.findById(supplyProcessId).get());
         supplyProcessRepo.deleteById(supplyProcessId);
     }
 
-    public SupplyProcessWithPartsResponse findSupplyProcessById(Long supplyProcessId) {
+    public SupplyProcessWithPartsResponse findSupplyProcessById(Long supplyProcessId) throws DataFormatException, IOException {
         SupplyProcess supplyProcessById = validateSupplyProcessId(supplyProcessId);
         SupplyProcessWithPartsResponse response = new SupplyProcessWithPartsResponse(new SupplyProcessPartsDTO());
 
-        response.getSupplyProcessParts().setSupplyProcess(ObjectMapperUtils.map(supplyProcessById, SupplyProcessDTO.class));
+        SupplyProcessDTO map = ObjectMapperUtils.map(supplyProcessById, SupplyProcessDTO.class);
+        map.setPicture(ImageUtil.decompressImage(supplyProcessById.getPicture()));
+
+        response.getSupplyProcessParts().setSupplyProcess(map);
+
         List<SupplyProcessPart> supplyProcessPartList = supplyProcessPartsRepo.findBySupplyProcess(ObjectMapperUtils.map(response.getSupplyProcessParts().getSupplyProcess(), SupplyProcess.class));
 
         supplyProcessPartList.forEach(supplyProcessPart -> {
 
             PartRequest partRequest = new PartRequest();
-            partRequest.setPart(ObjectMapperUtils.map(supplyProcessPart.getPart(), PartDTO.class));
+
+            PartDTO partDto = ObjectMapperUtils.map(supplyProcessPart.getPart(), PartDTO.class);
+            partDto.setPicture(supplyProcessPart.getPart().getPicture());
+            partRequest.setPart(partDto);
+
             partRequest.setAmount(supplyProcessPart.getAmount());
             partRequest.setCost(supplyProcessPart.getCost());
             partRequest.setFullDist(supplyProcessPart.getFullDist());
             partRequest.setPartialDist(supplyProcessPart.getPartialDist());
+
             response.getSupplyProcessParts().getParts().add(partRequest);
 
         });
