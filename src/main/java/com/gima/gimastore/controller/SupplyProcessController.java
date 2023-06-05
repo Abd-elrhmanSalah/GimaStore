@@ -2,7 +2,6 @@ package com.gima.gimastore.controller;
 
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
-import com.gima.gimastore.model.supplyProcess.SupplyProcessResponse;
 import com.gima.gimastore.service.SupplyProcessService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
@@ -68,7 +67,7 @@ public class SupplyProcessController {
     @GetMapping("/searchSupplyProcess")
     public ResponseEntity<?> searchSupplyProcess(@RequestParam Map<String, String> params, Pageable pageable) {
         try {
-            supplyProcessService.searchByPagingCriteria(params, pageable);
+
             return new ResponseEntity<>(supplyProcessService.searchByPagingCriteria(params, pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {

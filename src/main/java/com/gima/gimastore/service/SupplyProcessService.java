@@ -8,7 +8,10 @@ import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartDTO;
 import com.gima.gimastore.model.PartRequest;
-import com.gima.gimastore.model.supplyProcess.*;
+import com.gima.gimastore.model.supplyProcess.SupplyProcessDTO;
+import com.gima.gimastore.model.supplyProcess.SupplyProcessPartsDTO;
+import com.gima.gimastore.model.supplyProcess.SupplyProcessRequest;
+import com.gima.gimastore.model.supplyProcess.SupplyProcessWithPartsResponse;
 import com.gima.gimastore.repository.SupplyProcessPartsRepository;
 import com.gima.gimastore.repository.SupplyProcessRepository;
 import com.gima.gimastore.util.ImageUtil;
@@ -109,20 +112,17 @@ public class SupplyProcessService {
         return response;
     }
 
-    public SupplyProcessResponse findAllSupplyProcess() {
-        SupplyProcessResponse response = new SupplyProcessResponse();
+    public List<SupplyProcessDTO> findAllSupplyProcess() {
 
-        supplyProcessRepo.findAll().stream().map(supplyProcess -> {
-            SupplyProcessDTO supplyProcessDTO = ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
-            response.getSupplyProcess().add(supplyProcessDTO);
-            return response;
+        return supplyProcessRepo.findAll().stream().map(supplyProcess -> {
+            return ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
         }).collect(Collectors.toList());
 
-        return response;
+
     }
 
-    public List<SupplyProcessResponse> searchByPagingCriteria(Map<String, String> params, Pageable pageable) {
-        SupplyProcessResponse response = new SupplyProcessResponse();
+    public Page<SupplyProcess> searchByPagingCriteria(Map<String, String> params, Pageable pageable) {
+
 
         Page<SupplyProcess> supplyProcessPage = supplyProcessRepo.findAll(
                 (Specification<SupplyProcess>) (root, query, cb) -> {
@@ -149,29 +149,17 @@ public class SupplyProcessService {
                             if (!params.get("billId").equals(""))
                                 predicates.add(cb.equal(root.get("billId"), params.get("billId")));
 
-//                        if (params.containsKey("accountNumber"))
-//                            if (params.get("accountNumber") != null || !params.get("accountNumber").isEmpty())
-//                                if (supplierRepo.existsById(params.get("accountNumber")))
-//                                    predicates.add(cb.equal(root.get("debitAccountNumber"), params.get("accountNumber")));
-//                                else
-//                                    predicates.add(cb.equal(root.get("creditAccountNumber"), params.get("accountNumber")));
-//
-//                        if (params.containsKey("status"))
-//                            if (params.get("status") != null || !params.get("status").isEmpty())
-//                                predicates.add(cb.equal(root.get("statusID"), params.get("status")));
-
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
                 }, pageable);
 
-        return supplyProcessPage.getContent().stream().map(supplyProcess -> {
-            SupplyProcessDTO map = ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
-            response.getSupplyProcess().add(map);
-            return response;
-        }).collect(Collectors.toList());
 
+         supplyProcessPage.getContent().stream().map(supplyProcess -> {
+            return ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
+        }).collect(Collectors.toList());
+return supplyProcessPage;
 
     }
 
