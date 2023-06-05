@@ -2,14 +2,19 @@ package com.gima.gimastore.controller;
 
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
+import com.gima.gimastore.model.supplyProcess.SupplyProcessResponse;
 import com.gima.gimastore.service.SupplyProcessService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
 
 import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
 
@@ -47,6 +52,24 @@ public class SupplyProcessController {
         try {
             supplyProcessService.update(Utils.formattedJsonToSupplyProcessRequestObject(stringDto), file);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت تعديل التوريد" + SUCCESS.getMessage()), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/searchSupplyProcess")
+    public ResponseEntity<?> searchSupplyProcess(@RequestParam Map<String, String> params, Pageable pageable) {
+        try {
+            supplyProcessService.searchByPagingCriteria(params, pageable);
+            return new ResponseEntity<>(supplyProcessService.searchByPagingCriteria(params, pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
