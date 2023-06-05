@@ -132,18 +132,17 @@ public class SupplyProcessService {
                         Join<SupplyProcess, Supplier> processSupplierJoin = root.join("supplier");
 
                         if (params.containsKey("supplyProcessFromDate"))
-                            if (params.get("supplyProcessFromDate") != null || !params.get("supplyProcessFromDate").isEmpty())
+                            if (!params.get("supplyProcessFromDate").equals(""))
                                 predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("supplyProcessFromDate"))));
 
 
                         if (params.containsKey("supplyProcessToDate"))
-                            if (params.get("supplyProcessToDate") != null || !params.get("supplyProcessToDate").isEmpty())
-                                predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"),
-                                        formate.parse(params.get("supplyProcessToDate"))));
+                            if (!params.get("supplyProcessToDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("supplyProcessToDate"))));
 
 
                         if (params.containsKey("supplierId"))
-                            if (params.get("supplierId") != null || !params.get("supplierId").isEmpty())
+                            if (!params.get("supplierId").equals(""))
                                 predicates.add(cb.equal(processSupplierJoin.get("id"), params.get("supplierId")));
 
 //                        if (params.containsKey("billId"))
