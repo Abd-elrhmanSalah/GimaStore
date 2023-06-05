@@ -133,7 +133,7 @@ public class SupplyProcessService {
 
                         if (params.containsKey("supplyProcessFromDate"))
                             if (!params.get("supplyProcessFromDate").equals(""))
-                                predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("supplyProcessFromDate"))));
+                                predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.format(params.get("supplyProcessFromDate"))));
 
 
                         if (params.containsKey("supplyProcessToDate"))
@@ -145,10 +145,9 @@ public class SupplyProcessService {
                             if (!params.get("supplierId").equals(""))
                                 predicates.add(cb.equal(processSupplierJoin.get("id"), params.get("supplierId")));
 
-//                        if (params.containsKey("billId"))
-//                            if (params.get("bill_id") != null || !params.get("requestToDate").isEmpty())
-//                                predicates.add(cb.lessThanOrEqualTo(processSupplierJoin.get("bill_id"),
-//                                        formate.parse(params.get("bill_id"))));
+                        if (params.containsKey("billId"))
+                            if (!params.get("billId").equals(""))
+                                predicates.add(cb.equal(root.get("billId"), params.get("billId")));
 
 //                        if (params.containsKey("accountNumber"))
 //                            if (params.get("accountNumber") != null || !params.get("accountNumber").isEmpty())
@@ -167,9 +166,9 @@ public class SupplyProcessService {
                     }
                 }, pageable);
 
-        return supplyProcessPage.stream().map(supplyProcess -> {
-            SupplyProcessDTO supplyProcessDTO = ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
-            response.getSupplyProcess().add(supplyProcessDTO);
+        return supplyProcessPage.getContent().stream().map(supplyProcess -> {
+            SupplyProcessDTO map = ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
+            response.getSupplyProcess().add(map);
             return response;
         }).collect(Collectors.toList());
 
