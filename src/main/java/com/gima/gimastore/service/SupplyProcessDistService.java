@@ -1,9 +1,8 @@
 package com.gima.gimastore.service;
 
-import com.gima.gimastore.entity.Part;
-import com.gima.gimastore.entity.StorePart;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.entity.supplyProcessPartDist.SupplyProcessPartDist;
+import com.gima.gimastore.model.supplyProcess.SupplyProcessPartDistDTO;
 import com.gima.gimastore.repository.StorePartRepository;
 import com.gima.gimastore.repository.SupplyProcessPartDistRepository;
 import com.gima.gimastore.repository.SupplyProcessPartsRepository;
@@ -25,37 +24,50 @@ public class SupplyProcessDistService {
     }
 
     @Transactional
-    public void add(SupplyProcessPartDist supplyProcessPartDist) {
+    public void add(SupplyProcessPartDistDTO supplyProcessPartDistDTO) {
 
-        supplyProcessPartDistRepository.save(supplyProcessPartDist);
 
-        Optional<SupplyProcessPart> supplyProcessPartById = supplyProcessPartsRepository.findById(supplyProcessPartDist.getSupplyProcessPart().getId());
+        Optional<SupplyProcessPart> supplyProcessPartById = supplyProcessPartsRepository.findById(supplyProcessPartDistDTO.getSupplyProcessPart().getId());
 
-        Part part = null;
-        if (!supplyProcessPartById.isEmpty()) {
-            part = supplyProcessPartById.get().getPart();
-        }
-        Optional<StorePart> byStoreAndPart = storePartRepository.findByStoreAndPart(supplyProcessPartDist.getStore(), part);
+        supplyProcessPartDistDTO.getStoreRequests().forEach(dto -> {
+            SupplyProcessPartDist supplyProcessPartDist = new SupplyProcessPartDist();
+            supplyProcessPartDist.setSupplyProcessPart(supplyProcessPartDistDTO.getSupplyProcessPart());
 
-        if (!byStoreAndPart.isEmpty()) {
-            Integer amount = byStoreAndPart.get().getAmount();
-            byStoreAndPart.get().setAmount(amount + supplyProcessPartDist.getAmount());
-            storePartRepository.save(byStoreAndPart.get());
+            supplyProcessPartDist.setStore(dto.getStore());
+            supplyProcessPartDist.setAmount(dto.getAmount());
+            supplyProcessPartDistRepository.save(supplyProcessPartDist);
 
-        } else {
-            StorePart storePart = new StorePart();
-            storePart.setPart(part);
-            storePart.setStore(supplyProcessPartDist.getStore());
-            storePart.setAmount(supplyProcessPartDist.getAmount());
-            storePartRepository.save(storePart);
-        }
-        supplyProcessPartById.get().setPartialDist(true);
-        int i = supplyProcessPartById.get().getRemainAmount() - supplyProcessPartDist.getAmount();
+            supplyProcessPartById.get().setRemainAmount(supplyProcessPartById.get().getRemainAmount() - dto.getAmount());
+            supplyProcessPartById.get().setDistAmount(supplyProcessPartById.get().getDistAmount() + dto.getAmount());
+            if (supplyProcessPartById.get().getRemainAmount() == 0)
+                supplyProcessPartById.get().setFullDist(true);
 
-        supplyProcessPartById.get().setRemainAmount(i);
-        supplyProcessPartById.get().setDistAmount(supplyProcessPartById.get().getDistAmount() + supplyProcessPartDist.getAmount());
+            supplyProcessPartsRepository.save(supplyProcessPartById.get());
+        });
 
-        supplyProcessPartsRepository.save(supplyProcessPartById.get());
+        if (supplyProcessPartById.get().getPartialDist() == false)
+            supplyProcessPartById.get().setPartialDist(true);
+
+//        Part part = null;
+//        if (!supplyProcessPartById.isEmpty()) {
+//            part = supplyProcessPartById.get().getPart();
+//        }
+
+//        Optional<StorePart> byStoreAndPart = storePartRepository.findByStoreAndPart(supplyProcessPartDist.getStore(), part);
+//
+//        if (!byStoreAndPart.isEmpty()) {
+//            Integer amount = byStoreAndPart.get().getAmount();
+//            byStoreAndPart.get().setAmount(amount + supplyProcessPartDist.getAmount());
+//            storePartRepository.save(byStoreAndPart.get());
+//
+//        } else {
+//            StorePart storePart = new StorePart();
+//            storePart.setPart(part);
+//            storePart.setStore(supplyProcessPartDist.getStore());
+//            storePart.setAmount(supplyProcessPartDist.getAmount());
+//            storePartRepository.save(storePart);
+//        }
+
     }
 
 }

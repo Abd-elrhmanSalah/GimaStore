@@ -1,14 +1,14 @@
 package com.gima.gimastore.entity.supplyProcessPartDist;
 
-import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.Store;
-import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
+import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.Date;
 
 @Entity
 @Table(name = "SUPPLY_PROCESS_PARTS_DIST")
@@ -31,7 +31,16 @@ public class SupplyProcessPartDist implements Serializable {
 
     @Column(name = "IS_CONFIRMED", columnDefinition = "BIT DEFAULT 0")
     @NotNull
-    private Boolean isConfirmed=false;
+    private Boolean isConfirmed = false;
+
+    @ManyToOne
+    @JoinColumn(name = "CONFIRMED_BY")
+    @Null
+    private User confirmedBy;
+
+    @Column(name = "CONFIRMED_DATE")
+    @Null
+    private Date confirmedDate;
 
     public Long getId() {
         return id;
@@ -71,5 +80,21 @@ public class SupplyProcessPartDist implements Serializable {
 
     public void setConfirmed(Boolean confirmed) {
         isConfirmed = confirmed;
+    }
+
+    public User getConfirmedBy() {
+        return confirmedBy;
+    }
+
+    public void setConfirmedBy(User confirmedBy) {
+        this.confirmedBy = confirmedBy;
+    }
+
+    public Date getConfirmedDate() {
+        return confirmedDate;
+    }
+
+    public void setConfirmedDate(Date confirmedDate) {
+        this.confirmedDate = confirmedDate;
     }
 }

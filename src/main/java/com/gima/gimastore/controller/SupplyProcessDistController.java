@@ -1,8 +1,8 @@
 package com.gima.gimastore.controller;
 
-import com.gima.gimastore.entity.supplyProcessPartDist.SupplyProcessPartDist;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
+import com.gima.gimastore.model.supplyProcess.SupplyProcessPartDistDTO;
 import com.gima.gimastore.service.SupplyProcessDistService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
@@ -25,9 +25,9 @@ public class SupplyProcessDistController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addSupplyProcessDist(@RequestBody SupplyProcessPartDist supplyProcessPartDist) {
+    public ResponseEntity<?> addSupplyProcessDist(@RequestBody SupplyProcessPartDistDTO supplyProcessPartDistDTO) {
         try {
-            supplyProcessDistService.add(supplyProcessPartDist);
+            supplyProcessDistService.add(supplyProcessPartDistDTO);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم التوزيع  " + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
