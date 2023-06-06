@@ -30,7 +30,7 @@ public class SupplyProcessController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addSupplier(@RequestPart String stringDto, @RequestPart("picture") MultipartFile file) {
+    public ResponseEntity<?> addSupplyProcess(@RequestPart String stringDto, @RequestPart("picture") MultipartFile file) {
         try {
             supplyProcessService.add(Utils.formattedJsonToSupplyProcessRequestObject(stringDto), file);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم التوريد  " + SUCCESS.getMessage()), HttpStatus.OK);

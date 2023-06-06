@@ -99,9 +99,11 @@ public class SupplyProcessService {
                 }
             }
             partRequest.setPart(partDto);
-
+            partRequest.setId(supplyProcessPart.getId());
             partRequest.setAmount(supplyProcessPart.getAmount());
             partRequest.setCost(supplyProcessPart.getCost());
+            partRequest.setRemainAmount(supplyProcessPart.getRemainAmount());
+            partRequest.setDistAmount(supplyProcessPart.getDistAmount());
             partRequest.setFullDist(supplyProcessPart.getFullDist());
             partRequest.setPartialDist(supplyProcessPart.getPartialDist());
 
@@ -127,13 +129,13 @@ public class SupplyProcessService {
         Page<SupplyProcess> supplyProcessPage = supplyProcessRepo.findAll(
                 (Specification<SupplyProcess>) (root, query, cb) -> {
                     try {
-                        SimpleDateFormat formate = new SimpleDateFormat("dd-MM-yyyy");
+                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
                         List<Predicate> predicates = new ArrayList<>();
                         Join<SupplyProcess, Supplier> processSupplierJoin = root.join("supplier");
 
                         if (params.containsKey("supplyProcessFromDate"))
                             if (!params.get("supplyProcessFromDate").equals(""))
-                                predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.format(params.get("supplyProcessFromDate"))));
+                                predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("supplyProcessFromDate"))));
 
 
                         if (params.containsKey("supplyProcessToDate"))
@@ -156,10 +158,10 @@ public class SupplyProcessService {
                 }, pageable);
 
 
-         supplyProcessPage.getContent().stream().map(supplyProcess -> {
+        supplyProcessPage.getContent().stream().map(supplyProcess -> {
             return ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
         }).collect(Collectors.toList());
-return supplyProcessPage;
+        return supplyProcessPage;
 
     }
 
@@ -184,6 +186,8 @@ return supplyProcessPage;
             supPart.setPart(ObjectMapperUtils.map(partRequest.getPart(), Part.class));
             supPart.setAmount(partRequest.getAmount());
             supPart.setCost(partRequest.getCost());
+            supPart.setRemainAmount(partRequest.getAmount());
+            supPart.setDistAmount(0);
             supplyProcessPartsRepo.save(supPart);
         });
 

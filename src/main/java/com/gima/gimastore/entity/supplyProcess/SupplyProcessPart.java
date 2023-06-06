@@ -27,16 +27,20 @@ public class SupplyProcessPart implements Serializable {
     private BigDecimal cost;
 
     @Column(name = "AMOUNT")
-
     private Integer amount;
 
+    @Column(name = "DIST_AMOUNT")
+    private Integer distAmount;
+
+    @Column(name = "REMAIN_AMOUNT")
+    private Integer remainAmount;
     @Column(name = "IS_FULL_DIST", columnDefinition = "BIT DEFAULT 0")
     @NotNull
-    private Boolean isFullDist=false;
+    private Boolean isFullDist = false;
 
     @Column(name = "IS_PARTIAL_DIST", columnDefinition = "BIT DEFAULT 0")
     @NotNull
-    private Boolean isPartialDist=false;
+    private Boolean isPartialDist = false;
 
     public Long getId() {
         return id;
@@ -76,6 +80,22 @@ public class SupplyProcessPart implements Serializable {
 
     public void setAmount(Integer amount) {
         this.amount = amount;
+    }
+
+    public Integer getDistAmount() {
+        return distAmount;
+    }
+
+    public void setDistAmount(Integer distAmount) {
+        this.distAmount = distAmount;
+    }
+
+    public Integer getRemainAmount() {
+        return remainAmount;
+    }
+
+    public void setRemainAmount(Integer remainAmount) {
+        this.remainAmount = remainAmount;
     }
 
     public Boolean getFullDist() {

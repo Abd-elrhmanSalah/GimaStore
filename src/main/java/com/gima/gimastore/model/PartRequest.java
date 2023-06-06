@@ -4,19 +4,24 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class PartRequest implements Serializable {
+    private Long id;
     private PartDTO part;
     private BigDecimal cost;
     private Integer amount;
+    private Integer distAmount = 0;
+    private Integer remainAmount = 0;
     private Boolean isFullDist;
     private Boolean isPartialDist;
 
     public PartRequest() {
     }
 
-    public PartRequest(PartDTO part, BigDecimal cost, Integer amount) {
-        this.part = part;
-        this.cost = cost;
-        this.amount = amount;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public PartDTO getPart() {
@@ -41,6 +46,22 @@ public class PartRequest implements Serializable {
 
     public void setAmount(Integer amount) {
         this.amount = amount;
+    }
+
+    public Integer getDistAmount() {
+        return distAmount;
+    }
+
+    public void setDistAmount(Integer distAmount) {
+        this.distAmount = distAmount;
+    }
+
+    public Integer getRemainAmount() {
+        return remainAmount;
+    }
+
+    public void setRemainAmount(Integer remainAmount) {
+        this.remainAmount = remainAmount;
     }
 
     public Boolean getFullDist() {
