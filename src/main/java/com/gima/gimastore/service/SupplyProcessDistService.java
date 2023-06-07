@@ -88,6 +88,7 @@ public class SupplyProcessDistService {
         return supplyProcessPartDistRepository.findByStoreAndStatus(validateStore(storeId), validateStatus(statusId));
     }
 
+
     private Store validateStore(Long storeId) {
         Optional<Store> storeByID = storeRepo.findById(storeId);
 
