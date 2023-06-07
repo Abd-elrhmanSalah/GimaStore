@@ -9,6 +9,8 @@ import java.util.List;
 public class SupplyProcessPartDistDTO implements Serializable {
     private SupplyProcessPart supplyProcessPart;
     private List<StoreRequest> storeRequests;
+    private Long statusId;
+    private Long distUserId;
 
     public SupplyProcessPart getSupplyProcessPart() {
         return supplyProcessPart;
@@ -24,5 +26,21 @@ public class SupplyProcessPartDistDTO implements Serializable {
 
     public void setStoreRequests(List<StoreRequest> storeRequests) {
         this.storeRequests = storeRequests;
+    }
+
+    public Long getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getDistUserId() {
+        return distUserId;
+    }
+
+    public void setDistUserId(Long distUserId) {
+        this.distUserId = distUserId;
     }
 }

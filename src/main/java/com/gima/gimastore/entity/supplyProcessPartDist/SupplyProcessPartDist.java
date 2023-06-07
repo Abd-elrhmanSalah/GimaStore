@@ -1,11 +1,11 @@
 package com.gima.gimastore.entity.supplyProcessPartDist;
 
+import com.gima.gimastore.entity.Status;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.util.Date;
@@ -29,18 +29,25 @@ public class SupplyProcessPartDist implements Serializable {
     @Column(name = "AMOUNT")
     private Integer amount;
 
-    @Column(name = "IS_CONFIRMED", columnDefinition = "BIT DEFAULT 0")
-    @NotNull
-    private Boolean isConfirmed = false;
+    @ManyToOne
+    @JoinColumn(name = "ACTION_BY")
+    @Null
+    private User actionBy;
 
     @ManyToOne
-    @JoinColumn(name = "CONFIRMED_BY")
-    @Null
-    private User confirmedBy;
+    @JoinColumn(name = "Dist_BY")
+    private User distBy;
 
-    @Column(name = "CONFIRMED_DATE")
+    @ManyToOne
+    @JoinColumn(name = "status")
+    private Status status;
+
+    @Column(name = "ACTION_DATE")
     @Null
-    private Date confirmedDate;
+    private Date actionDate;
+
+    @Column(name = "CREATION_DATE")
+    private Date creationDate = new Date();
 
     public Long getId() {
         return id;
@@ -74,27 +81,43 @@ public class SupplyProcessPartDist implements Serializable {
         this.amount = amount;
     }
 
-    public Boolean getConfirmed() {
-        return isConfirmed;
+    public User getDistBy() {
+        return distBy;
     }
 
-    public void setConfirmed(Boolean confirmed) {
-        isConfirmed = confirmed;
+    public void setDistBy(User distBy) {
+        this.distBy = distBy;
     }
 
-    public User getConfirmedBy() {
-        return confirmedBy;
+    public Date getActionDate() {
+        return actionDate;
     }
 
-    public void setConfirmedBy(User confirmedBy) {
-        this.confirmedBy = confirmedBy;
+    public void setActionDate(Date actionDate) {
+        this.actionDate = actionDate;
     }
 
-    public Date getConfirmedDate() {
-        return confirmedDate;
+    public User getActionBy() {
+        return actionBy;
     }
 
-    public void setConfirmedDate(Date confirmedDate) {
-        this.confirmedDate = confirmedDate;
+    public void setActionBy(User actionBy) {
+        this.actionBy = actionBy;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

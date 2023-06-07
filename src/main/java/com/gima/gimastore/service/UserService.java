@@ -1,6 +1,7 @@
 package com.gima.gimastore.service;
 
 import com.gima.gimastore.entity.Role;
+import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
@@ -115,6 +116,11 @@ public class UserService {
         if (!Objects.isNull(userById.get().getAvatar()))
             userDto.setAvatar(ImageUtil.decompressImage(userById.get().getAvatar()));
 
+        if (userById.get().getRole().getId() == 3) {
+            Optional<Store> byUserAndIsLocked = storeRepo.findByUserAndIsLocked(userById.get(), false);
+            if (!byUserAndIsLocked.isEmpty())
+                userDto.setStoreId(byUserAndIsLocked.get().getId());
+        }
         return userDto;
     }
 

@@ -32,6 +32,7 @@ public class UserDTO implements Serializable {
     private String oldPassword;
 
     private Boolean isLocked;
+    private Long storeId;
 
     public UserDTO() {
     }
@@ -116,4 +117,11 @@ public class UserDTO implements Serializable {
         isLocked = locked;
     }
 
+    public Long getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
+    }
 }

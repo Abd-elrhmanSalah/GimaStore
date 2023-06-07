@@ -1,9 +1,11 @@
 package com.gima.gimastore.service;
 
+import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.UserDTO;
+import com.gima.gimastore.repository.StoreRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
@@ -21,9 +23,11 @@ import static com.gima.gimastore.constant.ResponseCodes.LOGIN_USER_LOCKED;
 public class LoginService {
 
     private UserRepository userRepo;
+    private StoreRepository storeRepo;
 
-    public LoginService(UserRepository userRepo) {
+    public LoginService(UserRepository userRepo, StoreRepository storeRepo) {
         this.userRepo = userRepo;
+        this.storeRepo = storeRepo;
     }
 
     public UserDTO login(String username, String password) throws DataFormatException, IOException {
@@ -38,6 +42,11 @@ public class LoginService {
         if (!Objects.isNull(byUserNameAndPassword.get().getAvatar()))
             userDto.setAvatar(ImageUtil.decompressImage(byUserNameAndPassword.get().getAvatar()));
 
+        if (byUserNameAndPassword.get().getRole().getId() == 3) {
+            Optional<Store> byUserAndIsLocked = storeRepo.findByUserAndIsLocked(byUserNameAndPassword.get(), false);
+            if (!byUserAndIsLocked.isEmpty())
+                userDto.setStoreId(byUserAndIsLocked.get().getId());
+        }
         return userDto;
     }
 }
