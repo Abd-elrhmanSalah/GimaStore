@@ -9,11 +9,15 @@ import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.supplyProcess.SupplyProcessPartDistDTO;
 import com.gima.gimastore.repository.*;
+import com.gima.gimastore.util.ImageUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
+import java.io.IOException;
 import java.util.Optional;
+import java.util.zip.DataFormatException;
 
 import static com.gima.gimastore.constant.ResponseCodes.*;
 
@@ -83,9 +87,19 @@ public class SupplyProcessDistService {
 
     }
 
-    public List<SupplyProcessPartDist> getPartsDisByStoreAndStatus(Long storeId, Long statusId) {
-
-        return supplyProcessPartDistRepository.findByStoreAndStatus(validateStore(storeId), validateStatus(statusId));
+    public Page<SupplyProcessPartDist> getPartsDisByStoreAndStatus(Long storeId, Long statusId, Pageable pageable) {
+        Page<SupplyProcessPartDist> byStoreAndStatus = supplyProcessPartDistRepository.findByStoreAndStatus(validateStore(storeId), validateStatus(statusId), pageable);
+         byStoreAndStatus.getContent().forEach(supplyProcessPartDist -> {
+             try {
+                 supplyProcessPartDist.getSupplyProcessPart().getPart().
+                         setPicture(ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()));
+             } catch (DataFormatException e) {
+                 throw new RuntimeException(e);
+             } catch (IOException e) {
+                 throw new RuntimeException(e);
+             }
+         });
+        return byStoreAndStatus;
     }
 
 

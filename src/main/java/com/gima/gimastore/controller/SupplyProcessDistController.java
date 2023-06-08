@@ -7,6 +7,7 @@ import com.gima.gimastore.service.SupplyProcessDistService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,10 +43,10 @@ public class SupplyProcessDistController {
     }
 
     @GetMapping("/distByStoreAndStatus")
-    public ResponseEntity<?> getSupplyProcessDistByStoreAndStatus(@RequestParam Long storeId, @RequestParam Long statusId) {
+    public ResponseEntity<?> getSupplyProcessDistByStoreAndStatus(@RequestParam Long storeId, @RequestParam Long statusId, Pageable pageable) {
         try {
 
-            return new ResponseEntity<>(supplyProcessDistService.getPartsDisByStoreAndStatus(storeId, statusId), HttpStatus.OK);
+            return new ResponseEntity<>(supplyProcessDistService.getPartsDisByStoreAndStatus(storeId, statusId, pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
