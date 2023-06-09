@@ -22,10 +22,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.zip.DataFormatException;
 
 import static com.gima.gimastore.constant.ResponseCodes.*;
@@ -142,7 +139,7 @@ public class SupplyProcessDistService {
 
         byStoreAndStatus.getContent().forEach(supplyProcessPartDist -> {
             try {
-                if (supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture() != null)
+                if (!Objects.isNull(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()))
                     supplyProcessPartDist.getSupplyProcessPart().getPart().
                             setPicture(ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()));
             } catch (DataFormatException e) {
