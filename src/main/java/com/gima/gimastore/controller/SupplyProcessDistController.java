@@ -47,7 +47,6 @@ public class SupplyProcessDistController {
     @GetMapping("/distByStoreAndStatus")
     public ResponseEntity<?> getSupplyProcessDistByStoreAndStatus(@RequestParam Map<String, String> params, Pageable pageable) {
         try {
-
             return new ResponseEntity<>(supplyProcessDistService.getPartsDisByStoreAndStatus( params, pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
