@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SupplyProcessRepository extends JpaRepository<SupplyProcess, Long> {
-    Page<SupplyProcess> findAll(Specification<SupplyProcess> voucherDueDate, Pageable pageable);
+    Page<SupplyProcess> findAll(Specification<SupplyProcess> specification, Pageable pageable);
 }

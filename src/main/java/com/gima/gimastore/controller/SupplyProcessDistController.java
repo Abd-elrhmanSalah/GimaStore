@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
 
 @RestController
@@ -43,10 +45,10 @@ public class SupplyProcessDistController {
     }
 
     @GetMapping("/distByStoreAndStatus")
-    public ResponseEntity<?> getSupplyProcessDistByStoreAndStatus(@RequestParam Long storeId, @RequestParam Long statusId, Pageable pageable) {
+    public ResponseEntity<?> getSupplyProcessDistByStoreAndStatus(@RequestParam Map<String, String> params, Pageable pageable) {
         try {
 
-            return new ResponseEntity<>(supplyProcessDistService.getPartsDisByStoreAndStatus(storeId, statusId, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(supplyProcessDistService.getPartsDisByStoreAndStatus( params, pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

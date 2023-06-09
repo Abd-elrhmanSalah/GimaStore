@@ -1,5 +1,6 @@
 package com.gima.gimastore.service;
 
+import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.Status;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
@@ -12,10 +13,18 @@ import com.gima.gimastore.repository.*;
 import com.gima.gimastore.util.ImageUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
 
@@ -87,18 +96,61 @@ public class SupplyProcessDistService {
 
     }
 
-    public Page<SupplyProcessPartDist> getPartsDisByStoreAndStatus(Long storeId, Long statusId, Pageable pageable) {
-        Page<SupplyProcessPartDist> byStoreAndStatus = supplyProcessPartDistRepository.findByStoreAndStatus(validateStore(storeId), validateStatus(statusId), pageable);
-         byStoreAndStatus.getContent().forEach(supplyProcessPartDist -> {
-             try {
-                 supplyProcessPartDist.getSupplyProcessPart().getPart().
-                         setPicture(ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()));
-             } catch (DataFormatException e) {
-                 throw new RuntimeException(e);
-             } catch (IOException e) {
-                 throw new RuntimeException(e);
-             }
-         });
+    public Page<SupplyProcessPartDist> getPartsDisByStoreAndStatus(Map<String, String> params, Pageable pageable) {
+        Page<SupplyProcessPartDist> byStoreAndStatus = supplyProcessPartDistRepository.findAll(
+                (Specification<SupplyProcessPartDist>) (root, query, cb) -> {
+                    try {
+
+                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                        List<Predicate> predicates = new ArrayList<>();
+                        Join<SupplyProcessPartDist, SupplyProcessPart> distPartJoin = root.join("supplyProcessPart");
+                        Join<SupplyProcessPart, Part> processPartJoin = distPartJoin.join("part");
+
+                        Join<SupplyProcessPartDist, Store> distStoreJoin = root.join("store");
+                        Join<SupplyProcessPartDist, Status> distStatusJoin = root.join("status");
+
+                        if (params.containsKey("storeId"))
+                            if (!params.get("storeId").equals("")) {
+                                validateStore(Long.parseLong(params.get("storeId")));
+                                predicates.add(cb.equal(distStoreJoin.get("id"), params.get("storeId")));
+                            }
+                        if (params.containsKey("statusId"))
+                            if (!params.get("statusId").equals("")) {
+                                validateStatus(Long.parseLong(params.get("statusId")));
+                                predicates.add(cb.equal(distStatusJoin.get("id"), params.get("statusId")));
+                            }
+
+                        if (params.containsKey("fromDate"))
+                            if (!params.get("fromDate").equals(""))
+                                predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("fromDate"))));
+
+                        if (params.containsKey("toDate"))
+                            if (!params.get("toDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("toDate"))));
+
+                        if (params.containsKey("partId"))
+                            if (!params.get("partId").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(processPartJoin.get("id"), params.get("partId")));
+
+
+                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, pageable);
+
+
+        byStoreAndStatus.getContent().forEach(supplyProcessPartDist -> {
+            try {
+                if (supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture() != null)
+                    supplyProcessPartDist.getSupplyProcessPart().getPart().
+                            setPicture(ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()));
+            } catch (DataFormatException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         return byStoreAndStatus;
     }
 
