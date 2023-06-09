@@ -137,14 +137,13 @@ public class SupplyProcessDistService {
                 }, pageable);
 
 
-        byStoreAndStatus.getContent().forEach(supplyProcessPartDist -> {
+        byStoreAndStatus.getContent().stream().map(supplyProcessPartDist -> {
             try {
                 if (!Objects.isNull(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()))
                     supplyProcessPartDist.getSupplyProcessPart().getPart().
                             setPicture(ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()));
-            } catch (DataFormatException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
+           return supplyProcessPartDist;
+            } catch (DataFormatException |IOException e) {
                 throw new RuntimeException(e);
             }
         });
