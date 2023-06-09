@@ -44,10 +44,27 @@ public class SupplyProcessDistController {
         }
     }
 
-    @GetMapping("/distByStoreAndStatus")
+    @GetMapping("/getDistRequests")
     public ResponseEntity<?> getSupplyProcessDistByStoreAndStatus(@RequestParam Map<String, String> params, Pageable pageable) {
         try {
-            return new ResponseEntity<>(supplyProcessDistService.getPartsDisByStoreAndStatus( params, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(supplyProcessDistService.getPartsDisByStoreAndStatus(params, pageable), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/acceptDistRequest")
+    public ResponseEntity<?> acceptRequest(@RequestParam Long requestId, Long userId) {
+        try {
+            supplyProcessDistService.acceptRequest(requestId, userId);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم قبول  " + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

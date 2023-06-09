@@ -1,9 +1,6 @@
 package com.gima.gimastore.service;
 
-import com.gima.gimastore.entity.Part;
-import com.gima.gimastore.entity.Status;
-import com.gima.gimastore.entity.Store;
-import com.gima.gimastore.entity.User;
+import com.gima.gimastore.entity.*;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.entity.supplyProcessPartDist.SupplyProcessPartDist;
 import com.gima.gimastore.exception.ApplicationException;
@@ -71,25 +68,6 @@ public class SupplyProcessDistService {
         if (supplyProcessPartById.get().getPartialDist() == false)
             supplyProcessPartById.get().setPartialDist(true);
 
-//        Part part = null;
-//        if (!supplyProcessPartById.isEmpty()) {
-//            part = supplyProcessPartById.get().getPart();
-//        }
-
-//        Optional<StorePart> byStoreAndPart = storePartRepository.findByStoreAndPart(supplyProcessPartDist.getStore(), part);
-//
-//        if (!byStoreAndPart.isEmpty()) {
-//            Integer amount = byStoreAndPart.get().getAmount();
-//            byStoreAndPart.get().setAmount(amount + supplyProcessPartDist.getAmount());
-//            storePartRepository.save(byStoreAndPart.get());
-//
-//        } else {
-//            StorePart storePart = new StorePart();
-//            storePart.setPart(part);
-//            storePart.setStore(supplyProcessPartDist.getStore());
-//            storePart.setAmount(supplyProcessPartDist.getAmount());
-//            storePartRepository.save(storePart);
-//        }
 
     }
 
@@ -142,14 +120,41 @@ public class SupplyProcessDistService {
                 if (!Objects.isNull(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()))
                     supplyProcessPartDist.getSupplyProcessPart().getPart().
                             setPicture(ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()));
-           return supplyProcessPartDist;
-            } catch (DataFormatException |IOException e) {
+                return supplyProcessPartDist;
+            } catch (DataFormatException | IOException e) {
                 throw new RuntimeException(e);
             }
         });
         return byStoreAndStatus;
     }
 
+    @Transactional
+    public void acceptRequest(Long partDist, Long userId) {
+
+        Optional<SupplyProcessPartDist> partDistById = supplyProcessPartDistRepository.findById(partDist);
+
+        Part part = partDistById.get().getSupplyProcessPart().getPart();
+        Optional<StorePart> byStoreAndPart = storePartRepository.findByStoreAndPart(partDistById.get().getStore(), part);
+
+        if (!byStoreAndPart.isEmpty()) {
+            Integer amount = byStoreAndPart.get().getAmount();
+            byStoreAndPart.get().setAmount(amount + partDistById.get().getAmount());
+            storePartRepository.save(byStoreAndPart.get());
+
+        } else {
+            StorePart storePart = new StorePart();
+            storePart.setPart(part);
+            storePart.setStore(partDistById.get().getStore());
+            storePart.setAmount(partDistById.get().getAmount());
+            storePartRepository.save(storePart);
+        }
+        User user = userRepo.findById(userId).get();
+        partDistById.get().setStatus(new Status(2L));
+        partDistById.get().setActionBy(user);
+        partDistById.get().setActionDate(new Date());
+
+        supplyProcessPartDistRepository.save(partDistById.get());
+    }
 
     private Store validateStore(Long storeId) {
         Optional<Store> storeByID = storeRepo.findById(storeId);

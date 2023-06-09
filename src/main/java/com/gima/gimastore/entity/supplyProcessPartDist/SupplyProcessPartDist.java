@@ -4,6 +4,7 @@ import com.gima.gimastore.entity.Status;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Null;
@@ -31,7 +32,7 @@ public class SupplyProcessPartDist implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "ACTION_BY")
-    @Null
+    @Nullable
     private User actionBy;
 
     @ManyToOne
@@ -43,7 +44,7 @@ public class SupplyProcessPartDist implements Serializable {
     private Status status;
 
     @Column(name = "ACTION_DATE")
-    @Null
+    @Nullable
     private Date actionDate;
 
     @Column(name = "CREATION_DATE")
