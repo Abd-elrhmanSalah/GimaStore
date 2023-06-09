@@ -105,7 +105,7 @@ public class SupplyProcessDistService {
 
                         if (params.containsKey("partId"))
                             if (!params.get("partId").equals(""))
-                                predicates.add(cb.lessThanOrEqualTo(processPartJoin.get("id"), params.get("partId")));
+                                predicates.add(cb.equal(processPartJoin.get("id"), params.get("partId")));
 
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
@@ -129,7 +129,7 @@ public class SupplyProcessDistService {
     }
 
     @Transactional
-    public void acceptRequest(Long partDist, Long userId) {
+    public void acceptRequest(Long partDist, Long userId, String notes) {
 
         Optional<SupplyProcessPartDist> partDistById = supplyProcessPartDistRepository.findById(partDist);
 
@@ -148,8 +148,33 @@ public class SupplyProcessDistService {
             storePart.setAmount(partDistById.get().getAmount());
             storePartRepository.save(storePart);
         }
+        partDistById.get().setNotes(notes);
         User user = userRepo.findById(userId).get();
         partDistById.get().setStatus(new Status(2L));
+        partDistById.get().setActionBy(user);
+        partDistById.get().setActionDate(new Date());
+
+        supplyProcessPartDistRepository.save(partDistById.get());
+    }
+
+    @Transactional
+    public void rejectRequest(Long partDist, Long userId,String notes) {
+
+        Optional<SupplyProcessPartDist> partDistById = supplyProcessPartDistRepository.findById(partDist);
+
+        partDistById.get().getSupplyProcessPart().
+                setRemainAmount(partDistById.get().getSupplyProcessPart().getRemainAmount() + partDistById.get().getAmount());
+        partDistById.get().getSupplyProcessPart().
+                setDistAmount(partDistById.get().getSupplyProcessPart().getDistAmount() - partDistById.get().getAmount());
+
+        if (partDistById.get().getSupplyProcessPart().getDistAmount() == 0)
+            partDistById.get().getSupplyProcessPart().setPartialDist(false);
+        if (partDistById.get().getSupplyProcessPart().getRemainAmount() > 0)
+            partDistById.get().getSupplyProcessPart().setFullDist(true);
+
+        partDistById.get().setNotes(notes);
+        User user = userRepo.findById(userId).get();
+        partDistById.get().setStatus(new Status(3L));
         partDistById.get().setActionBy(user);
         partDistById.get().setActionDate(new Date());
 

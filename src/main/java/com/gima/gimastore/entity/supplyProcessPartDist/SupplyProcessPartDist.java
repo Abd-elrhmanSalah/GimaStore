@@ -4,10 +4,10 @@ import com.gima.gimastore.entity.Status;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
+import org.hibernate.annotations.Nationalized;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
-import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -49,6 +49,11 @@ public class SupplyProcessPartDist implements Serializable {
 
     @Column(name = "CREATION_DATE")
     private Date creationDate = new Date();
+
+    @Column(name = "NOTES")
+    @Nullable
+    @Nationalized
+    private String notes;
 
     public Long getId() {
         return id;
@@ -120,5 +125,14 @@ public class SupplyProcessPartDist implements Serializable {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    @Nullable
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(@Nullable String notes) {
+        this.notes = notes;
     }
 }
