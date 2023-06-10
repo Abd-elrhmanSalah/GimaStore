@@ -119,18 +119,18 @@ public class SupplyProcessDistService {
 ////                byStoreAndStatus.getContent().get(i).getSupplyProcessPart().getPart().setPicture(bytes);
 //            }
 //        }
-//        byStoreAndStatus.getContent().forEach(supplyProcessPartDist-> {
-//
-//            if (!Objects.isNull(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture())){
-//                byte[] bytes = ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture());
-//                supplyProcessPartDist.getSupplyProcessPart().getPart().
-//                        setPicture(null);
-//                supplyProcessPartDist.getSupplyProcessPart().getPart().
-//                        setPicture(bytes);
-//        }
-////                return supplyProcessPartDist;
-//
-//        });
+        byStoreAndStatus.getContent().forEach(supplyProcessPartDist-> {
+
+            if (supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()!=null){
+                byte[] bytes = ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture());
+                supplyProcessPartDist.getSupplyProcessPart().getPart().
+                        setPicture(null);
+                supplyProcessPartDist.getSupplyProcessPart().getPart().
+                        setPicture(bytes);
+        }
+//                return supplyProcessPartDist;
+
+        });
         return byStoreAndStatus;
     }
 

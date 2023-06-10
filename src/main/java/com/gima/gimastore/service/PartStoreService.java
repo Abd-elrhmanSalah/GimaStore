@@ -18,10 +18,11 @@ public class PartStoreService {
         this.storeRepo = storeRepo;
     }
 
-    public Page<StorePart> findPartsByStore(Long storeId, Pageable pageable){
+    public Page<StorePart> findPartsByStore(Long storeId, Pageable pageable) {
         Page<StorePart> byStore = storePartRepo.findByStore(storeRepo.findById(storeId).get(), pageable);
         byStore.getContent().forEach(storePart -> {
-            storePart.getPart().setPicture(   ImageUtil.decompressImage(storePart.getPart().getPicture()));
+            if (storePart.getPart().getPicture() != null)
+                storePart.getPart().setPicture(ImageUtil.decompressImage(storePart.getPart().getPicture()));
         });
         return byStore;
     }
