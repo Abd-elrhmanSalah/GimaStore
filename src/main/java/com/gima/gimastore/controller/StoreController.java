@@ -85,10 +85,10 @@ public class StoreController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllStores() {
+    public ResponseEntity<?> getAllStores(Pageable pageable) {
         try {
 
-            return new ResponseEntity<>(storeService.findAll(), HttpStatus.OK);
+            return new ResponseEntity<>(storeService.findAll(pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -101,11 +101,12 @@ public class StoreController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/getStoreParts")
     public ResponseEntity<?> getAllStoreParts(@RequestParam Long storeId, Pageable pageable) {
         try {
 
-            return new ResponseEntity<>(partStoreService.findPartsByStore(storeId,pageable), HttpStatus.OK);
+            return new ResponseEntity<>(partStoreService.findPartsByStore(storeId, pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

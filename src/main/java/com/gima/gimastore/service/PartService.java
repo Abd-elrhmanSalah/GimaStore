@@ -7,14 +7,14 @@ import com.gima.gimastore.model.PartDTO;
 import com.gima.gimastore.repository.PartRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
 import static com.gima.gimastore.constant.ResponseCodes.NO_PART_ID;
@@ -80,16 +80,18 @@ public class PartService {
     }
 
 
-    public List<PartDTO> findAll() {
+    public Page<Part> findAll(Pageable pageable) {
 
-        return partRepo.findAll().stream().map(part -> {
-            PartDTO partDto = ObjectMapperUtils.map(part, PartDTO.class);
+        Page<Part> all = partRepo.findAll(pageable);
+        all.getContent().stream().forEach(part -> {
+
             if (!Objects.isNull(part.getPicture())) {
-                    partDto.setPicture(ImageUtil.decompressImage(part.getPicture()));
+                part.setPicture(ImageUtil.decompressImage(part.getPicture()));
 
             }
-            return partDto;
-        }).collect(Collectors.toList());
+
+        });
+        return all;
 
     }
 

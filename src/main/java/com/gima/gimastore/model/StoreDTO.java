@@ -9,7 +9,7 @@ public class StoreDTO implements Serializable {
     private Long id;
     private String storeName;
     private User user;
-    private Boolean isLocked;
+    private Boolean isLocked=false;
 
     public Long getId() {
         return id;

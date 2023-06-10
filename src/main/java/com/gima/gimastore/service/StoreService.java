@@ -5,19 +5,19 @@ import com.gima.gimastore.entity.User;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.StoreDTO;
-import com.gima.gimastore.repository.CommonRepo;
 import com.gima.gimastore.repository.StoreRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.gima.gimastore.constant.ResponseCodes.*;
 
 @Service
-public class StoreService implements CommonRepo<StoreDTO> {
+public class StoreService {
 
     private StoreRepository storeRepo;
     private UserRepository userRepo;
@@ -27,7 +27,7 @@ public class StoreService implements CommonRepo<StoreDTO> {
         this.userRepo = userRepo;
     }
 
-    @Override
+
     public void add(StoreDTO storeDTOParam) {
 
         validateStoreName(storeDTOParam.getStoreName());
@@ -41,7 +41,7 @@ public class StoreService implements CommonRepo<StoreDTO> {
         storeRepo.save(store);
     }
 
-    @Override
+
     public void update(StoreDTO dto) {
 
         validateStoreNameAndID(dto.getStoreName(), dto.getId());
@@ -57,7 +57,6 @@ public class StoreService implements CommonRepo<StoreDTO> {
     }
 
 
-    @Override
     public void delete(Long id) {
         Optional<Store> store = validateExistStore(id);
         store.get().setLocked(true);
@@ -65,7 +64,7 @@ public class StoreService implements CommonRepo<StoreDTO> {
 
     }
 
-    @Override
+
     public StoreDTO findById(Long id) {
         Optional<Store> store = validateExistStore(id);
         StoreDTO storedto = ObjectMapperUtils.map(store.get(), StoreDTO.class);
@@ -73,15 +72,17 @@ public class StoreService implements CommonRepo<StoreDTO> {
         return storedto;
     }
 
-    @Override
-    public List<StoreDTO> findAll() {
-        return ObjectMapperUtils.mapAll(storeRepo.findAll(), StoreDTO.class);
+
+    public Page<Store> findAll(Pageable pageable) {
+
+        Page<Store> all = storeRepo.findAll(pageable);
+        return all;
     }
 
     private void validateStoreName(String storeName) {
         if (storeRepo.existsByStoreName(storeName))
 //            if (storeRepo.findByStoreName(storeName).getLocked() == false)
-                throw new ApplicationException(new StatusResponse(REPEATED_STORENAME.getCode(), REPEATED_STORENAME.getKey(), REPEATED_STORENAME.getMessage()));
+            throw new ApplicationException(new StatusResponse(REPEATED_STORENAME.getCode(), REPEATED_STORENAME.getKey(), REPEATED_STORENAME.getMessage()));
 
     }
 
@@ -105,7 +106,7 @@ public class StoreService implements CommonRepo<StoreDTO> {
 //            Optional<Store> s = storeRepo.findByUserAndIsLocked(user, true);
 //            if (!s.isEmpty())
 //                if (!s.get().getLocked())
-                    throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
+            throw new ApplicationException(new StatusResponse(EXIST_USER_WITH_STORE.getCode(), EXIST_USER_WITH_STORE.getKey(), EXIST_USER_WITH_STORE.getMessage()));
         }
     }
 

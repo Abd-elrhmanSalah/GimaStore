@@ -6,6 +6,7 @@ import com.gima.gimastore.service.PartService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -84,10 +85,10 @@ public class PartController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllParts() {
+    public ResponseEntity<?> getAllParts(Pageable pageable) {
         try {
 
-            return new ResponseEntity<>(partService.findAll(), HttpStatus.OK);
+            return new ResponseEntity<>(partService.findAll(pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

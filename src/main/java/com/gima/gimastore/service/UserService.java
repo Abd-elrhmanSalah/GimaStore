@@ -11,6 +11,8 @@ import com.gima.gimastore.repository.StoreRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -89,15 +91,17 @@ public class UserService {
 
     }
 
-    public List<UserDTO> getAllUsers() {
+    public Page<User> getAllUsers(Pageable pageable) {
 
-        return userRepo.findAll().stream().map(user -> {
-            UserDTO userDto = ObjectMapperUtils.map(user, UserDTO.class);
+        Page<User> all = userRepo.findAll(pageable);
+        all.getContent().stream().forEach(user -> {
+
             if (!Objects.isNull(user.getAvatar())) {
-                userDto.setAvatar(ImageUtil.decompressImage(user.getAvatar()));
+                user.setAvatar(ImageUtil.decompressImage(user.getAvatar()));
             }
-            return userDto;
-        }).collect(Collectors.toList());
+
+        });
+        return all;
     }
 
     public UserDTO getUserById(Long id) throws IOException, DataFormatException {

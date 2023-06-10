@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
@@ -101,10 +100,10 @@ public class SupplyProcessController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllSupplyProcess() {
+    public ResponseEntity<?> getAllSupplyProcess(Pageable pageable) {
         try {
 
-            return new ResponseEntity<>(supplyProcessService.findAllSupplyProcess(), HttpStatus.OK);
+            return new ResponseEntity<>(supplyProcessService.findAllSupplyProcess(pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

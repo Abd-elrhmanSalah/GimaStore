@@ -31,7 +31,7 @@ public class UserDTO implements Serializable {
     @JsonDeserialize
     private String oldPassword;
 
-    private Boolean isLocked;
+    private Boolean isLocked=false;
     private Long storeId;
 
     public UserDTO() {

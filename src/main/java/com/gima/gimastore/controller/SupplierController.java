@@ -2,13 +2,12 @@ package com.gima.gimastore.controller;
 
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
-import com.gima.gimastore.model.StoreDTO;
 import com.gima.gimastore.model.SupplierDTO;
-import com.gima.gimastore.service.StoreService;
 import com.gima.gimastore.service.SupplierService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +24,7 @@ public class SupplierController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public SupplierController( SupplierService supplierService) {
+    public SupplierController(SupplierService supplierService) {
         this.supplierService = supplierService;
     }
 
@@ -84,10 +83,10 @@ public class SupplierController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllSuppliers() {
+    public ResponseEntity<?> getAllSuppliers(Pageable pageable) {
         try {
 
-            return new ResponseEntity<>(supplierService.findAll(), HttpStatus.OK);
+            return new ResponseEntity<>(supplierService.findAll(pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

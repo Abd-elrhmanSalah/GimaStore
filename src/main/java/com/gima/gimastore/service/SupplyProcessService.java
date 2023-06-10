@@ -93,7 +93,7 @@ public class SupplyProcessService {
             PartDTO partDto = ObjectMapperUtils.map(supplyProcessPart.getPart(), PartDTO.class);
             if (supplyProcessPart.getPart().getPicture() != null) {
 
-                    partDto.setPicture(ImageUtil.decompressImage(supplyProcessPart.getPart().getPicture()));
+                partDto.setPicture(ImageUtil.decompressImage(supplyProcessPart.getPart().getPicture()));
 
             }
             partRequest.setPart(partDto);
@@ -112,11 +112,9 @@ public class SupplyProcessService {
         return response;
     }
 
-    public List<SupplyProcessDTO> findAllSupplyProcess() {
+    public Page<SupplyProcess> findAllSupplyProcess(Pageable pageable) {
 
-        return supplyProcessRepo.findAll().stream().map(supplyProcess -> {
-            return ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
-        }).collect(Collectors.toList());
+        return supplyProcessRepo.findAll(pageable);
 
 
     }

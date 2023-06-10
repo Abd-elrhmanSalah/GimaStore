@@ -6,6 +6,7 @@ import com.gima.gimastore.service.UserService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -83,9 +84,9 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllUsers() {
+    public ResponseEntity<?> getAllUsers(Pageable pageable) {
         try {
-            return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+            return new ResponseEntity<>(userService.getAllUsers(pageable), HttpStatus.OK);
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
