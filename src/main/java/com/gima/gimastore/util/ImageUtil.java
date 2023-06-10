@@ -27,19 +27,33 @@ public class ImageUtil {
         return outputStream.toByteArray();
     }
 
-
-    public static byte[] decompressImage(byte[] data) throws DataFormatException, IOException {
+    public static byte[] decompressImage(byte[] data) {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] tmp = new byte[BITE_SIZE];
-
-        while (!inflater.finished()) {
-            int count = inflater.inflate(tmp);
-            outputStream.write(tmp, 0, count);
+        byte[] tmp = new byte[4*1024];
+        try {
+            while (!inflater.finished()) {
+                int count = inflater.inflate(tmp);
+                outputStream.write(tmp, 0, count);
+            }
+            outputStream.close();
+        } catch (Exception exception) {
         }
-
-        outputStream.close();
         return outputStream.toByteArray();
     }
+//    public static byte[] decompressImage(byte[] data) throws DataFormatException, IOException {
+//        Inflater inflater = new Inflater();
+//        inflater.setInput(data);
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+//        byte[] tmp = new byte[BITE_SIZE];
+//
+//        while (!inflater.finished()) {
+//            int count = inflater.inflate(tmp);
+//            outputStream.write(tmp, 0, count);
+//        }
+//
+//        outputStream.close();
+//        return outputStream.toByteArray();
+//    }
 }

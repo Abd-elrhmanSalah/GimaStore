@@ -92,11 +92,9 @@ public class SupplyProcessService {
 
             PartDTO partDto = ObjectMapperUtils.map(supplyProcessPart.getPart(), PartDTO.class);
             if (supplyProcessPart.getPart().getPicture() != null) {
-                try {
+
                     partDto.setPicture(ImageUtil.decompressImage(supplyProcessPart.getPart().getPicture()));
-                } catch (DataFormatException | IOException e) {
-                    throw new RuntimeException(e);
-                }
+
             }
             partRequest.setPart(partDto);
             partRequest.setId(supplyProcessPart.getId());

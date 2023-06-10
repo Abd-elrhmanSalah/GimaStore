@@ -16,11 +16,10 @@ import org.springframework.stereotype.Service;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.zip.DataFormatException;
+import java.util.stream.Collectors;
 
 import static com.gima.gimastore.constant.ResponseCodes.*;
 
@@ -70,7 +69,7 @@ public class SupplyProcessDistService {
 
 
     }
-
+@Transactional
     public Page<SupplyProcessPartDist> getPartsDisByStoreAndStatus(Map<String, String> params, Pageable pageable) {
         Page<SupplyProcessPartDist> byStoreAndStatus = supplyProcessPartDistRepository.findAll(
                 (Specification<SupplyProcessPartDist>) (root, query, cb) -> {
@@ -114,17 +113,24 @@ public class SupplyProcessDistService {
                     }
                 }, pageable);
 
-
-        byStoreAndStatus.getContent().stream().map(supplyProcessPartDist -> {
-            try {
-                if (!Objects.isNull(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()))
-                    supplyProcessPartDist.getSupplyProcessPart().getPart().
-                            setPicture(ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()));
-                return supplyProcessPartDist;
-            } catch (DataFormatException | IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+//        for (int i = 0; i < byStoreAndStatus.getContent().size(); i++) {
+//            if (!Objects.isNull(byStoreAndStatus.getContent().get(i).getSupplyProcessPart().getPart().getPicture())) {
+//                byte[] bytes = ImageUtil.decompressImage(byStoreAndStatus.getContent().get(i).getSupplyProcessPart().getPart().getPicture());
+////                byStoreAndStatus.getContent().get(i).getSupplyProcessPart().getPart().setPicture(bytes);
+//            }
+//        }
+//        byStoreAndStatus.getContent().forEach(supplyProcessPartDist-> {
+//
+//            if (!Objects.isNull(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture())){
+//                byte[] bytes = ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture());
+//                supplyProcessPartDist.getSupplyProcessPart().getPart().
+//                        setPicture(null);
+//                supplyProcessPartDist.getSupplyProcessPart().getPart().
+//                        setPicture(bytes);
+//        }
+////                return supplyProcessPartDist;
+//
+//        });
         return byStoreAndStatus;
     }
 
@@ -158,7 +164,7 @@ public class SupplyProcessDistService {
     }
 
     @Transactional
-    public void rejectRequest(Long partDist, Long userId,String notes) {
+    public void rejectRequest(Long partDist, Long userId, String notes) {
 
         Optional<SupplyProcessPartDist> partDistById = supplyProcessPartDistRepository.findById(partDist);
 

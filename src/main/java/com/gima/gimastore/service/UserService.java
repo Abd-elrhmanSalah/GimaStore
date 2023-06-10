@@ -94,13 +94,7 @@ public class UserService {
         return userRepo.findAll().stream().map(user -> {
             UserDTO userDto = ObjectMapperUtils.map(user, UserDTO.class);
             if (!Objects.isNull(user.getAvatar())) {
-                try {
-                    userDto.setAvatar(ImageUtil.decompressImage(user.getAvatar()));
-                } catch (DataFormatException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                userDto.setAvatar(ImageUtil.decompressImage(user.getAvatar()));
             }
             return userDto;
         }).collect(Collectors.toList());
