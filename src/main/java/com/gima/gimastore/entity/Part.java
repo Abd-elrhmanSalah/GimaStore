@@ -28,8 +28,10 @@ public class Part implements Serializable {
     private byte[] picture;
 
     @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
-    @NotNull
-    private Boolean isLocked;
+    private Boolean isLocked=false;
+
+    @Column(name = "MIN_AMOUNT")
+    private Integer minAmount;
 
     public Long getId() {
         return id;
@@ -69,5 +71,13 @@ public class Part implements Serializable {
 
     public void setLocked(Boolean locked) {
         isLocked = locked;
+    }
+
+    public Integer getMinAmount() {
+        return minAmount;
+    }
+
+    public void setMinAmount(Integer minAmount) {
+        this.minAmount = minAmount;
     }
 }

@@ -69,7 +69,7 @@ public class SupplyProcessDistService {
 
 
     }
-@Transactional
+
     public Page<SupplyProcessPartDist> getPartsDisByStoreAndStatus(Map<String, String> params, Pageable pageable) {
         Page<SupplyProcessPartDist> byStoreAndStatus = supplyProcessPartDistRepository.findAll(
                 (Specification<SupplyProcessPartDist>) (root, query, cb) -> {
@@ -113,13 +113,8 @@ public class SupplyProcessDistService {
                     }
                 }, pageable);
 
-//        for (int i = 0; i < byStoreAndStatus.getContent().size(); i++) {
-//            if (!Objects.isNull(byStoreAndStatus.getContent().get(i).getSupplyProcessPart().getPart().getPicture())) {
-//                byte[] bytes = ImageUtil.decompressImage(byStoreAndStatus.getContent().get(i).getSupplyProcessPart().getPart().getPicture());
-////                byStoreAndStatus.getContent().get(i).getSupplyProcessPart().getPart().setPicture(bytes);
-//            }
-//        }
-        byStoreAndStatus.getContent().forEach(supplyProcessPartDist-> {
+
+        byStoreAndStatus.getContent().stream().forEach(supplyProcessPartDist-> {
 
             if (supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()!=null){
                 byte[] bytes = ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture());
@@ -128,7 +123,7 @@ public class SupplyProcessDistService {
                 supplyProcessPartDist.getSupplyProcessPart().getPart().
                         setPicture(bytes);
         }
-//                return supplyProcessPartDist;
+
 
         });
         return byStoreAndStatus;
@@ -175,7 +170,7 @@ public class SupplyProcessDistService {
 
         if (partDistById.get().getSupplyProcessPart().getDistAmount() == 0)
             partDistById.get().getSupplyProcessPart().setPartialDist(false);
-        if (partDistById.get().getSupplyProcessPart().getRemainAmount() > 0)
+        if (partDistById.get().getSupplyProcessPart().getRemainAmount() ==- 0)
             partDistById.get().getSupplyProcessPart().setFullDist(true);
 
         partDistById.get().setNotes(notes);

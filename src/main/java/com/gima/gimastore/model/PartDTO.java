@@ -9,7 +9,8 @@ public class PartDTO implements Serializable {
     private String partName;
     private BigDecimal currentCost;
     private byte[] picture;
-    private Boolean isLocked;
+    private Boolean isLocked = false;
+    private Integer minAmount;
 
     public Long getId() {
         return id;
@@ -49,5 +50,13 @@ public class PartDTO implements Serializable {
 
     public void setLocked(Boolean locked) {
         isLocked = locked;
+    }
+
+    public Integer getMinAmount() {
+        return minAmount;
+    }
+
+    public void setMinAmount(Integer minAmount) {
+        this.minAmount = minAmount;
     }
 }

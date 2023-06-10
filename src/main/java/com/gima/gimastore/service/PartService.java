@@ -85,7 +85,6 @@ public class PartService {
         return partRepo.findAll().stream().map(part -> {
             PartDTO partDto = ObjectMapperUtils.map(part, PartDTO.class);
             if (!Objects.isNull(part.getPicture())) {
-
                     partDto.setPicture(ImageUtil.decompressImage(part.getPicture()));
 
             }

@@ -3,7 +3,6 @@ package com.gima.gimastore.entity;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -26,8 +25,7 @@ public class Store implements Serializable {
     private User user;
 
     @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
-    @NotNull
-    private Boolean isLocked;
+    private Boolean isLocked = false;
 
 
     public Long getId() {
