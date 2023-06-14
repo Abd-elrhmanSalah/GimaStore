@@ -3,19 +3,24 @@ package com.gima.gimastore.service;
 import com.gima.gimastore.constant.ResponseCodes;
 import com.gima.gimastore.entity.*;
 import com.gima.gimastore.entity.storePartDist.StoresPartDist;
-import com.gima.gimastore.entity.supplyProcessPartDist.SupplyProcessPartDist;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.StoresPartsDistRequest;
 import com.gima.gimastore.repository.*;
 import com.gima.gimastore.util.CommonBusinessValidationUtil;
+import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class StoresPartsDistService {
@@ -71,6 +76,63 @@ public class StoresPartsDistService {
 
     }
 
+    public Page<StoresPartDist> getDistRequests(Map<String, String> params, Pageable pageable) {
+        Page<StoresPartDist> byStoreAndStatus = storesPartsDistRepo.findAll(
+                (Specification<StoresPartDist>) (root, query, cb) -> {
+                    try {
+
+                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                        List<Predicate> predicates = new ArrayList<>();
+//                        Join<StoresPartDist, Part> distPartJoin = root.join("supplyProcessPart");
+                        Join<StoresPartDist, Part> storePartJoin = root.join("part");
+
+                        Join<StoresPartDist, Store> distStoreJoin = root.join("storeTo");
+                        Join<StoresPartDist, Status> distStatusJoin = root.join("status");
+
+                        if (params.containsKey("storeIdTo"))
+                            if (!params.get("storeIdTo").equals("")) {
+                                businessValidationUtil.validateStore(Long.parseLong(params.get("storeIdTo")));
+                                predicates.add(cb.equal(distStoreJoin.get("id"), params.get("storeIdTo")));
+                            }
+                        if (params.containsKey("statusId"))
+                            if (!params.get("statusId").equals("")) {
+                                businessValidationUtil.validateStatus(Long.parseLong(params.get("statusId")));
+                                predicates.add(cb.equal(distStatusJoin.get("id"), params.get("statusId")));
+                            }
+
+                        if (params.containsKey("fromDate"))
+                            if (!params.get("fromDate").equals(""))
+                                predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("fromDate"))));
+
+                        if (params.containsKey("toDate"))
+                            if (!params.get("toDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("toDate"))));
+
+                        if (params.containsKey("partId"))
+                            if (!params.get("partId").equals(""))
+                                predicates.add(cb.equal(storePartJoin.get("id"), params.get("partId")));
+
+
+                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, pageable);
+
+
+        byStoreAndStatus.getContent().stream().forEach(storesPartDist -> {
+
+            if (storesPartDist.getPart().getPicture() != null) {
+                byte[] bytes = ImageUtil.decompressImage(storesPartDist.getPart().getPicture());
+                storesPartDist.getPart().setPicture(null);
+                storesPartDist.getPart().setPicture(bytes);
+            }
+
+
+        });
+        return byStoreAndStatus;
+    }
+
     @Transactional
     public void acceptRequest(Long partDist, Long userId, String notes) {
 
@@ -110,7 +172,7 @@ public class StoresPartsDistService {
         Optional<StorePart> byStoreAndPart = storePartRepo.findByStoreAndPart(store, part);
 
         byStoreAndPart.get()
-                .setAmount(storePartDist.getAmount()+ byStoreAndPart.get().getAmount());
+                .setAmount(storePartDist.getAmount() + byStoreAndPart.get().getAmount());
 
         storePartDist.setNotes(notes);
         User user = userRepo.findById(userId).get();
@@ -120,6 +182,7 @@ public class StoresPartsDistService {
 
         storesPartsDistRepo.save(storePartDist);
     }
+
     public StoresPartsDistRequest findById(Long id) {
         return null;
     }
