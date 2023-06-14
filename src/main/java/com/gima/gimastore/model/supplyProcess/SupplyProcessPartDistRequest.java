@@ -1,12 +1,11 @@
 package com.gima.gimastore.model.supplyProcess;
 
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
-import com.gima.gimastore.model.supplyProcess.StoreRequest;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class SupplyProcessPartDistDTO implements Serializable {
+public class SupplyProcessPartDistRequest implements Serializable {
     private SupplyProcessPart supplyProcessPart;
     private List<StoreRequest> storeRequests;
     private Long statusId;

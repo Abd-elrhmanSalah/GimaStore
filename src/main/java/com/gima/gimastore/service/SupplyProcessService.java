@@ -7,7 +7,7 @@ import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartDTO;
-import com.gima.gimastore.model.PartRequest;
+import com.gima.gimastore.model.supplyProcess.SupplyProcessPartRequest;
 import com.gima.gimastore.model.supplyProcess.SupplyProcessDTO;
 import com.gima.gimastore.model.supplyProcess.SupplyProcessPartsDTO;
 import com.gima.gimastore.model.supplyProcess.SupplyProcessRequest;
@@ -58,7 +58,7 @@ public class SupplyProcessService {
 
     @Transactional
     public void update(SupplyProcessRequest request, MultipartFile file) throws IOException {
-        SupplyProcess supplyProcess = validateSupplyProcessId(request.getSupplyProcess().getId());
+        SupplyProcess supplyProcess = validateSupplyProcessId(request.getSupplyProcessDTO().getId());
         SupplyProcess savedSupplyProcess = saveAndUpdateSupplyProcess(request, file, true, supplyProcess.getPicture());
 
         supplyProcessPartsRepo.deleteAllBySupplyProcess(savedSupplyProcess);
@@ -88,7 +88,7 @@ public class SupplyProcessService {
 
         supplyProcessPartList.forEach(supplyProcessPart -> {
 
-            PartRequest partRequest = new PartRequest();
+            SupplyProcessPartRequest partRequest = new SupplyProcessPartRequest();
 
             PartDTO partDto = ObjectMapperUtils.map(supplyProcessPart.getPart(), PartDTO.class);
             if (supplyProcessPart.getPart().getPicture() != null) {
@@ -162,7 +162,7 @@ public class SupplyProcessService {
     }
 
     private SupplyProcess saveAndUpdateSupplyProcess(SupplyProcessRequest request, MultipartFile file, boolean update, byte[] oldPic) throws IOException {
-        SupplyProcessDTO supplyProcessDTO = request.getSupplyProcess();
+        SupplyProcessDTO supplyProcessDTO = request.getSupplyProcessDTO();
         SupplyProcess supplyProcess = ObjectMapperUtils.map(supplyProcessDTO, SupplyProcess.class);
 
         if (update == true && oldPic != null)

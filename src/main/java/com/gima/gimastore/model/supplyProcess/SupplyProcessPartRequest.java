@@ -1,9 +1,11 @@
-package com.gima.gimastore.model;
+package com.gima.gimastore.model.supplyProcess;
+
+import com.gima.gimastore.model.PartDTO;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class PartRequest implements Serializable {
+public class SupplyProcessPartRequest implements Serializable {
     private Long id;
     private PartDTO part;
     private BigDecimal cost;
@@ -13,7 +15,7 @@ public class PartRequest implements Serializable {
     private Boolean isFullDist;
     private Boolean isPartialDist;
 
-    public PartRequest() {
+    public SupplyProcessPartRequest() {
     }
 
     public Long getId() {

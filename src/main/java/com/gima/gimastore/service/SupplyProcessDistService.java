@@ -3,10 +3,12 @@ package com.gima.gimastore.service;
 import com.gima.gimastore.entity.*;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.entity.supplyProcessPartDist.SupplyProcessPartDist;
-import com.gima.gimastore.exception.ApplicationException;
-import com.gima.gimastore.exception.StatusResponse;
-import com.gima.gimastore.model.supplyProcess.SupplyProcessPartDistDTO;
-import com.gima.gimastore.repository.*;
+import com.gima.gimastore.model.supplyProcess.SupplyProcessPartDistRequest;
+import com.gima.gimastore.repository.StorePartRepository;
+import com.gima.gimastore.repository.SupplyProcessPartDistRepository;
+import com.gima.gimastore.repository.SupplyProcessPartsRepository;
+import com.gima.gimastore.repository.UserRepository;
+import com.gima.gimastore.util.CommonBusinessValidationUtil;
 import com.gima.gimastore.util.ImageUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,32 +21,27 @@ import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.gima.gimastore.constant.ResponseCodes.*;
 
 @Service
 public class SupplyProcessDistService {
-    private SupplyProcessPartDistRepository supplyProcessPartDistRepository;
-    private StorePartRepository storePartRepository;
-    private SupplyProcessPartsRepository supplyProcessPartsRepository;
+    private SupplyProcessPartDistRepository supplyProcessPartDistRepo;
+    private StorePartRepository storePartRepo;
+    private SupplyProcessPartsRepository supplyProcessPartsRepo;
     private UserRepository userRepo;
-    private StatusRepository statusRepo;
-    private StoreRepository storeRepo;
+    private CommonBusinessValidationUtil businessValidationUtil;
 
-    public SupplyProcessDistService(SupplyProcessPartDistRepository supplyProcessPartDistRepository, StorePartRepository storePartRepository, SupplyProcessPartsRepository supplyProcessPartsRepository, UserRepository userRepo, StatusRepository statusRepo, StoreRepository storeRepo) {
-        this.supplyProcessPartDistRepository = supplyProcessPartDistRepository;
-        this.storePartRepository = storePartRepository;
-        this.supplyProcessPartsRepository = supplyProcessPartsRepository;
+    public SupplyProcessDistService(SupplyProcessPartDistRepository supplyProcessPartDistRepository, StorePartRepository storePartRepository, SupplyProcessPartsRepository supplyProcessPartsRepo, UserRepository userRepo, CommonBusinessValidationUtil businessValidationUtil) {
+        this.supplyProcessPartDistRepo = supplyProcessPartDistRepository;
+        this.storePartRepo = storePartRepository;
+        this.supplyProcessPartsRepo = supplyProcessPartsRepo;
         this.userRepo = userRepo;
-        this.statusRepo = statusRepo;
-        this.storeRepo = storeRepo;
+        this.businessValidationUtil = businessValidationUtil;
     }
 
     @Transactional
-    public void add(SupplyProcessPartDistDTO supplyProcessPartDistDTO) {
+    public void add(SupplyProcessPartDistRequest supplyProcessPartDistDTO) {
 
-        Optional<SupplyProcessPart> supplyProcessPartById = supplyProcessPartsRepository.findById(supplyProcessPartDistDTO.getSupplyProcessPart().getId());
+        Optional<SupplyProcessPart> supplyProcessPartById = supplyProcessPartsRepo.findById(supplyProcessPartDistDTO.getSupplyProcessPart().getId());
 
         supplyProcessPartDistDTO.getStoreRequests().forEach(dto -> {
             SupplyProcessPartDist supplyProcessPartDist = new SupplyProcessPartDist();
@@ -52,16 +49,16 @@ public class SupplyProcessDistService {
 
             supplyProcessPartDist.setStore(dto.getStore());
             supplyProcessPartDist.setAmount(dto.getAmount());
-            supplyProcessPartDist.setDistBy(validateUser(supplyProcessPartDistDTO.getDistUserId()));
-            supplyProcessPartDist.setStatus(validateStatus(supplyProcessPartDistDTO.getStatusId()));
-            supplyProcessPartDistRepository.save(supplyProcessPartDist);
+            supplyProcessPartDist.setDistBy(businessValidationUtil.validateUser(supplyProcessPartDistDTO.getDistUserId()));
+            supplyProcessPartDist.setStatus(businessValidationUtil.validateStatus(supplyProcessPartDistDTO.getStatusId()));
+            supplyProcessPartDistRepo.save(supplyProcessPartDist);
 
             supplyProcessPartById.get().setRemainAmount(supplyProcessPartById.get().getRemainAmount() - dto.getAmount());
             supplyProcessPartById.get().setDistAmount(supplyProcessPartById.get().getDistAmount() + dto.getAmount());
             if (supplyProcessPartById.get().getRemainAmount() == 0)
                 supplyProcessPartById.get().setFullDist(true);
 
-            supplyProcessPartsRepository.save(supplyProcessPartById.get());
+            supplyProcessPartsRepo.save(supplyProcessPartById.get());
         });
 
         if (supplyProcessPartById.get().getPartialDist() == false)
@@ -70,8 +67,8 @@ public class SupplyProcessDistService {
 
     }
 
-    public Page<SupplyProcessPartDist> getPartsDisByStoreAndStatus(Map<String, String> params, Pageable pageable) {
-        Page<SupplyProcessPartDist> byStoreAndStatus = supplyProcessPartDistRepository.findAll(
+    public Page<SupplyProcessPartDist> getDistRequests(Map<String, String> params, Pageable pageable) {
+        Page<SupplyProcessPartDist> byStoreAndStatus = supplyProcessPartDistRepo.findAll(
                 (Specification<SupplyProcessPartDist>) (root, query, cb) -> {
                     try {
 
@@ -85,12 +82,12 @@ public class SupplyProcessDistService {
 
                         if (params.containsKey("storeId"))
                             if (!params.get("storeId").equals("")) {
-                                validateStore(Long.parseLong(params.get("storeId")));
+                                businessValidationUtil.validateStore(Long.parseLong(params.get("storeId")));
                                 predicates.add(cb.equal(distStoreJoin.get("id"), params.get("storeId")));
                             }
                         if (params.containsKey("statusId"))
                             if (!params.get("statusId").equals("")) {
-                                validateStatus(Long.parseLong(params.get("statusId")));
+                                businessValidationUtil.validateStatus(Long.parseLong(params.get("statusId")));
                                 predicates.add(cb.equal(distStatusJoin.get("id"), params.get("statusId")));
                             }
 
@@ -114,15 +111,15 @@ public class SupplyProcessDistService {
                 }, pageable);
 
 
-        byStoreAndStatus.getContent().stream().forEach(supplyProcessPartDist-> {
+        byStoreAndStatus.getContent().stream().forEach(supplyProcessPartDist -> {
 
-            if (supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture()!=null){
+            if (supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture() != null) {
                 byte[] bytes = ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture());
                 supplyProcessPartDist.getSupplyProcessPart().getPart().
                         setPicture(null);
                 supplyProcessPartDist.getSupplyProcessPart().getPart().
                         setPicture(bytes);
-        }
+            }
 
 
         });
@@ -132,22 +129,22 @@ public class SupplyProcessDistService {
     @Transactional
     public void acceptRequest(Long partDist, Long userId, String notes) {
 
-        Optional<SupplyProcessPartDist> partDistById = supplyProcessPartDistRepository.findById(partDist);
+        Optional<SupplyProcessPartDist> partDistById = supplyProcessPartDistRepo.findById(partDist);
 
         Part part = partDistById.get().getSupplyProcessPart().getPart();
-        Optional<StorePart> byStoreAndPart = storePartRepository.findByStoreAndPart(partDistById.get().getStore(), part);
+        Optional<StorePart> byStoreAndPart = storePartRepo.findByStoreAndPart(partDistById.get().getStore(), part);
 
         if (!byStoreAndPart.isEmpty()) {
             Integer amount = byStoreAndPart.get().getAmount();
             byStoreAndPart.get().setAmount(amount + partDistById.get().getAmount());
-            storePartRepository.save(byStoreAndPart.get());
+            storePartRepo.save(byStoreAndPart.get());
 
         } else {
             StorePart storePart = new StorePart();
             storePart.setPart(part);
             storePart.setStore(partDistById.get().getStore());
             storePart.setAmount(partDistById.get().getAmount());
-            storePartRepository.save(storePart);
+            storePartRepo.save(storePart);
         }
         partDistById.get().setNotes(notes);
         User user = userRepo.findById(userId).get();
@@ -155,13 +152,13 @@ public class SupplyProcessDistService {
         partDistById.get().setActionBy(user);
         partDistById.get().setActionDate(new Date());
 
-        supplyProcessPartDistRepository.save(partDistById.get());
+        supplyProcessPartDistRepo.save(partDistById.get());
     }
 
     @Transactional
     public void rejectRequest(Long partDist, Long userId, String notes) {
 
-        Optional<SupplyProcessPartDist> partDistById = supplyProcessPartDistRepository.findById(partDist);
+        Optional<SupplyProcessPartDist> partDistById = supplyProcessPartDistRepo.findById(partDist);
 
         partDistById.get().getSupplyProcessPart().
                 setRemainAmount(partDistById.get().getSupplyProcessPart().getRemainAmount() + partDistById.get().getAmount());
@@ -170,7 +167,7 @@ public class SupplyProcessDistService {
 
         if (partDistById.get().getSupplyProcessPart().getDistAmount() == 0)
             partDistById.get().getSupplyProcessPart().setPartialDist(false);
-        if (partDistById.get().getSupplyProcessPart().getRemainAmount() ==- 0)
+        if (partDistById.get().getSupplyProcessPart().getRemainAmount() == -0)
             partDistById.get().getSupplyProcessPart().setFullDist(true);
 
         partDistById.get().setNotes(notes);
@@ -179,30 +176,7 @@ public class SupplyProcessDistService {
         partDistById.get().setActionBy(user);
         partDistById.get().setActionDate(new Date());
 
-        supplyProcessPartDistRepository.save(partDistById.get());
+        supplyProcessPartDistRepo.save(partDistById.get());
     }
 
-    private Store validateStore(Long storeId) {
-        Optional<Store> storeByID = storeRepo.findById(storeId);
-
-        if (storeByID.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_STORE_ID.getCode(), NO_STORE_ID.getKey(), NO_STORE_ID.getMessage()));
-        return storeByID.get();
-    }
-
-    private User validateUser(Long userId) {
-        Optional<User> userByID = userRepo.findById(userId);
-
-        if (userByID.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
-        return userByID.get();
-    }
-
-    private Status validateStatus(Long statusId) {
-
-        Optional<Status> statusById = statusRepo.findById(statusId);
-        if (statusById.isEmpty())
-            throw new ApplicationException(new StatusResponse(NO_STATUS_ID.getCode(), NO_STATUS_ID.getKey(), NO_STATUS_ID.getMessage()));
-        return statusById.get();
-    }
 }

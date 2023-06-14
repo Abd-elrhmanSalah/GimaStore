@@ -1,7 +1,5 @@
 package com.gima.gimastore.model.supplyProcess;
 
-import com.gima.gimastore.model.PartRequest;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +7,7 @@ import java.util.List;
 public class SupplyProcessPartsDTO implements Serializable {
 
     private SupplyProcessDTO supplyProcess;
-    private List<PartRequest> parts = new ArrayList<>();
+    private List<SupplyProcessPartRequest> parts = new ArrayList<>();
 
 
     public SupplyProcessDTO getSupplyProcess() {
@@ -20,11 +18,11 @@ public class SupplyProcessPartsDTO implements Serializable {
         this.supplyProcess = supplyProcess;
     }
 
-    public List<PartRequest> getParts() {
+    public List<SupplyProcessPartRequest> getParts() {
         return parts;
     }
 
-    public void setParts(List<PartRequest> parts) {
+    public void setParts(List<SupplyProcessPartRequest> parts) {
         this.parts = parts;
     }
 }

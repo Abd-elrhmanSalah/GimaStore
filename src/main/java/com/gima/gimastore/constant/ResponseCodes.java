@@ -24,11 +24,9 @@ public enum ResponseCodes {
 
     NO_SUPPLYPROCESS_ID("016", "SupplyProcessId Error", "لا يوجد توريد بهذا الID"),
     NO_STATUS_ID("017", "StatusId Error", "لا يوجد statusID "),
-    RECONCILIATION_NOT_MATCHE("017", "Reconciliation NotMatched Error", "Reconciliation NotMatched can't accepted"),
-    INTERNAL_SERVER_ERROR("018", "Internal Server Error", "Internal Server Error"),
-    STATUSECODE("019", "Status  Error", "Status Code unknown"),
-    SOURCECODE("111", "SourceCode Error", "Source Code unknown"),
-    CHANGESATUS("222", "Change Status Error", "can't change status for requestID: ");
+    QUANTITY_PART_WITH_STORE("018", "Part and Store Quantity Error", "لايمكن سحب هذه الكمية من هذا الجزء"),
+    NO_PART_WITH_STORE("019", "Part and Store Not Found", "لايوجد هذا الجزء فى هذا المخزن"),
+    INTERNAL_SERVER_ERROR("020", "Internal Server Error", "Internal Server Error");
 
 //    public static final String SUCCESS_TRANSACTION_MESSAGE = "The transaction has been ended successfully ";
 
