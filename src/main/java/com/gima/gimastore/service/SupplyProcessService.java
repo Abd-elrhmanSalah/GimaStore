@@ -7,11 +7,7 @@ import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartDTO;
-import com.gima.gimastore.model.supplyProcess.SupplyProcessPartRequest;
-import com.gima.gimastore.model.supplyProcess.SupplyProcessDTO;
-import com.gima.gimastore.model.supplyProcess.SupplyProcessPartsDTO;
-import com.gima.gimastore.model.supplyProcess.SupplyProcessRequest;
-import com.gima.gimastore.model.supplyProcess.SupplyProcessWithPartsResponse;
+import com.gima.gimastore.model.supplyProcess.*;
 import com.gima.gimastore.repository.SupplyProcessPartsRepository;
 import com.gima.gimastore.repository.SupplyProcessRepository;
 import com.gima.gimastore.util.ImageUtil;
@@ -129,14 +125,14 @@ public class SupplyProcessService {
                         List<Predicate> predicates = new ArrayList<>();
                         Join<SupplyProcess, Supplier> processSupplierJoin = root.join("supplier");
 
-                        if (params.containsKey("supplyProcessFromDate"))
-                            if (!params.get("supplyProcessFromDate").equals(""))
-                                predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("supplyProcessFromDate"))));
+                        if (params.containsKey("FromDate"))
+                            if (!params.get("FromDate").equals(""))
+                                predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
 
-                        if (params.containsKey("supplyProcessToDate"))
-                            if (!params.get("supplyProcessToDate").equals(""))
-                                predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("supplyProcessToDate"))));
+                        if (params.containsKey("ToDate"))
+                            if (!params.get("ToDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("ToDate"))));
 
 
                         if (params.containsKey("supplierId"))
@@ -146,6 +142,55 @@ public class SupplyProcessService {
                         if (params.containsKey("billId"))
                             if (!params.get("billId").equals(""))
                                 predicates.add(cb.equal(root.get("billId"), params.get("billId")));
+
+                        if (params.containsKey("status"))
+                            if (!params.get("status").equals("")) {
+                                String s = (params.get("status").toLowerCase().equals("false")) ? "0" : "1";
+                                predicates.add(cb.equal(root.get("isFullDist"), Integer.valueOf(s)));
+                            }
+
+                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, pageable);
+
+
+        supplyProcessPage.getContent().stream().map(supplyProcess -> {
+            return ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
+        }).collect(Collectors.toList());
+        return supplyProcessPage;
+
+    }
+    public Page<SupplyProcessPart> searchByPartInSupplyProcess(Map<String, String> params, Pageable pageable) {
+
+
+        Page<SupplyProcessPart> supplyProcessPage = supplyProcessPartsRepo.findAll(
+                (Specification<SupplyProcessPart>) (root, query, cb) -> {
+                    try {
+                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                        List<Predicate> predicates = new ArrayList<>();
+                        Join<SupplyProcess, Supplier> processSupplierJoin = root.join("supplier");
+                      //  Join<SupplyProcess, Supplier> processSupplierJoin = root.join("supplier");
+
+                        if (params.containsKey("FromDate"))
+                            if (!params.get("FromDate").equals(""))
+                                predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("FromDate"))));
+
+
+                        if (params.containsKey("ToDate"))
+                            if (!params.get("ToDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("ToDate"))));
+
+
+                        if (params.containsKey("supplierId"))
+                            if (!params.get("supplierId").equals(""))
+                                predicates.add(cb.equal(processSupplierJoin.get("id"), params.get("supplierId")));
+
+                        if (params.containsKey("billId"))
+                            if (!params.get("billId").equals(""))
+                                predicates.add(cb.equal(root.get("billId"), params.get("billId")));
+
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {

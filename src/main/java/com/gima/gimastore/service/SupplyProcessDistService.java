@@ -85,6 +85,7 @@ public class SupplyProcessDistService {
                                 businessValidationUtil.validateStore(Long.parseLong(params.get("storeId")));
                                 predicates.add(cb.equal(distStoreJoin.get("id"), params.get("storeId")));
                             }
+
                         if (params.containsKey("statusId"))
                             if (!params.get("statusId").equals("")) {
                                 businessValidationUtil.validateStatus(Long.parseLong(params.get("statusId")));
