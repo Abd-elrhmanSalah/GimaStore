@@ -24,10 +24,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
@@ -173,34 +170,46 @@ public class SupplyProcessService {
 
     public Page<SupplyProcessPart> searchByPartInSupplyProcess(Map<String, String> params, Pageable pageable) {
 
-//select  from supplyProcessPart where part_id=?
+
         Page<SupplyProcessPart> supplyProcessPage = supplyProcessPartsRepo.findAll(
                 (Specification<SupplyProcessPart>) (root, query, cb) -> {
                     try {
                         SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
                         List<Predicate> predicates = new ArrayList<>();
+
+                        Join<SupplyProcess, SupplyProcessPart> supplyProcessSupplyProcessPartJoin =
+                                root.join("supplyProcess");
+
+                        Join<SupplyProcess, Supplier> processSupplierJoin =
+                                supplyProcessSupplyProcessPartJoin.join("supplier");
+
                         Join<SupplyProcessPart, Part> supplyProcessPartPartJoin = root.join("part");
 
-                        Join<SupplyProcess, SupplyProcessPart> supplyProcessSupplyProcessPartJoin = supplyProcessPartPartJoin.join("supplyProcess");
-                        Join<SupplyProcess, Supplier> processSupplierJoin = root.join("supplier");
 
                         if (params.containsKey("partId"))
                             if (!params.get("partId").equals(""))
-                                predicates.add(cb.equal(supplyProcessPartPartJoin.get("billId"), params.get("partId")));
+                                predicates.add(cb.equal(supplyProcessPartPartJoin.get("id"), params.get("partId")));
 
                         if (params.containsKey("FromDate"))
                             if (!params.get("FromDate").equals(""))
-                                predicates.add(cb.greaterThanOrEqualTo(supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("FromDate"))));
+                                predicates.add(cb.greaterThanOrEqualTo(
+                                        supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("FromDate"))));
 
 
                         if (params.containsKey("ToDate"))
                             if (!params.get("ToDate").equals(""))
-                                predicates.add(cb.lessThanOrEqualTo(supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("ToDate"))));
+                                predicates.add(cb.lessThanOrEqualTo(
+                                        supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("ToDate"))));
 
 
                         if (params.containsKey("supplierId"))
                             if (!params.get("supplierId").equals(""))
                                 predicates.add(cb.equal(processSupplierJoin.get("id"), params.get("supplierId")));
+
+                        if (params.containsKey("billId"))
+                            if (!params.get("billId").equals(""))
+                                predicates.add(cb.equal(
+                                        supplyProcessSupplyProcessPartJoin.get("billId"), params.get("billId")));
 
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
@@ -209,7 +218,17 @@ public class SupplyProcessService {
                     }
                 }, pageable);
 
-
+//        supplyProcessPage.map(SupplyProcessPart -> {
+//            SupplyProcessPartsDTO map = ObjectMapperUtils.map(SupplyProcessPart, SupplyProcessPartsDTO.class);
+//            if (!Objects.isNull(map.().getPart().getPicture())) {
+//
+//                Long partId = map.getSupplyProcessPart().getPart().getId();
+//                map.getSupplyProcessPart().getPart().
+//                        setPicture(ImageUtil.decompressImage(partRepo.findById(partId).get().getPicture()));
+//            }
+//            return map;
+//        }).toList();
+//        return all;
         supplyProcessPage.getContent().stream().map(supplyProcess -> {
             return ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
         }).collect(Collectors.toList());

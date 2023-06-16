@@ -5,6 +5,7 @@ import com.gima.gimastore.entity.*;
 import com.gima.gimastore.entity.storePartDist.StoresPartDist;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
+import com.gima.gimastore.model.StorePartDistDTO;
 import com.gima.gimastore.model.StoresPartsDistRequest;
 import com.gima.gimastore.repository.*;
 import com.gima.gimastore.util.CommonBusinessValidationUtil;
@@ -119,18 +120,18 @@ public class StoresPartsDistService {
                     }
                 }, pageable);
 
+        byStoreAndStatus.map(storesPartDist -> {
+            StorePartDistDTO map = ObjectMapperUtils.map(storesPartDist, StorePartDistDTO.class);
+            if (!Objects.isNull(map.getPart().getPicture())) {
 
-        byStoreAndStatus.getContent().stream().forEach(storesPartDist -> {
-
-            if (storesPartDist.getPart().getPicture() != null) {
-                byte[] bytes = ImageUtil.decompressImage(storesPartDist.getPart().getPicture());
-                storesPartDist.getPart().setPicture(null);
-                storesPartDist.getPart().setPicture(bytes);
+                Long partId = map.getPart().getId();
+                map.getPart().
+                        setPicture(ImageUtil.decompressImage(partRepo.findById(partId).get().getPicture()));
             }
-
-
-        });
+            return map;
+        }).toList();
         return byStoreAndStatus;
+
     }
 
     @Transactional

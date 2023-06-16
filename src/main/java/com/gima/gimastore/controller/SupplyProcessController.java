@@ -134,5 +134,22 @@ public class SupplyProcessController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("/searchSupplyProcessByPart")
+    public ResponseEntity<?> searchSupplyProcessByPart(@RequestParam Map<String, String> params, Pageable pageable) {
+        try {
+
+            return new ResponseEntity<>(supplyProcessService.searchByPartInSupplyProcess(params, pageable), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

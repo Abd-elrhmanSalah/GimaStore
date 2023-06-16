@@ -20,7 +20,6 @@ import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class SupplyProcessDistService {
@@ -113,20 +112,15 @@ public class SupplyProcessDistService {
                     }
                 }, pageable);
 
-//        List<SupplyProcessPartDist> supplyProcessPartDists = all.map(s->{
-//            System.out.println();
-//        });
-
-         all.map(supplyProcessPartDist -> {
+        all.map(supplyProcessPartDist -> {
             SupplyProcessPartDistDTO map = ObjectMapperUtils.map(supplyProcessPartDist, SupplyProcessPartDistDTO.class);
             if (!Objects.isNull(map.getSupplyProcessPart().getPart().getPicture())) {
-//                byte[] bytes = ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture());
+
                 Long partId = map.getSupplyProcessPart().getPart().getId();
                 map.getSupplyProcessPart().getPart().
                         setPicture(ImageUtil.decompressImage(partRepo.findById(partId).get().getPicture()));
             }
             return map;
-//
         }).toList();
         return all;
     }
