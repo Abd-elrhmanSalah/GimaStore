@@ -138,7 +138,7 @@ public class StoresPartsDistService {
 
 
         StoresPartDist storePartDist = storesPartsDistRepo.findById(partDist).get();
-        Part part = partRepo.findById(partDist).get();
+        Part part = partRepo.findById(storePartDist.getPart().getId()).get();
         Store store = storeRepo.findById(storePartDist.getStoreTo().getId()).get();
         Optional<StorePart> byStoreAndPart = storePartRepo.findByStoreAndPart(store, part);
 
@@ -152,7 +152,7 @@ public class StoresPartsDistService {
             storePart.setPart(part);
             storePart.setStore(storePartDist.getStoreTo());
             storePart.setAmount(storePartDist.getAmount());
-            storePartRepo.save(byStoreAndPart.get());
+            storePartRepo.save(storePart);
         }
         storePartDist.setNotes(notes);
         User user = userRepo.findById(userId).get();
@@ -167,7 +167,7 @@ public class StoresPartsDistService {
     public void rejectRequest(Long partDist, Long userId, String notes) {
 
         StoresPartDist storePartDist = storesPartsDistRepo.findById(partDist).get();
-        Part part = partRepo.findById(partDist).get();
+        Part part = partRepo.findById(storePartDist.getPart().getId()).get();
         Store store = storeRepo.findById(storePartDist.getStoreFrom().getId()).get();
         Optional<StorePart> byStoreAndPart = storePartRepo.findByStoreAndPart(store, part);
 

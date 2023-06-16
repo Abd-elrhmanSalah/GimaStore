@@ -162,34 +162,37 @@ public class SupplyProcessService {
         return supplyProcessPage;
 
     }
+
     public Page<SupplyProcessPart> searchByPartInSupplyProcess(Map<String, String> params, Pageable pageable) {
 
-
+//select  from supplyProcessPart where part_id=?
         Page<SupplyProcessPart> supplyProcessPage = supplyProcessPartsRepo.findAll(
                 (Specification<SupplyProcessPart>) (root, query, cb) -> {
                     try {
                         SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
                         List<Predicate> predicates = new ArrayList<>();
-                        Join<SupplyProcess, Supplier> processSupplierJoin = root.join("supplier");
-                      //  Join<SupplyProcess, Supplier> processSupplierJoin = root.join("supplier");
+                        Join<SupplyProcessPart, Part> supplyProcessPartPartJoin = root.join("part");
+
+                        Join<SupplyProcess, SupplyProcessPart> supplyProcessSupplyProcessPartJoin = supplyProcessPartPartJoin.join("supplyProcess");
+                          Join<SupplyProcess, Supplier> processSupplierJoin = root.join("supplier");
+
+                        if (params.containsKey("partId"))
+                            if (!params.get("partId").equals(""))
+                                predicates.add(cb.equal(supplyProcessPartPartJoin.get("billId"), params.get("partId")));
 
                         if (params.containsKey("FromDate"))
                             if (!params.get("FromDate").equals(""))
-                                predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("FromDate"))));
+                                predicates.add(cb.greaterThanOrEqualTo(supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("FromDate"))));
 
 
                         if (params.containsKey("ToDate"))
                             if (!params.get("ToDate").equals(""))
-                                predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("ToDate"))));
+                                predicates.add(cb.lessThanOrEqualTo(supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("ToDate"))));
 
 
                         if (params.containsKey("supplierId"))
                             if (!params.get("supplierId").equals(""))
                                 predicates.add(cb.equal(processSupplierJoin.get("id"), params.get("supplierId")));
-
-                        if (params.containsKey("billId"))
-                            if (!params.get("billId").equals(""))
-                                predicates.add(cb.equal(root.get("billId"), params.get("billId")));
 
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));

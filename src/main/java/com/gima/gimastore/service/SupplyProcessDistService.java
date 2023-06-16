@@ -64,7 +64,7 @@ public class SupplyProcessDistService {
         if (supplyProcessPartById.get().getPartialDist() == false)
             supplyProcessPartById.get().setPartialDist(true);
 
-
+//if()
     }
 
     public Page<SupplyProcessPartDist> getDistRequests(Map<String, String> params, Pageable pageable) {
