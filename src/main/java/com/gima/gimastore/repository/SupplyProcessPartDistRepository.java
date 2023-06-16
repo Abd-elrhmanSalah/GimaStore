@@ -10,6 +10,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface SupplyProcessPartDistRepository extends JpaRepository<SupplyProcessPartDist, Long> {
     Page<SupplyProcessPartDist> findAll(Specification<SupplyProcessPartDist> specification, Pageable pageable);

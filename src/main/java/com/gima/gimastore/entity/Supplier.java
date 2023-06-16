@@ -28,6 +28,13 @@ public class Supplier implements Serializable {
     @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
     private Boolean isLocked=false;
 
+    public Supplier() {
+    }
+
+    public Supplier(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

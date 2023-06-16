@@ -3,13 +3,12 @@ package com.gima.gimastore.service;
 import com.gima.gimastore.entity.*;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.entity.supplyProcessPartDist.SupplyProcessPartDist;
+import com.gima.gimastore.model.supplyProcess.SupplyProcessPartDistDTO;
 import com.gima.gimastore.model.supplyProcess.SupplyProcessPartDistRequest;
-import com.gima.gimastore.repository.StorePartRepository;
-import com.gima.gimastore.repository.SupplyProcessPartDistRepository;
-import com.gima.gimastore.repository.SupplyProcessPartsRepository;
-import com.gima.gimastore.repository.UserRepository;
+import com.gima.gimastore.repository.*;
 import com.gima.gimastore.util.CommonBusinessValidationUtil;
 import com.gima.gimastore.util.ImageUtil;
+import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,6 +20,7 @@ import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SupplyProcessDistService {
@@ -29,13 +29,15 @@ public class SupplyProcessDistService {
     private SupplyProcessPartsRepository supplyProcessPartsRepo;
     private UserRepository userRepo;
     private CommonBusinessValidationUtil businessValidationUtil;
+    private PartRepository partRepo;
 
-    public SupplyProcessDistService(SupplyProcessPartDistRepository supplyProcessPartDistRepository, StorePartRepository storePartRepository, SupplyProcessPartsRepository supplyProcessPartsRepo, UserRepository userRepo, CommonBusinessValidationUtil businessValidationUtil) {
-        this.supplyProcessPartDistRepo = supplyProcessPartDistRepository;
-        this.storePartRepo = storePartRepository;
+    public SupplyProcessDistService(SupplyProcessPartDistRepository supplyProcessPartDistRepo, StorePartRepository storePartRepo, SupplyProcessPartsRepository supplyProcessPartsRepo, UserRepository userRepo, CommonBusinessValidationUtil businessValidationUtil, PartRepository partRepo) {
+        this.supplyProcessPartDistRepo = supplyProcessPartDistRepo;
+        this.storePartRepo = storePartRepo;
         this.supplyProcessPartsRepo = supplyProcessPartsRepo;
         this.userRepo = userRepo;
         this.businessValidationUtil = businessValidationUtil;
+        this.partRepo = partRepo;
     }
 
     @Transactional
@@ -68,7 +70,7 @@ public class SupplyProcessDistService {
     }
 
     public Page<SupplyProcessPartDist> getDistRequests(Map<String, String> params, Pageable pageable) {
-        Page<SupplyProcessPartDist> byStoreAndStatus = supplyProcessPartDistRepo.findAll(
+        Page<SupplyProcessPartDist> all = supplyProcessPartDistRepo.findAll(
                 (Specification<SupplyProcessPartDist>) (root, query, cb) -> {
                     try {
 
@@ -111,20 +113,22 @@ public class SupplyProcessDistService {
                     }
                 }, pageable);
 
+//        List<SupplyProcessPartDist> supplyProcessPartDists = all.map(s->{
+//            System.out.println();
+//        });
 
-        byStoreAndStatus.getContent().stream().forEach(supplyProcessPartDist -> {
-
-            if (supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture() != null) {
-                byte[] bytes = ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture());
-                supplyProcessPartDist.getSupplyProcessPart().getPart().
-                        setPicture(null);
-                supplyProcessPartDist.getSupplyProcessPart().getPart().
-                        setPicture(bytes);
+         all.map(supplyProcessPartDist -> {
+            SupplyProcessPartDistDTO map = ObjectMapperUtils.map(supplyProcessPartDist, SupplyProcessPartDistDTO.class);
+            if (!Objects.isNull(map.getSupplyProcessPart().getPart().getPicture())) {
+//                byte[] bytes = ImageUtil.decompressImage(supplyProcessPartDist.getSupplyProcessPart().getPart().getPicture());
+                Long partId = map.getSupplyProcessPart().getPart().getId();
+                map.getSupplyProcessPart().getPart().
+                        setPicture(ImageUtil.decompressImage(partRepo.findById(partId).get().getPicture()));
             }
-
-
-        });
-        return byStoreAndStatus;
+            return map;
+//
+        }).toList();
+        return all;
     }
 
     @Transactional

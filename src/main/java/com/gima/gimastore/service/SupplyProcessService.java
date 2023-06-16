@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
 import static com.gima.gimastore.constant.ResponseCodes.NO_SUPPLYPROCESS_ID;
+import static com.gima.gimastore.constant.ResponseCodes.REPEATED_SUPPLIER_AND_BILLID;
 
 @Service
 public class SupplyProcessService {
@@ -46,6 +47,13 @@ public class SupplyProcessService {
 
 
     public void add(SupplyProcessRequest request, MultipartFile file) throws IOException {
+
+        if (supplyProcessRepo.existsBySupplierAndBillId(new Supplier(request.getSupplyProcessDTO().getSupplier().getId()),
+                request.getSupplyProcessDTO().getBillId())) {
+
+            throw new ApplicationException(new StatusResponse(REPEATED_SUPPLIER_AND_BILLID.getCode(), REPEATED_SUPPLIER_AND_BILLID.getKey(),
+                    REPEATED_SUPPLIER_AND_BILLID.getMessage()));
+        }
         SupplyProcess savedSupplyProcess = saveAndUpdateSupplyProcess(request, file, false, null);
 
         savePartsList(request, savedSupplyProcess);
@@ -174,7 +182,7 @@ public class SupplyProcessService {
                         Join<SupplyProcessPart, Part> supplyProcessPartPartJoin = root.join("part");
 
                         Join<SupplyProcess, SupplyProcessPart> supplyProcessSupplyProcessPartJoin = supplyProcessPartPartJoin.join("supplyProcess");
-                          Join<SupplyProcess, Supplier> processSupplierJoin = root.join("supplier");
+                        Join<SupplyProcess, Supplier> processSupplierJoin = root.join("supplier");
 
                         if (params.containsKey("partId"))
                             if (!params.get("partId").equals(""))

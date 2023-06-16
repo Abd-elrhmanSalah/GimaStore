@@ -1,6 +1,7 @@
 package com.gima.gimastore.entity;
 
 import org.hibernate.annotations.Nationalized;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,20 +19,25 @@ public class Part implements Serializable {
 
     @Column(name = "PART_NAME")
     @Nationalized
+    @NotNull
     private String partName;
 
     @Column(name = "CURRENT_COST")
+    @NotNull
     private BigDecimal currentCost;
 
     @Lob
     @Column(name = "PICTURE", length = 1000)
+    @Nullable
     private byte[] picture;
 
     @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
-    private Boolean isLocked=false;
+    @NotNull
+    private Boolean isLocked = false;
 
     @Column(name = "MIN_AMOUNT")
-    private Integer minAmount;
+    @NotNull
+    private Integer minAmount = 1;
 
     public Long getId() {
         return id;
