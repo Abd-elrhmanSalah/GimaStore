@@ -242,7 +242,7 @@ public class SupplyProcessService {
 
         });
 
-        PageImpl<PartSearchSupplyResponse> partSearchResponses = new PageImpl<>(supplyProcessList, pageable, supplyProcessPage.getContent().size());
+        PageImpl<PartSearchSupplyResponse> partSearchResponses = new PageImpl<>(supplyProcessList, pageable, supplyProcessPage.getTotalElements());
         return partSearchResponses;
 
     }
