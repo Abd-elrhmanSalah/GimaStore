@@ -10,6 +10,8 @@ public class PartSearchSupplyResponse implements Serializable {
     private String creationBy;
     private String amount;
     private String cost;
+    private String remainAmount;
+    private String distAmount;
 
     public Long getSupplyProcessId() {
         return supplyProcessId;
@@ -65,5 +67,21 @@ public class PartSearchSupplyResponse implements Serializable {
 
     public void setCost(String cost) {
         this.cost = cost;
+    }
+
+    public String getRemainAmount() {
+        return remainAmount;
+    }
+
+    public void setRemainAmount(String remainAmount) {
+        this.remainAmount = remainAmount;
+    }
+
+    public String getDistAmount() {
+        return distAmount;
+    }
+
+    public void setDistAmount(String distAmount) {
+        this.distAmount = distAmount;
     }
 }

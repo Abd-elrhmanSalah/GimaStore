@@ -237,6 +237,8 @@ public class SupplyProcessService {
             supplyResponse.setSupplierName(SupplyProcessPart.getSupplyProcess().getSupplier().getSupplierName());
             supplyResponse.setAmount(String.valueOf(SupplyProcessPart.getAmount()));
             supplyResponse.setCost(String.valueOf(SupplyProcessPart.getCost()));
+            supplyResponse.setDistAmount(String.valueOf(SupplyProcessPart.getDistAmount()));
+            supplyResponse.setRemainAmount(String.valueOf(SupplyProcessPart.getRemainAmount()));
 
             supplyProcessList.add(supplyResponse);
 
