@@ -81,10 +81,10 @@ public class PartService {
             partDto.setPicture(ImageUtil.decompressImage(partById.get().getPicture()));
 
         List<StorePart> storePartByPart = storePartRepo.findStorePartByPart(partById.get());
-
+        partDto.setTotalInStores(0);
         storePartByPart.forEach(storePart -> {
-            Integer total = storePart.getAmount();
-            partDto.setTotalInStores(total++);
+
+            partDto.setTotalInStores(storePart.getAmount() + partDto.getTotalInStores());
         });
         return partDto;
     }
