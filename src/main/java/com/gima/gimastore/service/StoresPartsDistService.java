@@ -125,8 +125,7 @@ public class StoresPartsDistService {
             if (!Objects.isNull(map.getPart().getPicture())) {
 
                 Long partId = map.getPart().getId();
-                map.getPart().
-                        setPicture(ImageUtil.decompressImage(partRepo.findById(partId).get().getPicture()));
+                map.getPart().setPicture(ImageUtil.decompressImage(partRepo.findById(partId).get().getPicture()));
             }
             return map;
         }).toList();

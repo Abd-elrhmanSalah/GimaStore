@@ -1,5 +1,7 @@
 package com.gima.gimastore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -11,6 +13,8 @@ public class PartDTO implements Serializable {
     private byte[] picture;
     private Boolean isLocked = false;
     private Integer minAmount;
+
+    private Integer totalInStores;
 
     public Long getId() {
         return id;
@@ -58,5 +62,13 @@ public class PartDTO implements Serializable {
 
     public void setMinAmount(Integer minAmount) {
         this.minAmount = minAmount;
+    }
+
+    public Integer getTotalInStores() {
+        return totalInStores;
+    }
+
+    public void setTotalInStores(Integer totalInStores) {
+        this.totalInStores = totalInStores;
     }
 }

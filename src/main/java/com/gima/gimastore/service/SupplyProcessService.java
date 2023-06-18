@@ -7,12 +7,14 @@ import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartDTO;
+import com.gima.gimastore.model.PartSearchSupplyResponse;
 import com.gima.gimastore.model.supplyProcess.*;
 import com.gima.gimastore.repository.SupplyProcessPartsRepository;
 import com.gima.gimastore.repository.SupplyProcessRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,10 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
@@ -41,7 +46,6 @@ public class SupplyProcessService {
         this.supplyProcessRepo = supplyProcessRepo;
         this.supplyProcessPartsRepo = supplyProcessPartsRepo;
     }
-
 
     public void add(SupplyProcessRequest request, MultipartFile file) throws IOException {
 
@@ -168,7 +172,7 @@ public class SupplyProcessService {
 
     }
 
-    public Page<SupplyProcessPart> searchByPartInSupplyProcess(Map<String, String> params, Pageable pageable) {
+    public Page<PartSearchSupplyResponse> searchByPartInSupplyProcess(Map<String, String> params, Pageable pageable) {
 
 
         Page<SupplyProcessPart> supplyProcessPage = supplyProcessPartsRepo.findAll(
@@ -218,21 +222,28 @@ public class SupplyProcessService {
                     }
                 }, pageable);
 
-//        supplyProcessPage.map(SupplyProcessPart -> {
-//            SupplyProcessPartsDTO map = ObjectMapperUtils.map(SupplyProcessPart, SupplyProcessPartsDTO.class);
-//            if (!Objects.isNull(map.().getPart().getPicture())) {
-//
-//                Long partId = map.getSupplyProcessPart().getPart().getId();
-//                map.getSupplyProcessPart().getPart().
-//                        setPicture(ImageUtil.decompressImage(partRepo.findById(partId).get().getPicture()));
-//            }
-//            return map;
-//        }).toList();
-//        return all;
-        supplyProcessPage.getContent().stream().map(supplyProcess -> {
-            return ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
-        }).collect(Collectors.toList());
-        return supplyProcessPage;
+
+        List<PartSearchSupplyResponse> supplyProcessList = new ArrayList<>();
+
+        supplyProcessPage.stream().forEach(SupplyProcessPart -> {
+
+            PartSearchSupplyResponse supplyResponse = new PartSearchSupplyResponse();
+
+            supplyResponse.setSupplyProcessId(SupplyProcessPart.getSupplyProcess().getId());
+            supplyResponse.setCreationDate(SupplyProcessPart.getSupplyProcess().getCreationDate().toString());
+            supplyResponse.setCreationBy(SupplyProcessPart.getSupplyProcess().getCreatedBy().getFirstName() +
+                    " " + SupplyProcessPart.getSupplyProcess().getCreatedBy().getLastName());
+            supplyResponse.setBillId(SupplyProcessPart.getSupplyProcess().getBillId());
+            supplyResponse.setSupplierName(SupplyProcessPart.getSupplyProcess().getSupplier().getSupplierName());
+            supplyResponse.setAmount(String.valueOf(SupplyProcessPart.getAmount()));
+            supplyResponse.setCost(String.valueOf(SupplyProcessPart.getCost()));
+
+            supplyProcessList.add(supplyResponse);
+
+        });
+
+        PageImpl<PartSearchSupplyResponse> partSearchResponses = new PageImpl<>(supplyProcessList, pageable, supplyProcessPage.getContent().size());
+        return partSearchResponses;
 
     }
 

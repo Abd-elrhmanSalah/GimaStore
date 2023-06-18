@@ -1,10 +1,12 @@
 package com.gima.gimastore.service;
 
 import com.gima.gimastore.entity.Part;
+import com.gima.gimastore.entity.StorePart;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartDTO;
 import com.gima.gimastore.repository.PartRepository;
+import com.gima.gimastore.repository.StorePartRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
@@ -24,11 +27,12 @@ import static com.gima.gimastore.constant.ResponseCodes.REPEATED_PARTNAME;
 public class PartService {
 
     private PartRepository partRepo;
+    private StorePartRepository storePartRepo;
 
-    public PartService(PartRepository partRepo) {
+    public PartService(PartRepository partRepo, StorePartRepository storePartRepo) {
         this.partRepo = partRepo;
+        this.storePartRepo = storePartRepo;
     }
-
 
     public void add(PartDTO partDTOParam, MultipartFile file) throws IOException {
 
@@ -76,6 +80,12 @@ public class PartService {
         if (!Objects.isNull(partById.get().getPicture()))
             partDto.setPicture(ImageUtil.decompressImage(partById.get().getPicture()));
 
+        List<StorePart> storePartByPart = storePartRepo.findStorePartByPart(partById.get());
+
+        storePartByPart.forEach(storePart -> {
+            Integer total = storePart.getAmount();
+            partDto.setTotalInStores(total++);
+        });
         return partDto;
     }
 
