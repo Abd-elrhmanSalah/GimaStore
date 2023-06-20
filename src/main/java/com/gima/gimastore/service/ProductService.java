@@ -23,8 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
 
-import static com.gima.gimastore.constant.ResponseCodes.NO_PRODUCT_ID;
-import static com.gima.gimastore.constant.ResponseCodes.REPEATED_PRODUCT_NAME;
+import static com.gima.gimastore.constant.ResponseCodes.*;
 
 @Service
 public class ProductService {
@@ -77,7 +76,9 @@ public class ProductService {
 
     public void delete(Long id) {
         Optional<Product> productById = validateExistProduct(id);
-        productById.get().setLocked(true);
+        if (productById.get().getLocked())
+            productById.get().setLocked(false);
+        else productById.get().setLocked(true);
         productRepo.save(productById.get());
     }
 
@@ -87,13 +88,16 @@ public class ProductService {
         if (productById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_PRODUCT_ID.getCode(), NO_PRODUCT_ID.getKey(), NO_PRODUCT_ID.getMessage()));
 
+        if (productById.get().getLocked())
+            throw new ApplicationException(new StatusResponse(LOCK_UNLOCK_ERROR.getCode(), LOCK_UNLOCK_ERROR.getKey(), LOCK_UNLOCK_ERROR.getMessage()));
+
         ProductDTO productDTO = ObjectMapperUtils.map(productById.get(), ProductDTO.class);
         if (!Objects.isNull(productById.get().getPicture()))
             productDTO.setPicture(ImageUtil.decompressImage(productById.get().getPicture()));
         List<ProductPart> allByProduct = productPartRepo.findAllByProduct(productById.get());
         allByProduct.forEach(byProduct -> {
             PartRequest partRequest = new PartRequest();
-            byProduct.getPart().setPicture(null);
+            byProduct.getPart().setPicture(ImageUtil.decompressImage(byProduct.getPart().getPicture()));
             partRequest.setPart(byProduct.getPart());
             partRequest.setAmount(byProduct.getAmount());
             productDTO.getParts().add(partRequest);

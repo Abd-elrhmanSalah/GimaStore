@@ -29,7 +29,9 @@ public enum ResponseCodes {
     REPEATED_SUPPLIER_AND_BILLID("020", "Supplier and BillId Error", "هذا المورد لديه هذه الفاتورة بالفعل"),
     REPEATED_PRODUCT_NAME("021", "ProductName Error", "اسم المنتج موجودة بالفعل"),
     NO_PRODUCT_ID("022", "ProductId Error", "لا يوجد  "),
-    INTERNAL_SERVER_ERROR("022", "Internal Server Error", "Internal Server Error");
+    LOCK_UNLOCK_ERROR("023", "lOCK AND ULOCK ERROR ", "يستخدم فقط مع المنتجات غير مغلقة"),
+
+    INTERNAL_SERVER_ERROR("024", "Internal Server Error", "Internal Server Error");
 
 //    public static final String SUCCESS_TRANSACTION_MESSAGE = "The transaction has been ended successfully ";
 
