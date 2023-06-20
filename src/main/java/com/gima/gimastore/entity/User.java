@@ -37,7 +37,7 @@ public class User implements Serializable {
     private String lastName;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "ROLE_ID")
     @LazyCollection(value = LazyCollectionOption.TRUE)
     private Role role;
 

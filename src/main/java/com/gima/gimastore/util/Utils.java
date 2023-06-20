@@ -3,6 +3,7 @@ package com.gima.gimastore.util;
 import com.gima.gimastore.constant.ResponseCodes;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartDTO;
+import com.gima.gimastore.model.ProductDTO;
 import com.gima.gimastore.model.supplyProcess.SupplyProcessRequest;
 import com.gima.gimastore.model.UserDTO;
 import com.google.gson.Gson;
@@ -35,6 +36,10 @@ public class Utils {
     public static PartDTO formattedJsonToPartDTOObject(String stringDTO) {
         Gson gson = new Gson();
         return gson.fromJson(stringDTO, PartDTO.class);
+    }
+    public static ProductDTO formattedJsonToProductDTOObject(String stringDTO) {
+        Gson gson = new Gson();
+        return gson.fromJson(stringDTO, ProductDTO.class);
     }
     public static SupplyProcessRequest formattedJsonToSupplyProcessRequestObject(String stringDTO) {
         Gson gson = new Gson();

@@ -27,7 +27,9 @@ public enum ResponseCodes {
     QUANTITY_PART_WITH_STORE("018", "Part and Store Quantity Error", "لايمكن سحب هذه الكمية من هذا الجزء"),
     NO_PART_WITH_STORE("019", "Part and Store Not Found", "لايوجد هذا الجزء فى هذا المخزن"),
     REPEATED_SUPPLIER_AND_BILLID("020", "Supplier and BillId Error", "هذا المورد لديه هذه الفاتورة بالفعل"),
-    INTERNAL_SERVER_ERROR("021", "Internal Server Error", "Internal Server Error");
+    REPEATED_PRODUCT_NAME("021", "ProductName Error", "اسم المنتج موجودة بالفعل"),
+    NO_PRODUCT_ID("022", "ProductId Error", "لا يوجد  "),
+    INTERNAL_SERVER_ERROR("022", "Internal Server Error", "Internal Server Error");
 
 //    public static final String SUCCESS_TRANSACTION_MESSAGE = "The transaction has been ended successfully ";
 
