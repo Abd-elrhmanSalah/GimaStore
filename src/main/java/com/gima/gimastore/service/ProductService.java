@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -44,9 +45,10 @@ public class ProductService {
             savedProduct.setPicture(ImageUtil.compressImage(file.getBytes()));
 
         productRepo.save(savedProduct);
-        addProductParts(productParamDTO,savedProduct);
+        addProductParts(productParamDTO, savedProduct);
     }
 
+    @Transactional
     public void update(ProductDTO productParamDTO, MultipartFile file) throws IOException {
 
         Optional<Product> productById = validateExistProduct(productParamDTO.getId());
@@ -61,7 +63,7 @@ public class ProductService {
 
         productRepo.save(savedProduct);
         productPartRepo.deleteAllByProduct(savedProduct);
-        addProductParts(productParamDTO,savedProduct);
+        addProductParts(productParamDTO, savedProduct);
     }
 
     private void addProductParts(ProductDTO productParamDTO, Product savedProduct) {
@@ -89,8 +91,8 @@ public class ProductService {
         if (!Objects.isNull(productById.get().getPicture()))
             productDTO.setPicture(ImageUtil.decompressImage(productById.get().getPicture()));
         List<ProductPart> allByProduct = productPartRepo.findAllByProduct(productById.get());
-        allByProduct.forEach(byProduct->{
-            PartRequest partRequest  =new PartRequest();
+        allByProduct.forEach(byProduct -> {
+            PartRequest partRequest = new PartRequest();
             byProduct.getPart().setPicture(null);
             partRequest.setPart(byProduct.getPart());
             partRequest.setAmount(byProduct.getAmount());
@@ -114,6 +116,7 @@ public class ProductService {
         return all;
 
     }
+
     private void validateProductName(String productName) {
         if (productRepo.existsByProductName(productName))
             throw new ApplicationException(new StatusResponse(REPEATED_PRODUCT_NAME.getCode(), REPEATED_PRODUCT_NAME.getKey(),
