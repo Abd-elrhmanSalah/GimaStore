@@ -21,6 +21,11 @@ public class Product implements Serializable {
     @NotNull
     private String productName;
 
+    @Column(name = "PRICE")
+    @Nationalized
+    @NotNull
+    private Double price;
+
     @Lob
     @Column(name = "PICTURE", length = 1000)
     @Nullable
@@ -61,5 +66,13 @@ public class Product implements Serializable {
 
     public void setLocked(Boolean locked) {
         isLocked = locked;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }

@@ -189,11 +189,6 @@ public class SupplyProcessService {
 
                         Join<SupplyProcessPart, Part> supplyProcessPartPartJoin = root.join("part");
 
-
-                        if (params.containsKey("partId"))
-                            if (!params.get("partId").equals(""))
-                                predicates.add(cb.equal(supplyProcessPartPartJoin.get("id"), params.get("partId")));
-
                         if (params.containsKey("FromDate"))
                             if (!params.get("FromDate").equals(""))
                                 predicates.add(cb.greaterThanOrEqualTo(
@@ -204,6 +199,11 @@ public class SupplyProcessService {
                             if (!params.get("ToDate").equals(""))
                                 predicates.add(cb.lessThanOrEqualTo(
                                         supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("ToDate"))));
+
+                        if (params.containsKey("partId"))
+                            if (!params.get("partId").equals(""))
+                                predicates.add(cb.equal(supplyProcessPartPartJoin.get("id"), params.get("partId")));
+
 
 
                         if (params.containsKey("supplierId"))

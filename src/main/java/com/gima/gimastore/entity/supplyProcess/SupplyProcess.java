@@ -34,8 +34,6 @@ public class SupplyProcess implements Serializable {
     private User createdBy;
 
     @Column(name = "CREATION_DATE")
-//    @JsonSerialize(using = LocalDateTimeSerializer.class)
-//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private Date creationDate;
 
     @Column(name = "NOTES")

@@ -88,12 +88,13 @@ public class ProductService {
         if (productById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_PRODUCT_ID.getCode(), NO_PRODUCT_ID.getKey(), NO_PRODUCT_ID.getMessage()));
 
-        if (productById.get().getLocked())
-            throw new ApplicationException(new StatusResponse(LOCK_UNLOCK_ERROR.getCode(), LOCK_UNLOCK_ERROR.getKey(), LOCK_UNLOCK_ERROR.getMessage()));
+//        if (productById.get().getLocked())
+//            throw new ApplicationException(new StatusResponse(LOCK_UNLOCK_ERROR.getCode(), LOCK_UNLOCK_ERROR.getKey(), LOCK_UNLOCK_ERROR.getMessage()));
 
         ProductDTO productDTO = ObjectMapperUtils.map(productById.get(), ProductDTO.class);
         if (!Objects.isNull(productById.get().getPicture()))
             productDTO.setPicture(ImageUtil.decompressImage(productById.get().getPicture()));
+
         List<ProductPart> allByProduct = productPartRepo.findAllByProduct(productById.get());
         allByProduct.forEach(byProduct -> {
             PartRequest partRequest = new PartRequest();

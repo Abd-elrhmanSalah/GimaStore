@@ -9,6 +9,8 @@ public class ProductDTO implements Serializable {
     private String productName;
     private byte[] picture;
     private Boolean isLocked;
+
+    private Double price;
     private List<PartRequest> parts=new ArrayList<>();
 
     public Long getId() {
@@ -49,5 +51,13 @@ public class ProductDTO implements Serializable {
 
     public void setParts(List<PartRequest> parts) {
         this.parts = parts;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }
