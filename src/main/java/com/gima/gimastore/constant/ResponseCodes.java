@@ -30,6 +30,11 @@ public enum ResponseCodes {
     REPEATED_PRODUCT_NAME("021", "ProductName Error", "اسم المنتج موجودة بالفعل"),
     NO_PRODUCT_ID("022", "ProductId Error", "لا يوجد  "),
     LOCK_UNLOCK_ERROR("023", "lOCK AND ULOCK ERROR ", "يستخدم فقط مع المنتجات غير مغلقة"),
+    REPEATED_DEPARTMENT_NAME("024", "DeptName Error", "اسم القسم موجود بالفعل"),
+    NO_DEPARTMENT_ID("025", "DeptId Error", "لا يوجد  "),
+    REPEATED_SUPERVISOR_NAME("026", "SupervisorName Error", "اسم المشرف موجود بالفعل"),
+    NO_SUPERVISOR_ID("027", "SupervisorId Error", "لا يوجد  "),
+
 
     INTERNAL_SERVER_ERROR("024", "Internal Server Error", "Internal Server Error");
 
