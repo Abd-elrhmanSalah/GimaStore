@@ -1,7 +1,7 @@
-package com.gima.gimastore.model;
+package com.gima.gimastore.model.productionProcess;
 
 import com.gima.gimastore.entity.Part;
-import com.gima.gimastore.entity.Product;
+import com.gima.gimastore.entity.productProcess.Product;
 
 import java.io.Serializable;
 

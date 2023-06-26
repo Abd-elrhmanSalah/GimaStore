@@ -1,12 +1,12 @@
 package com.gima.gimastore.service;
 
-import com.gima.gimastore.entity.Product;
-import com.gima.gimastore.entity.ProductPart;
+import com.gima.gimastore.entity.productProcess.Product;
+import com.gima.gimastore.entity.productProcess.ProductPart;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartRequest;
-import com.gima.gimastore.model.ProductDTO;
-import com.gima.gimastore.model.ProductPartDTO;
+import com.gima.gimastore.model.productionProcess.ProductDTO;
+import com.gima.gimastore.model.productionProcess.ProductPartDTO;
 import com.gima.gimastore.repository.ProductPartRepository;
 import com.gima.gimastore.repository.ProductRepository;
 import com.gima.gimastore.util.ImageUtil;

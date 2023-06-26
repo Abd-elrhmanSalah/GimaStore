@@ -34,6 +34,7 @@ public enum ResponseCodes {
     NO_DEPARTMENT_ID("025", "DeptId Error", "لا يوجد  "),
     REPEATED_SUPERVISOR_NAME("026", "SupervisorName Error", "اسم المشرف موجود بالفعل"),
     NO_SUPERVISOR_ID("027", "SupervisorId Error", "لا يوجد  "),
+    REPEATED_REQUESTEDID("028", "RequestId Error", "هذا الاذن موجود بالفعل"),
 
 
     INTERNAL_SERVER_ERROR("024", "Internal Server Error", "Internal Server Error");

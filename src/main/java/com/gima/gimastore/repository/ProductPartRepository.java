@@ -1,7 +1,7 @@
 package com.gima.gimastore.repository;
 
-import com.gima.gimastore.entity.Product;
-import com.gima.gimastore.entity.ProductPart;
+import com.gima.gimastore.entity.productProcess.Product;
+import com.gima.gimastore.entity.productProcess.ProductPart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

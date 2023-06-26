@@ -1,17 +1,37 @@
-package com.gima.gimastore.model;
+package com.gima.gimastore.entity.productProcess;
 
+import org.hibernate.annotations.Nationalized;
+import org.springframework.lang.Nullable;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-public class ProductDTO implements Serializable {
+@Entity
+@Table(name = "PRODUCT")
+public class Product implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id")
     private Long id;
-    private String productName;
-    private byte[] picture;
-    private Boolean isLocked;
 
+    @Column(name = "PRODUCT_NAME")
+    @Nationalized
+    @NotNull
+    private String productName;
+
+    @Column(name = "PRICE")
+    @NotNull
     private Double price;
-    private List<PartRequest> parts=new ArrayList<>();
+
+    @Lob
+    @Column(name = "PICTURE", length = 1000)
+    @Nullable
+    private byte[] picture;
+
+    @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
+    @NotNull
+    private Boolean isLocked = false;
 
     public Long getId() {
         return id;
@@ -29,11 +49,12 @@ public class ProductDTO implements Serializable {
         this.productName = productName;
     }
 
+    @Nullable
     public byte[] getPicture() {
         return picture;
     }
 
-    public void setPicture(byte[] picture) {
+    public void setPicture(@Nullable byte[] picture) {
         this.picture = picture;
     }
 
@@ -43,14 +64,6 @@ public class ProductDTO implements Serializable {
 
     public void setLocked(Boolean locked) {
         isLocked = locked;
-    }
-
-    public List<PartRequest> getParts() {
-        return parts;
-    }
-
-    public void setParts(List<PartRequest> parts) {
-        this.parts = parts;
     }
 
     public Double getPrice() {

@@ -1,5 +1,6 @@
-package com.gima.gimastore.entity;
+package com.gima.gimastore.entity.productProcess;
 
+import com.gima.gimastore.entity.Part;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 

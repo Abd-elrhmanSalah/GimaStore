@@ -3,7 +3,7 @@ package com.gima.gimastore.util;
 import com.gima.gimastore.constant.ResponseCodes;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartDTO;
-import com.gima.gimastore.model.ProductDTO;
+import com.gima.gimastore.model.productionProcess.ProductDTO;
 import com.gima.gimastore.model.supplyProcess.SupplyProcessRequest;
 import com.gima.gimastore.model.UserDTO;
 import com.google.gson.Gson;
