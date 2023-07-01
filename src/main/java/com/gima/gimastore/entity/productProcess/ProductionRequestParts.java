@@ -31,15 +31,15 @@ public class ProductionRequestParts implements Serializable {
 
     @Column(name = "RETURNED_AMOUNT")
     @NotNull
-    private Integer returnedAmount=0;
+    private Integer returnedAmount;
 
     @Column(name = "HARMED_AMOUNT")
     @NotNull
-    private Integer harmedAmount=0;
+    private Integer harmedAmount;
 
     @Column(name = "UNHARMED_AMOUNT")
     @NotNull
-    private Integer unharmedAmount=0;
+    private Integer unharmedAmount;
 
     @Column(name = "IS_HAVE_RETURNED", columnDefinition = "BIT DEFAULT 0")
     @NotNull

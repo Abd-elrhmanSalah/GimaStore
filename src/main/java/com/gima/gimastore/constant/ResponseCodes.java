@@ -35,8 +35,8 @@ public enum ResponseCodes {
     REPEATED_SUPERVISOR_NAME("026", "SupervisorName Error", "اسم المشرف موجود بالفعل"),
     NO_SUPERVISOR_ID("027", "SupervisorId Error", "لا يوجد  "),
     REPEATED_REQUESTEDID("028", "RequestId Error", "هذا الاذن موجود بالفعل"),
-
-
+    NO_STORE_WITH_PART("029", "StorePart Error", "هذا المنتج غير مكتمل الأجزاء فى هذا المخزن"),
+    NO_AMOUNT_IN_STORE_TO_PRODUCT("030", "StorePartAmount Error", "لا توجد كميات كافية من الأجزاء لهذا المنتج لهذه العملية"),
     INTERNAL_SERVER_ERROR("024", "Internal Server Error", "Internal Server Error");
 
 //    public static final String SUCCESS_TRANSACTION_MESSAGE = "The transaction has been ended successfully ";

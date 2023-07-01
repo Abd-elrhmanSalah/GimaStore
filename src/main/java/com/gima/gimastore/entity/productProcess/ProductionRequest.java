@@ -1,6 +1,7 @@
 package com.gima.gimastore.entity.productProcess;
 
 import com.gima.gimastore.entity.Department;
+import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.Supervisor;
 import com.gima.gimastore.entity.User;
 import org.hibernate.annotations.Nationalized;
@@ -20,7 +21,7 @@ public class ProductionRequest implements Serializable {
     @Column(name = "Id")
     private Long id;
 
-    @Column(name = "PRICE")
+    @Column(name = "REQUEST_ID")
     @NotNull
     private String requestID;
 
@@ -28,6 +29,10 @@ public class ProductionRequest implements Serializable {
     @JoinColumn(name = "PRODUCT_ID")
     @Nullable
     private Product product;
+    @ManyToOne
+    @JoinColumn(name = "STORE_ID")
+    @NotNull
+    private Store store;
 
     @ManyToOne
     @JoinColumn(name = "DEPARTMENT_ID")
@@ -47,17 +52,15 @@ public class ProductionRequest implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
-    @Nationalized
     private User createdBy;
 
     @Column(name = "CREATION_DATE")
     private Date creationDate;
     @Column(name = "IS_PRODUCT", columnDefinition = "BIT DEFAULT 0")
     @NotNull
-    private Boolean isProduct = false;
+    private Boolean isItProduct = false;
 
     @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
-    @NotNull
     private Boolean isLocked = false;
 
     public Long getId() {
@@ -81,9 +84,6 @@ public class ProductionRequest implements Serializable {
         return product;
     }
 
-    public void setProduct(Boolean product) {
-        isProduct = product;
-    }
 
     public Boolean getLocked() {
         return isLocked;
@@ -117,6 +117,15 @@ public class ProductionRequest implements Serializable {
         return expectedProduction;
     }
 
+
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(@Nullable Store store) {
+        this.store = store;
+    }
+
     public void setExpectedProduction(Integer expectedProduction) {
         this.expectedProduction = expectedProduction;
     }
@@ -144,5 +153,13 @@ public class ProductionRequest implements Serializable {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Boolean getItProduct() {
+        return isItProduct;
+    }
+
+    public void setItProduct(Boolean itProduct) {
+        isItProduct = itProduct;
     }
 }

@@ -1,6 +1,8 @@
 package com.gima.gimastore.model.productionProcess;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gima.gimastore.entity.Department;
+import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.Supervisor;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.productProcess.Product;
@@ -14,23 +16,22 @@ public class ProductionRequestDTO implements Serializable {
     private Long id;
     @NotNull
     private String requestID;
-
     private Product product;
+    @NotNull
+    private Store store;
     @NotNull
     private Department department;
     @NotNull
     private Supervisor supervisor;
     @NotNull
-    @N
     private Integer expectedProduction;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer exactlyProduction;
-
     private User createdBy;
-
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date creationDate = new Date();
-    private Boolean isProduct;
-
-    private Boolean isLocked;
+    private Boolean isItProduct;
+    private Boolean isLocked = false;
 
     public Long getId() {
         return id;
@@ -52,9 +53,10 @@ public class ProductionRequestDTO implements Serializable {
         return product;
     }
 
-    public void setProduct(Boolean product) {
-        isProduct = product;
+    public void setProduct(Product product) {
+        this.product = product;
     }
+
 
     public Boolean getLocked() {
         return isLocked;
@@ -64,9 +66,6 @@ public class ProductionRequestDTO implements Serializable {
         isLocked = locked;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
 
     public Department getDepartment() {
         return department;
@@ -98,5 +97,37 @@ public class ProductionRequestDTO implements Serializable {
 
     public void setExactlyProduction(Integer exactlyProduction) {
         this.exactlyProduction = exactlyProduction;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Boolean getItProduct() {
+        return isItProduct;
+    }
+
+    public void setItProduct(Boolean itProduct) {
+        isItProduct = itProduct;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
     }
 }

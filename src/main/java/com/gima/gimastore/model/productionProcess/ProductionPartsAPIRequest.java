@@ -1,5 +1,7 @@
 package com.gima.gimastore.model.productionProcess;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gima.gimastore.entity.Part;
 
 import java.io.Serializable;
@@ -8,14 +10,14 @@ public class ProductionPartsAPIRequest implements Serializable {
     private Part part;
 
     private Integer amount;
-
-    private Integer returnedAmount;
-
-    private Integer harmedAmount;
-
-    private Integer unharmedAmount;
-
-    private Boolean isHaveReturned;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Integer returnedAmount = 0;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Integer harmedAmount = 0;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Integer unharmedAmount = 0;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Boolean isHaveReturned = false;
 
     public Part getPart() {
         return part;
