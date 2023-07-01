@@ -25,7 +25,7 @@ public class ProductionRequestDTO implements Serializable {
     private Supervisor supervisor;
     @NotNull
     private Integer expectedProduction;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
     private Integer exactlyProduction;
     private User createdBy;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

@@ -3,11 +3,13 @@ package com.gima.gimastore.controller;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.productionProcess.ProductionAPIRequest;
+import com.gima.gimastore.model.productionProcess.ProductionRequestDTO;
 import com.gima.gimastore.service.LoginService;
 import com.gima.gimastore.service.ProductProcessService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +53,44 @@ public class ProductProcessController {
         try {
             productProcessService.addProductionRequest(productionAPIRequest);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت إضافة طلب الإنتاج " + SUCCESS.getMessage()), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PostMapping("/productPartsReturn")
+    public ResponseEntity<?> productPartsReturn(@RequestParam String requestId, @RequestParam Integer exactlyProduction) {
+        try {
+
+            return new ResponseEntity<>(productProcessService.productPartsReturn(requestId, exactlyProduction), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @GetMapping("/getAllProductionRequest")
+    public ResponseEntity<?> getAllProductionRequest(Pageable pageable) {
+        try {
+
+            return new ResponseEntity<>(productProcessService.getAllProductionRequest(pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
