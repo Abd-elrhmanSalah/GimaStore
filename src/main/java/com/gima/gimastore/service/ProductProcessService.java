@@ -261,6 +261,20 @@ public class ProductProcessService {
         });
     }
 
+    public List<ProductPartResponse> getProductPartsByRequestId(String requestId) {
+        List<ProductionRequestParts> allByProductionRequest = productionRequestPartsRepo.findAllByProductionRequest(productionRequestRepo.findByRequestID(requestId).get());
+        List<ProductPartResponse> returnedProductPartResponseList = new ArrayList<>();
+        allByProductionRequest.forEach(productionRequestParts -> {
+            ProductPartResponse productPartResponse = new ProductPartResponse();
+
+            productPartResponse.setPart(productionRequestParts.getPart());
+            productPartResponse.setRequestedAmount(productionRequestParts.getRequestedAmount());
+            returnedProductPartResponseList.add(productPartResponse);
+
+        });
+        return returnedProductPartResponseList;
+    }
+
     private Optional<Product> validateExistProduct(Long id) {
         Optional<Product> productById = productRepo.findById(id);
         if (productById.isEmpty())
