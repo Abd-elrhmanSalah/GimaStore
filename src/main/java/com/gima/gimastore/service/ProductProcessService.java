@@ -124,38 +124,35 @@ public class ProductProcessService {
                         SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
                         List<Predicate> predicates = new ArrayList<>();
 
-                        Join<SupplyProcess, SupplyProcessPart> supplyProcessSupplyProcessPartJoin =
-                                root.join("supplyProcess");
+                        Join<ProductionRequest, Store> productionRequestStoreJoin = root.join("store");
 
-                        Join<SupplyProcess, Supplier> processSupplierJoin =
-                                supplyProcessSupplyProcessPartJoin.join("supplier");
+                        Join<ProductionRequest, Product> productionRequestProductJoin = root.join("product");
 
-                        Join<SupplyProcessPart, Part> supplyProcessPartPartJoin = root.join("part");
+//                        Join<SupplyProcessPart, Part> supplyProcessPartPartJoin = root.join("part");
 
                         if (params.containsKey("FromDate"))
                             if (!params.get("FromDate").equals(""))
                                 predicates.add(cb.greaterThanOrEqualTo(
-                                        supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("FromDate"))));
+                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
 
                         if (params.containsKey("ToDate"))
                             if (!params.get("ToDate").equals(""))
                                 predicates.add(cb.lessThanOrEqualTo(
-                                        supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("ToDate"))));
+                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
 
-                        if (params.containsKey("partId"))
-                            if (!params.get("partId").equals(""))
-                                predicates.add(cb.equal(supplyProcessPartPartJoin.get("id"), params.get("partId")));
+                        if (params.containsKey("storeId"))
+                            if (!params.get("storeId").equals(""))
+                                predicates.add(cb.equal(productionRequestStoreJoin.get("id"), params.get("storeId")));
 
 
-                        if (params.containsKey("supplierId"))
-                            if (!params.get("supplierId").equals(""))
-                                predicates.add(cb.equal(processSupplierJoin.get("id"), params.get("supplierId")));
+                        if (params.containsKey("requestId"))
+                            if (!params.get("requestId").equals(""))
+                                predicates.add(cb.equal(root.get("requestID"), params.get("requestId")));
 
-                        if (params.containsKey("billId"))
-                            if (!params.get("billId").equals(""))
-                                predicates.add(cb.equal(
-                                        supplyProcessSupplyProcessPartJoin.get("billId"), params.get("billId")));
+                        if (params.containsKey("productId"))
+                            if (!params.get("productId").equals(""))
+                                predicates.add(cb.equal(productionRequestProductJoin.get("id"), params.get("productId")));
 
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
@@ -164,7 +161,7 @@ public class ProductProcessService {
                     }
                 }, pageable);
 
-
+        System.out.println(list);
 //        return new PageImpl<>(list, pageable, list.getSize());
         return list;
     }
