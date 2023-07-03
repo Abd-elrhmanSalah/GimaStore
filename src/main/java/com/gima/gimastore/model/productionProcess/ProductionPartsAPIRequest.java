@@ -3,12 +3,14 @@ package com.gima.gimastore.model.productionProcess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gima.gimastore.entity.Part;
+import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 
 public class ProductionPartsAPIRequest implements Serializable {
+    @Nullable
+    private Long id;
     private Part part;
-
     private Integer requestedAmount;
 
     private Integer usedAmount = 0;
@@ -20,6 +22,15 @@ public class ProductionPartsAPIRequest implements Serializable {
     private Integer unharmedAmount = 0;
 
     private Boolean isHaveReturned = false;
+
+    @Nullable
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(@Nullable Long id) {
+        this.id = id;
+    }
 
     public Part getPart() {
         return part;

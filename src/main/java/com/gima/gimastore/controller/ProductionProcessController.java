@@ -3,6 +3,7 @@ package com.gima.gimastore.controller;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.productionProcess.ProductionAPIRequest;
+import com.gima.gimastore.model.productionProcess.ProductionReturnRequest;
 import com.gima.gimastore.service.ProductProcessService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
@@ -128,6 +129,25 @@ public class ProductionProcessController {
     public ResponseEntity<?> confirmProductionRequest(@RequestParam String requestId) {
         try {
             productProcessService.confirmProductionRequest(requestId);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تأكيد طلب الإنتاج" + SUCCESS.getMessage()), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PostMapping("/productionReturn")
+    public ResponseEntity<?> productionReturn(@RequestBody ProductionReturnRequest productionReturnRequest) {
+        try {
+            productProcessService.addProductionRequestReturn(productionReturnRequest);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تأكيد طلب الإنتاج" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {

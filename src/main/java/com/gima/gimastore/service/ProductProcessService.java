@@ -67,6 +67,7 @@ public class ProductProcessService {
                     , REPEATED_REQUESTEDID.getMessage()));
 
         ProductionRequest productionRequest = ObjectMapperUtils.map(productionAPIRequest.getProductionRequestDTO(), ProductionRequest.class);
+        productionRequest.setExactlyProduction(productionRequest.getExpectedProduction());
         ProductionRequest savedProductionRequest = productionRequestRepo.save(productionRequest);
 
         productionAPIRequest.getParts().forEach(partApiRequest -> {
@@ -90,7 +91,7 @@ public class ProductProcessService {
         ProductionRequest productionRequest = productionRequestRepo.findByRequestID(productionReturnRequest.getRequestID()).get();
 
         productionRequest.setExactlyProduction(productionReturnRequest.getExactlyProduction());
-
+        productionRequest.setCompleted(true);
         ProductionRequest savedProductionRequest = productionRequestRepo.save(productionRequest);
 
 
@@ -98,11 +99,13 @@ public class ProductProcessService {
         for (int i = 0; i < allByProductionRequest.size(); i++) {
 
             if (allByProductionRequest.get(i).getPart().getId() == productionReturnRequest.getParts().get(i).getPart().getId()) {
-//                Integer amountToReturn = allByProductionRequest.get(i).getAmount() -
-//                        exactlyProductPartResponseList.get(i).getRequestedAmount();
-//                productPartResponse.setPart(allByProductionRequest.get(i).getPart());
-//                productPartResponse.setRequestedAmount(amountToReturn);
-//                returnedProductPartResponseList.add(productPartResponse);
+                ProductionRequestParts map = ObjectMapperUtils.map(productionReturnRequest.getParts().get(i), ProductionRequestParts.class);
+                map.setProductionRequest(savedProductionRequest);
+                map.setHaveReturned(true);
+                productionRequestPartsRepo.save(map);
+                StorePart storePart = storePartRepo.findByStoreAndPart(savedProductionRequest.getStore(), map.getPart()).get();
+                storePart.setAmount(storePart.getAmount() + map.getUnharmedAmount());
+                storePartRepo.save(storePart);
             }
 
         }
@@ -210,6 +213,7 @@ public class ProductProcessService {
             Integer totalAmountRequested = partAmountPerProduct * productionRequestDTO.getExactlyProduction();
             if (byStoreAndPart.get().getPart().getId() == part.getId()) {
                 ProductPartResponse productPartResponse = new ProductPartResponse();
+
                 productPartResponse.setPart(part);
                 productPartResponse.setRequestedAmount(totalAmountRequested);
                 exactlyProductPartResponseList.add(productPartResponse);
@@ -226,6 +230,8 @@ public class ProductProcessService {
             if (allByProductionRequest.get(i).getPart().getId() == exactlyProductPartResponseList.get(i).getPart().getId()) {
                 Integer amountToReturn = allByProductionRequest.get(i).getRequestedAmount() -
                         exactlyProductPartResponseList.get(i).getRequestedAmount();
+                Long dbId = productionRequestPartsRepo.findAllByProductionRequestAndPart(productionRequest, allByProductionRequest.get(i).getPart()).getId();
+                productPartResponse.setId(dbId);
                 productPartResponse.setPart(allByProductionRequest.get(i).getPart());
                 productPartResponse.setRequestedAmount(amountToReturn);
                 returnedProductPartResponseList.add(productPartResponse);
@@ -248,6 +254,11 @@ public class ProductProcessService {
         ProductionRequest productionRequest = productionRequestRepo.findByRequestID(requestId).get();
         productionRequest.setCompleted(true);
         productionRequestRepo.save(productionRequest);
+        List<ProductionRequestParts> allByProductionRequest = productionRequestPartsRepo.findAllByProductionRequest(productionRequest);
+        allByProductionRequest.forEach(productionRequestParts -> {
+            productionRequestParts.setUsedAmount(productionRequestParts.getRequestedAmount());
+            productionRequestPartsRepo.save(productionRequestParts);
+        });
     }
 
     private Optional<Product> validateExistProduct(Long id) {
