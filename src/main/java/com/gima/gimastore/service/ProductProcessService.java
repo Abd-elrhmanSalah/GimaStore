@@ -244,6 +244,12 @@ public class ProductProcessService {
         return requestIdList;
     }
 
+    public void confirmProductionRequest(String requestId) {
+        ProductionRequest productionRequest = productionRequestRepo.findByRequestID(requestId).get();
+        productionRequest.setCompleted(true);
+        productionRequestRepo.save(productionRequest);
+    }
+
     private Optional<Product> validateExistProduct(Long id) {
         Optional<Product> productById = productRepo.findById(id);
         if (productById.isEmpty())

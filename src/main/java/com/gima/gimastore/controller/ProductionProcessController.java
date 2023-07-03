@@ -3,8 +3,6 @@ package com.gima.gimastore.controller;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.productionProcess.ProductionAPIRequest;
-import com.gima.gimastore.model.productionProcess.ProductionRequestDTO;
-import com.gima.gimastore.service.LoginService;
 import com.gima.gimastore.service.ProductProcessService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
@@ -21,12 +19,12 @@ import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
 @RestController
 @RequestMapping("/productProcess")
 @CrossOrigin(origins = "*")
-public class ProductProcessController {
+public class ProductionProcessController {
     private ProductProcessService productProcessService;
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductProcessController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductionProcessController.class);
 
-    public ProductProcessController(ProductProcessService productProcessService) {
+    public ProductionProcessController(ProductProcessService productProcessService) {
         this.productProcessService = productProcessService;
     }
 
@@ -112,6 +110,25 @@ public class ProductProcessController {
         try {
 
             return new ResponseEntity<>(productProcessService.getAllRequestIds(), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PostMapping("/confirmProductionRequest")
+    public ResponseEntity<?> confirmProductionRequest(@RequestParam String requestId) {
+        try {
+            productProcessService.confirmProductionRequest(requestId);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تأكيد طلب الإنتاج" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
