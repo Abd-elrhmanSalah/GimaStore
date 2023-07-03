@@ -16,6 +16,7 @@ import com.gima.gimastore.model.PartSearchSupplyResponse;
 import com.gima.gimastore.model.productionProcess.ProductPartResponse;
 import com.gima.gimastore.model.productionProcess.ProductionAPIRequest;
 import com.gima.gimastore.model.productionProcess.ProductionRequestDTO;
+import com.gima.gimastore.model.productionProcess.ProductionReturnRequest;
 import com.gima.gimastore.repository.*;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.data.domain.Page;
@@ -77,11 +78,34 @@ public class ProductProcessService {
 
             StorePart storeAndPart = storePartRepo.findByStoreAndPart(savedProductionRequest.getStore(),
                     productionRequestParts.getPart()).get();
-            Integer amountToDecrease = storeAndPart.getAmount() - productionRequestParts.getAmount();
+            Integer amountToDecrease = storeAndPart.getAmount() - productionRequestParts.getRequestedAmount();
             storeAndPart.setAmount(amountToDecrease);
             storePartRepo.save(storeAndPart);
         });
 
+    }
+
+    @Transactional
+    public void addProductionRequestReturn(ProductionReturnRequest productionReturnRequest) {
+        ProductionRequest productionRequest = productionRequestRepo.findByRequestID(productionReturnRequest.getRequestID()).get();
+
+        productionRequest.setExactlyProduction(productionReturnRequest.getExactlyProduction());
+
+        ProductionRequest savedProductionRequest = productionRequestRepo.save(productionRequest);
+
+
+        List<ProductionRequestParts> allByProductionRequest = productionRequestPartsRepo.findAllByProductionRequest(savedProductionRequest);
+        for (int i = 0; i < allByProductionRequest.size(); i++) {
+
+            if (allByProductionRequest.get(i).getPart().getId() == productionReturnRequest.getParts().get(i).getPart().getId()) {
+//                Integer amountToReturn = allByProductionRequest.get(i).getAmount() -
+//                        exactlyProductPartResponseList.get(i).getRequestedAmount();
+//                productPartResponse.setPart(allByProductionRequest.get(i).getPart());
+//                productPartResponse.setRequestedAmount(amountToReturn);
+//                returnedProductPartResponseList.add(productPartResponse);
+            }
+
+        }
     }
 
     @Transactional
@@ -128,8 +152,6 @@ public class ProductProcessService {
 
                         Join<ProductionRequest, Product> productionRequestProductJoin = root.join("product");
 
-//                        Join<SupplyProcessPart, Part> supplyProcessPartPartJoin = root.join("part");
-
                         if (params.containsKey("FromDate"))
                             if (!params.get("FromDate").equals(""))
                                 predicates.add(cb.greaterThanOrEqualTo(
@@ -154,6 +176,13 @@ public class ProductProcessService {
                             if (!params.get("productId").equals(""))
                                 predicates.add(cb.equal(productionRequestProductJoin.get("id"), params.get("productId")));
 
+                        if (params.containsKey("isCompleted"))
+                            if (!params.get("isCompleted").equals(""))
+                                if (params.get("isCompleted").equalsIgnoreCase("false"))
+                                    predicates.add(cb.equal(root.get("isCompleted"), false));
+                                else
+                                    predicates.add(cb.equal(root.get("isCompleted"), true));
+
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {
@@ -161,8 +190,6 @@ public class ProductProcessService {
                     }
                 }, pageable);
 
-        System.out.println(list);
-//        return new PageImpl<>(list, pageable, list.getSize());
         return list;
     }
 
@@ -197,7 +224,7 @@ public class ProductProcessService {
             ProductPartResponse productPartResponse = new ProductPartResponse();
 
             if (allByProductionRequest.get(i).getPart().getId() == exactlyProductPartResponseList.get(i).getPart().getId()) {
-                Integer amountToReturn = allByProductionRequest.get(i).getAmount() -
+                Integer amountToReturn = allByProductionRequest.get(i).getRequestedAmount() -
                         exactlyProductPartResponseList.get(i).getRequestedAmount();
                 productPartResponse.setPart(allByProductionRequest.get(i).getPart());
                 productPartResponse.setRequestedAmount(amountToReturn);

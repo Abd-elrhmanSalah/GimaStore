@@ -32,6 +32,7 @@ public class ProductionRequestDTO implements Serializable {
     private Date creationDate = new Date();
     private Boolean isItProduct;
     private Boolean isLocked = false;
+    private Boolean isCompleted = false;
 
     public Long getId() {
         return id;
@@ -129,5 +130,13 @@ public class ProductionRequestDTO implements Serializable {
 
     public void setStore(Store store) {
         this.store = store;
+    }
+
+    public Boolean getCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(Boolean completed) {
+        isCompleted = completed;
     }
 }

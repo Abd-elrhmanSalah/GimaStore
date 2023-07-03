@@ -9,14 +9,16 @@ import java.io.Serializable;
 public class ProductionPartsAPIRequest implements Serializable {
     private Part part;
 
-    private Integer amount;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Integer requestedAmount;
+
+    private Integer usedAmount = 0;
+
     private Integer returnedAmount = 0;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
     private Integer harmedAmount = 0;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
     private Integer unharmedAmount = 0;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
     private Boolean isHaveReturned = false;
 
     public Part getPart() {
@@ -27,13 +29,22 @@ public class ProductionPartsAPIRequest implements Serializable {
         this.part = part;
     }
 
-    public Integer getAmount() {
-        return amount;
+    public Integer getRequestedAmount() {
+        return requestedAmount;
     }
 
-    public void setAmount(Integer amount) {
-        this.amount = amount;
+    public void setRequestedAmount(Integer requestedAmount) {
+        this.requestedAmount = requestedAmount;
     }
+
+    public Integer getUsedAmount() {
+        return usedAmount;
+    }
+
+    public void setUsedAmount(Integer usedAmount) {
+        this.usedAmount = usedAmount;
+    }
+
 
     public Integer getReturnedAmount() {
         return returnedAmount;

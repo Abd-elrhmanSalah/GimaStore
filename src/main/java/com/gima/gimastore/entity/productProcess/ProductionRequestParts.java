@@ -25,9 +25,13 @@ public class ProductionRequestParts implements Serializable {
     @Nullable
     private Part part;
 
-    @Column(name = "AMOUNT")
+    @Column(name = "REQUESTED_AMOUNT")
     @NotNull
-    private Integer amount;
+    private Integer requestedAmount;
+
+    @Column(name = "USED_AMOUNT")
+    @NotNull
+    private Integer usedAmount;
 
     @Column(name = "RETURNED_AMOUNT")
     @NotNull
@@ -71,12 +75,20 @@ public class ProductionRequestParts implements Serializable {
         this.part = part;
     }
 
-    public Integer getAmount() {
-        return amount;
+    public Integer getRequestedAmount() {
+        return requestedAmount;
     }
 
-    public void setAmount(Integer amount) {
-        this.amount = amount;
+    public void setRequestedAmount(Integer requestedAmount) {
+        this.requestedAmount = requestedAmount;
+    }
+
+    public Integer getUsedAmount() {
+        return usedAmount;
+    }
+
+    public void setUsedAmount(Integer usedAmount) {
+        this.usedAmount = usedAmount;
     }
 
     public Integer getReturnedAmount() {

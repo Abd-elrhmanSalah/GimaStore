@@ -63,6 +63,10 @@ public class ProductionRequest implements Serializable {
     @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
     private Boolean isLocked = false;
 
+    @Column(name = "IS_COMPLETED", columnDefinition = "BIT DEFAULT 0")
+    private Boolean isCompleted = false;
+
+
     public Long getId() {
         return id;
     }
@@ -161,5 +165,13 @@ public class ProductionRequest implements Serializable {
 
     public void setItProduct(Boolean itProduct) {
         isItProduct = itProduct;
+    }
+
+    public Boolean getCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(Boolean completed) {
+        isCompleted = completed;
     }
 }
