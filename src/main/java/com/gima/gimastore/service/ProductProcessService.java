@@ -3,10 +3,13 @@ package com.gima.gimastore.service;
 import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.StorePart;
+import com.gima.gimastore.entity.Supplier;
 import com.gima.gimastore.entity.productProcess.Product;
 import com.gima.gimastore.entity.productProcess.ProductPart;
 import com.gima.gimastore.entity.productProcess.ProductionRequest;
 import com.gima.gimastore.entity.productProcess.ProductionRequestParts;
+import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
+import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartSearchSupplyResponse;
@@ -18,12 +21,19 @@ import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -106,13 +116,57 @@ public class ProductProcessService {
         return productPartResponseList;
     }
 
-    public Page<ProductionRequestDTO> getAllProductionRequest(Pageable pageable) {
+    public Page<ProductionRequest> getAllProductionRequest(Map<String, String> params, Pageable pageable) {
 
-        List<ProductionRequestDTO> list = productionRequestRepo.findAll(pageable).stream().map(productionRequest ->
-                ObjectMapperUtils.map(productionRequest, ProductionRequestDTO.class)).collect(Collectors.toList());
+        Page<ProductionRequest> list = productionRequestRepo.findAll(
+                (Specification<ProductionRequest>) (root, query, cb) -> {
+                    try {
+                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                        List<Predicate> predicates = new ArrayList<>();
 
-        return new PageImpl<>(list, pageable, list.size());
+                        Join<SupplyProcess, SupplyProcessPart> supplyProcessSupplyProcessPartJoin =
+                                root.join("supplyProcess");
 
+                        Join<SupplyProcess, Supplier> processSupplierJoin =
+                                supplyProcessSupplyProcessPartJoin.join("supplier");
+
+                        Join<SupplyProcessPart, Part> supplyProcessPartPartJoin = root.join("part");
+
+                        if (params.containsKey("FromDate"))
+                            if (!params.get("FromDate").equals(""))
+                                predicates.add(cb.greaterThanOrEqualTo(
+                                        supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("FromDate"))));
+
+
+                        if (params.containsKey("ToDate"))
+                            if (!params.get("ToDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(
+                                        supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("ToDate"))));
+
+                        if (params.containsKey("partId"))
+                            if (!params.get("partId").equals(""))
+                                predicates.add(cb.equal(supplyProcessPartPartJoin.get("id"), params.get("partId")));
+
+
+                        if (params.containsKey("supplierId"))
+                            if (!params.get("supplierId").equals(""))
+                                predicates.add(cb.equal(processSupplierJoin.get("id"), params.get("supplierId")));
+
+                        if (params.containsKey("billId"))
+                            if (!params.get("billId").equals(""))
+                                predicates.add(cb.equal(
+                                        supplyProcessSupplyProcessPartJoin.get("billId"), params.get("billId")));
+
+
+                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, pageable);
+
+
+//        return new PageImpl<>(list, pageable, list.getSize());
+        return list;
     }
 
     public List<ProductPartResponse> productPartsReturn(String requestId, Integer exactlyProduction) {
@@ -155,6 +209,15 @@ public class ProductProcessService {
 
         }
         return returnedProductPartResponseList;
+    }
+
+    public List<String> getAllRequestIds() {
+        List<ProductionRequest> productionRequests = productionRequestRepo.findAll(Sort.by("id"));
+        List<String> requestIdList = new ArrayList<>();
+        productionRequests.stream().forEach(productionRequest -> {
+            requestIdList.add(productionRequest.getRequestID());
+        });
+        return requestIdList;
     }
 
     private Optional<Product> validateExistProduct(Long id) {

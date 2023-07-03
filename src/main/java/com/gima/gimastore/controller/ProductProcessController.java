@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
 
 @RestController
@@ -87,10 +89,29 @@ public class ProductProcessController {
     }
 
     @GetMapping("/getAllProductionRequest")
-    public ResponseEntity<?> getAllProductionRequest(Pageable pageable) {
+    public ResponseEntity<?> getAllProductionRequest(@RequestParam Map<String, String> params, Pageable pageable) {
         try {
 
-            return new ResponseEntity<>(productProcessService.getAllProductionRequest(pageable), HttpStatus.OK);
+            return new ResponseEntity<>(productProcessService.getAllProductionRequest(params, pageable), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @GetMapping("/getAllProductionRequestIds")
+    public ResponseEntity<?> getAllProductionRequestIds() {
+        try {
+
+            return new ResponseEntity<>(productProcessService.getAllRequestIds(), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
