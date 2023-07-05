@@ -37,6 +37,9 @@ public enum ResponseCodes {
     REPEATED_REQUESTEDID("028", "RequestId Error", "هذا الاذن موجود بالفعل"),
     NO_STORE_WITH_PART("029", "StorePart Error", "هذا المنتج غير مكتمل الأجزاء فى هذا المخزن"),
     NO_AMOUNT_IN_STORE_TO_PRODUCT("030", "StorePartAmount Error", "لا توجد كميات كافية من الأجزاء لهذا المنتج لهذه العملية"),
+    INVALID_GREATER_EXACTLYAMOUNT("031", "exactlyAmount Error", "لا يمكن ان تكون الكمية المنتجة اكبر من الكمية المتوقعة"),
+    INVALID_EQUALITY_EXACTLYAMOUNT("032", "exactlyAmount Error", "الكمية متساوية مع الكمية المتوقعة للانتاج"),
+
     INTERNAL_SERVER_ERROR("024", "Internal Server Error", "Internal Server Error");
 
 //    public static final String SUCCESS_TRANSACTION_MESSAGE = "The transaction has been ended successfully ";

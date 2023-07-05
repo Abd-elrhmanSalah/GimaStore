@@ -13,6 +13,7 @@ import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartSearchSupplyResponse;
+import com.gima.gimastore.model.ProductPartReturnedResponse;
 import com.gima.gimastore.model.productionProcess.ProductPartResponse;
 import com.gima.gimastore.model.productionProcess.ProductionAPIRequest;
 import com.gima.gimastore.model.productionProcess.ProductionRequestDTO;
@@ -196,9 +197,18 @@ public class ProductProcessService {
         return list;
     }
 
-    public List<ProductPartResponse> productPartsReturn(String requestId, Integer exactlyProduction) {
+    public List<ProductPartReturnedResponse> productPartsReturn(String requestId, Integer exactlyProduction) {
         ProductionRequest productionRequest = productionRequestRepo.findByRequestID(requestId).get();
         ProductionRequestDTO productionRequestDTO = ObjectMapperUtils.map(productionRequest, ProductionRequestDTO.class);
+
+        if (exactlyProduction > productionRequest.getExpectedProduction())
+            throw new ApplicationException(new StatusResponse(INVALID_GREATER_EXACTLYAMOUNT.getCode(),
+                    INVALID_GREATER_EXACTLYAMOUNT.getKey(), INVALID_GREATER_EXACTLYAMOUNT.getMessage()));
+
+        if (exactlyProduction == productionRequest.getExpectedProduction())
+            throw new ApplicationException(new StatusResponse(INVALID_EQUALITY_EXACTLYAMOUNT.getCode(),
+                    INVALID_EQUALITY_EXACTLYAMOUNT.getKey(), INVALID_EQUALITY_EXACTLYAMOUNT.getMessage()));
+
         productionRequestDTO.setExactlyProduction(exactlyProduction);
 
         List<ProductPart> allByProduct = productPartRepo.findAllByProduct(productionRequestDTO.getProduct());
@@ -220,20 +230,23 @@ public class ProductProcessService {
             }
         });
 
-        List<ProductPartResponse> returnedProductPartResponseList = new ArrayList<>();
+        List<ProductPartReturnedResponse> returnedProductPartResponseList = new ArrayList<>();
 
         List<ProductionRequestParts> allByProductionRequest = productionRequestPartsRepo.findAllByProductionRequest(
                 ObjectMapperUtils.map(productionRequestDTO, ProductionRequest.class));
         for (int i = 0; i < allByProductionRequest.size(); i++) {
-            ProductPartResponse productPartResponse = new ProductPartResponse();
+            ProductPartReturnedResponse productPartResponse = new ProductPartReturnedResponse();
 
             if (allByProductionRequest.get(i).getPart().getId() == exactlyProductPartResponseList.get(i).getPart().getId()) {
                 Integer amountToReturn = allByProductionRequest.get(i).getRequestedAmount() -
                         exactlyProductPartResponseList.get(i).getRequestedAmount();
-                Long dbId = productionRequestPartsRepo.findAllByProductionRequestAndPart(productionRequest, allByProductionRequest.get(i).getPart()).getId();
-                productPartResponse.setId(dbId);
+                ProductionRequestParts productionRequestParts = productionRequestPartsRepo.findAllByProductionRequestAndPart(productionRequest, allByProductionRequest.get(i).getPart());
+                productPartResponse.setId(productionRequestParts.getId());
                 productPartResponse.setPart(allByProductionRequest.get(i).getPart());
-                productPartResponse.setRequestedAmount(amountToReturn);
+                productPartResponse.setReturnedAmount(amountToReturn);
+                productPartResponse.setRequestedAmount(productionRequestParts.getRequestedAmount());
+
+
                 returnedProductPartResponseList.add(productPartResponse);
             }
 
