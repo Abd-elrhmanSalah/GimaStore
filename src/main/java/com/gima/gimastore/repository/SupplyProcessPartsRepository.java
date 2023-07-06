@@ -16,5 +16,8 @@ public interface SupplyProcessPartsRepository extends JpaRepository<SupplyProces
     List<SupplyProcessPart> findBySupplyProcess(SupplyProcess supplyProcess);
 
     void deleteAllBySupplyProcess(SupplyProcess supplyProcess);
+
     Page<SupplyProcessPart> findAll(Specification<SupplyProcessPart> specification, Pageable pageable);
+
+
 }
