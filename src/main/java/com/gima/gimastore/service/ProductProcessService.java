@@ -65,7 +65,7 @@ public class ProductProcessService {
                     , REPEATED_REQUESTEDID.getMessage()));
 
         ProductionRequest productionRequest = ObjectMapperUtils.map(productionAPIRequest.getProductionRequestDTO(), ProductionRequest.class);
-        productionRequest.setExactlyProduction(productionRequest.getExpectedProduction());
+        productionRequest.setExactlyProduction(0);
         ProductionRequest savedProductionRequest = productionRequestRepo.save(productionRequest);
 
         productionAPIRequest.getParts().forEach(partApiRequest -> {
