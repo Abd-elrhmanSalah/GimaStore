@@ -1,6 +1,7 @@
 package com.gima.gimastore.service;
 
 import com.gima.gimastore.entity.*;
+import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.entity.supplyProcessPartDist.SupplyProcessPartDist;
 import com.gima.gimastore.model.supplyProcess.SupplyProcessPartDistDTO;
@@ -29,14 +30,16 @@ public class SupplyProcessDistService {
     private UserRepository userRepo;
     private CommonBusinessValidationUtil businessValidationUtil;
     private PartRepository partRepo;
+    private SupplyProcessRepository supplyProcessRepository;
 
-    public SupplyProcessDistService(SupplyProcessPartDistRepository supplyProcessPartDistRepo, StorePartRepository storePartRepo, SupplyProcessPartsRepository supplyProcessPartsRepo, UserRepository userRepo, CommonBusinessValidationUtil businessValidationUtil, PartRepository partRepo) {
+    public SupplyProcessDistService(SupplyProcessPartDistRepository supplyProcessPartDistRepo, StorePartRepository storePartRepo, SupplyProcessPartsRepository supplyProcessPartsRepo, UserRepository userRepo, CommonBusinessValidationUtil businessValidationUtil, PartRepository partRepo, SupplyProcessRepository supplyProcessRepository) {
         this.supplyProcessPartDistRepo = supplyProcessPartDistRepo;
         this.storePartRepo = storePartRepo;
         this.supplyProcessPartsRepo = supplyProcessPartsRepo;
         this.userRepo = userRepo;
         this.businessValidationUtil = businessValidationUtil;
         this.partRepo = partRepo;
+        this.supplyProcessRepository = supplyProcessRepository;
     }
 
     @Transactional
@@ -152,6 +155,14 @@ public class SupplyProcessDistService {
         partDistById.get().setActionDate(new Date());
 
         supplyProcessPartDistRepo.save(partDistById.get());
+        List<SupplyProcessPart> bySupplyProcess = supplyProcessPartsRepo.findBySupplyProcess(partDistById.get().getSupplyProcessPart().getSupplyProcess());
+        Boolean allPartialDist = bySupplyProcess.stream().allMatch(supplyProcessPart ->
+                supplyProcessPart.getFullDist() == true);
+        if (allPartialDist) {
+            SupplyProcess supplyProcess = supplyProcessRepository.findById(partDistById.get().getSupplyProcessPart().getSupplyProcess().getId()).get();
+            supplyProcess.setFullDist(true);
+            supplyProcessRepository.save(supplyProcess);
+        }
     }
 
     @Transactional
@@ -166,7 +177,7 @@ public class SupplyProcessDistService {
 
         if (partDistById.get().getSupplyProcessPart().getDistAmount() == 0)
             partDistById.get().getSupplyProcessPart().setPartialDist(false);
-        if (partDistById.get().getSupplyProcessPart().getRemainAmount() == -0)
+        if (partDistById.get().getSupplyProcessPart().getRemainAmount() == 0)
             partDistById.get().getSupplyProcessPart().setFullDist(true);
 
         partDistById.get().setNotes(notes);

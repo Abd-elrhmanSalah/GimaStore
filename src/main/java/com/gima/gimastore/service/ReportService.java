@@ -137,8 +137,10 @@ public class ReportService {
                     }
                 }, pageable);
         partReportResponse.setOutGoing(0);
+        partReportResponse.setHarmedAmount(0);
         productionRequestParts.getContent().stream().forEach(productionRequestPart -> {
             partReportResponse.setOutGoing(productionRequestPart.getUsedAmount() + partReportResponse.getOutGoing());
+            partReportResponse.setHarmedAmount(productionRequestPart.getHarmedAmount() + partReportResponse.getHarmedAmount());
         });
 
         return partReportResponse;

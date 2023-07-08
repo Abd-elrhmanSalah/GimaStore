@@ -14,10 +14,7 @@ import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartSearchSupplyResponse;
 import com.gima.gimastore.model.ProductPartReturnedResponse;
-import com.gima.gimastore.model.productionProcess.ProductPartResponse;
-import com.gima.gimastore.model.productionProcess.ProductionAPIRequest;
-import com.gima.gimastore.model.productionProcess.ProductionRequestDTO;
-import com.gima.gimastore.model.productionProcess.ProductionReturnRequest;
+import com.gima.gimastore.model.productionProcess.*;
 import com.gima.gimastore.repository.*;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.data.domain.Page;
@@ -274,20 +271,26 @@ public class ProductProcessService {
         return requestIdList;
     }
 
-    public List<ProductPartResponse> getProductPartsByRequestId(String requestId) {
+    public List<ProductionPartsAPIRequest> getProductPartsByRequestId(String requestId) {
         List<ProductionRequestParts> allByProductionRequest = productionRequestPartsRepo.findAllByProductionRequest(productionRequestRepo.findByRequestID(requestId).get());
-        List<ProductPartResponse> returnedProductPartResponseList = new ArrayList<>();
+        List<ProductionPartsAPIRequest> returnedProductPartResponseList = new ArrayList<>();
         allByProductionRequest.forEach(productionRequestParts -> {
-            ProductPartResponse productPartResponse = new ProductPartResponse();
+            ProductionPartsAPIRequest productPartResponse = new ProductionPartsAPIRequest();
 
             productPartResponse.setPart(productionRequestParts.getPart());
             productPartResponse.setRequestedAmount(productionRequestParts.getRequestedAmount());
+            productPartResponse.setHarmedAmount(productionRequestParts.getHarmedAmount());
+            productPartResponse.setUnharmedAmount(productionRequestParts.getUnharmedAmount());
+            productPartResponse.setHaveReturned(productionRequestParts.getHaveReturned());
+            productPartResponse.setReturnedAmount(productionRequestParts.getReturnedAmount());
+            productPartResponse.setUsedAmount(productionRequestParts.getUsedAmount());
+
             returnedProductPartResponseList.add(productPartResponse);
 
         });
+
         return returnedProductPartResponseList;
     }
-
 
 
     private Optional<Product> validateExistProduct(Long id) {

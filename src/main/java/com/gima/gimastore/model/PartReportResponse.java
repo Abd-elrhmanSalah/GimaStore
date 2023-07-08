@@ -8,6 +8,7 @@ public class PartReportResponse implements Serializable {
     private Integer existingAmount;
     private Integer outGoing;
     private Integer balanceFirstPeriod;
+    private Integer harmedAmount;
 
     public String getPartName() {
         return partName;
@@ -39,5 +40,13 @@ public class PartReportResponse implements Serializable {
 
     public void setBalanceFirstPeriod(Integer balanceFirstPeriod) {
         this.balanceFirstPeriod = balanceFirstPeriod;
+    }
+
+    public Integer getHarmedAmount() {
+        return harmedAmount;
+    }
+
+    public void setHarmedAmount(Integer harmedAmount) {
+        this.harmedAmount = harmedAmount;
     }
 }
