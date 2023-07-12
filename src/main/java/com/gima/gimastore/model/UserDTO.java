@@ -31,8 +31,10 @@ public class UserDTO implements Serializable {
     @JsonDeserialize
     private String oldPassword;
 
-    private Boolean isLocked=false;
+    private Boolean isLocked = false;
     private Long storeId;
+
+    private UserPrivilegesDTO userPrivileges;
 
     public UserDTO() {
     }
@@ -123,5 +125,13 @@ public class UserDTO implements Serializable {
 
     public void setStoreId(Long storeId) {
         this.storeId = storeId;
+    }
+
+    public UserPrivilegesDTO getUserPrivileges() {
+        return userPrivileges;
+    }
+
+    public void setUserPrivileges(UserPrivilegesDTO userPrivileges) {
+        this.userPrivileges = userPrivileges;
     }
 }

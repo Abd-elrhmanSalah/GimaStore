@@ -3,11 +3,14 @@ package com.gima.gimastore.service;
 import com.gima.gimastore.entity.Role;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
+import com.gima.gimastore.entity.UserPrivileges;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.UserDTO;
+import com.gima.gimastore.model.UserPrivilegesDTO;
 import com.gima.gimastore.repository.RoleRepository;
 import com.gima.gimastore.repository.StoreRepository;
+import com.gima.gimastore.repository.UserPrivilegesRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
@@ -33,13 +36,16 @@ public class UserService {
     private UserRepository userRepo;
     private RoleRepository roleRepo;
     private StoreRepository storeRepo;
+    private UserPrivilegesRepository userPrivilegesRepo;
 
-    public UserService(UserRepository userRepo, RoleRepository roleRepo, StoreRepository storeRepo) {
+    public UserService(UserRepository userRepo, RoleRepository roleRepo, StoreRepository storeRepo, UserPrivilegesRepository userPrivilegesRepo) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.storeRepo = storeRepo;
+        this.userPrivilegesRepo = userPrivilegesRepo;
     }
 
+    @Transactional
     public void addUser(UserDTO userDTOParam, MultipartFile file) throws IOException {
 
         validateUserName(userDTOParam.getUserName());
@@ -49,33 +55,45 @@ public class UserService {
         if (!file.isEmpty())
             savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
 
+        UserPrivilegesDTO userPrivilegesDTO = ObjectMapperUtils.map(userDTOParam.getUserPrivileges(), UserPrivilegesDTO.class);
+        userPrivilegesDTO.setUser(savedUser);
+        UserPrivileges userPrivileges = ObjectMapperUtils.map(userPrivilegesDTO, UserPrivileges.class);
         userRepo.save(savedUser);
+        userPrivilegesRepo.save(userPrivileges);
 
     }
 
     @Transactional
-    public void updateUser(UserDTO userDTO, MultipartFile file) throws IOException {
+    public void updateUser(UserDTO userParamDTO, MultipartFile file) throws IOException {
 
-        Optional<User> userById = userRepo.findById(userDTO.getId());
+        Optional<User> userById = userRepo.findById(userParamDTO.getId());
         if (userById.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_USER_ID.getCode(), NO_USER_ID.getKey(), NO_USER_ID.getMessage()));
 
-        validateUserNameAndID(userDTO.getUserName(), userDTO.getId());
+        validateUserNameAndID(userParamDTO.getUserName(), userParamDTO.getId());
 
-        if (userDTO.getChangePassword() == true) {
-            if (!userRepo.existsByPasswordAndId(userDTO.getOldPassword(), userDTO.getId()))
+        if (userParamDTO.getChangePassword() == true) {
+            if (!userRepo.existsByPasswordAndId(userParamDTO.getOldPassword(), userParamDTO.getId()))
                 throw new ApplicationException(new StatusResponse(PASSWORD_INCORRECT.getCode(), PASSWORD_INCORRECT.getKey(), PASSWORD_INCORRECT.getMessage()));
         }
 
         if (userById.get().getAvatar() != null)
-            userDTO.setAvatar(userById.get().getAvatar());
+            userParamDTO.setAvatar(userById.get().getAvatar());
 
-        User savedUser = userRepo.save(ObjectMapperUtils.map(userDTO, User.class));
+        User savedUser = userRepo.save(ObjectMapperUtils.map(userParamDTO, User.class));
 
         if (!file.isEmpty())
             savedUser.setAvatar(ImageUtil.compressImage(file.getBytes()));
 
+        UserPrivilegesDTO userPrivilegesDTO = ObjectMapperUtils.map(userParamDTO.getUserPrivileges(), UserPrivilegesDTO.class);
+        userPrivilegesDTO.setUser(savedUser);
+
+        UserPrivileges userPrivileges = ObjectMapperUtils.map(userPrivilegesDTO, UserPrivileges.class);
+        UserPrivileges userPrivilegesDB = userPrivilegesRepo.findByUser(savedUser);
+        userPrivileges.setUser(savedUser);
+        userPrivileges.setId(userPrivilegesDB.getId());
         userRepo.save(savedUser);
+        userPrivilegesRepo.save(userPrivileges);
     }
 
     public void deleteUser(Long id) {
@@ -119,6 +137,8 @@ public class UserService {
             if (!byUserAndIsLocked.isEmpty())
                 userDto.setStoreId(byUserAndIsLocked.get().getId());
         }
+        UserPrivileges userPrivileges = userPrivilegesRepo.findByUser(userById.get());
+        userDto.setUserPrivileges(ObjectMapperUtils.map(userPrivileges, UserPrivilegesDTO.class));
         return userDto;
     }
 

@@ -2,10 +2,13 @@ package com.gima.gimastore.service;
 
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
+import com.gima.gimastore.entity.UserPrivileges;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.UserDTO;
+import com.gima.gimastore.model.UserPrivilegesDTO;
 import com.gima.gimastore.repository.StoreRepository;
+import com.gima.gimastore.repository.UserPrivilegesRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
@@ -24,10 +27,12 @@ public class LoginService {
 
     private UserRepository userRepo;
     private StoreRepository storeRepo;
+    private UserPrivilegesRepository userPrivilegesRepo;
 
-    public LoginService(UserRepository userRepo, StoreRepository storeRepo) {
+    public LoginService(UserRepository userRepo, StoreRepository storeRepo, UserPrivilegesRepository userPrivilegesRepo) {
         this.userRepo = userRepo;
         this.storeRepo = storeRepo;
+        this.userPrivilegesRepo = userPrivilegesRepo;
     }
 
     public UserDTO login(String username, String password) throws DataFormatException, IOException {
@@ -47,6 +52,8 @@ public class LoginService {
             if (!byUserAndIsLocked.isEmpty())
                 userDto.setStoreId(byUserAndIsLocked.get().getId());
         }
+        UserPrivileges byUser = userPrivilegesRepo.findByUser(byUserNameAndPassword.get());
+        userDto.setUserPrivileges(ObjectMapperUtils.map(byUser, UserPrivilegesDTO.class));
         return userDto;
     }
 }
