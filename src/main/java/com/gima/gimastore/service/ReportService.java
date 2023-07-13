@@ -1,8 +1,6 @@
 package com.gima.gimastore.service;
 
-import com.gima.gimastore.entity.Part;
-import com.gima.gimastore.entity.Store;
-import com.gima.gimastore.entity.StorePart;
+import com.gima.gimastore.entity.*;
 import com.gima.gimastore.entity.productProcess.Product;
 import com.gima.gimastore.entity.productProcess.ProductionRequest;
 import com.gima.gimastore.entity.productProcess.ProductionRequestParts;
@@ -10,10 +8,7 @@ import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.model.PartReportResponse;
 import com.gima.gimastore.model.PartSearchSupplyResponse;
-import com.gima.gimastore.repository.PartRepository;
-import com.gima.gimastore.repository.ProductionRequestPartsRepository;
-import com.gima.gimastore.repository.StorePartRepository;
-import com.gima.gimastore.repository.SupplyProcessPartsRepository;
+import com.gima.gimastore.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -34,12 +29,14 @@ public class ReportService {
     private ProductionRequestPartsRepository productionRequestPartsRepository;
     private StorePartRepository storePartRepository;
     private SupplyProcessPartsRepository supplyProcessPartsRepository;
+    private StorePartSettlementRepository storePartSettlementRepo;
 
-    public ReportService(PartRepository partRepository, ProductionRequestPartsRepository productionRequestPartsRepository, StorePartRepository storePartRepository, SupplyProcessPartsRepository supplyProcessPartsRepository) {
+    public ReportService(PartRepository partRepository, ProductionRequestPartsRepository productionRequestPartsRepository, StorePartRepository storePartRepository, SupplyProcessPartsRepository supplyProcessPartsRepository, StorePartSettlementRepository storePartSettlementRepo) {
         this.partRepository = partRepository;
         this.productionRequestPartsRepository = productionRequestPartsRepository;
         this.storePartRepository = storePartRepository;
         this.supplyProcessPartsRepository = supplyProcessPartsRepository;
+        this.storePartSettlementRepo = storePartSettlementRepo;
     }
 
     public PartReportResponse getPartReport(Map<String, String> params, Pageable pageable) {
@@ -144,5 +141,44 @@ public class ReportService {
         });
 
         return partReportResponse;
+    }
+
+    public Page<StorePartSettlement> getStorePartSettlementReport(Map<String, String> params, Pageable pageable) {
+
+
+        Page<StorePartSettlement> storePartSettlements = storePartSettlementRepo.findAll(
+                (Specification<StorePartSettlement>) (root, query, cb) -> {
+                    try {
+                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                        List<Predicate> predicates = new ArrayList<>();
+
+                        Join<StorePartSettlement, Store> storePartSettlementStoreJoin = root.join("store");
+//                        Join<StorePartSettlement, Part> storePartSettlementPartJoin = root.join("part");
+//                        Join<StorePartSettlement, User> storePartSettlementUserJoin = root.join("user");
+
+
+                        if (params.containsKey("FromDate"))
+                            if (!params.get("FromDate").equals(""))
+                                predicates.add(cb.greaterThanOrEqualTo(
+                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
+
+
+                        if (params.containsKey("ToDate"))
+                            if (!params.get("ToDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(
+                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
+
+                        if (params.containsKey("storeId"))
+                            if (!params.get("storeId").equals(""))
+                                predicates.add(cb.equal(storePartSettlementStoreJoin.get("id"), params.get("storeId")));
+
+
+                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, pageable);
+
+        return storePartSettlements;
     }
 }

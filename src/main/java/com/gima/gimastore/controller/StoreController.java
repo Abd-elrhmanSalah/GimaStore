@@ -3,6 +3,8 @@ package com.gima.gimastore.controller;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.StoreDTO;
+import com.gima.gimastore.model.StorePartSettlementDTO;
+import com.gima.gimastore.model.StorePartSettlementRequest;
 import com.gima.gimastore.service.PartStoreService;
 import com.gima.gimastore.service.StoreService;
 import com.gima.gimastore.util.Utils;
@@ -14,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import java.util.List;
 
 import static com.gima.gimastore.constant.ResponseCodes.SUCCESS;
 
@@ -107,6 +111,24 @@ public class StoreController {
         try {
 
             return new ResponseEntity<>(partStoreService.findPartsByStore(storeId, pageable), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/storePartsSettlement")
+    public ResponseEntity<?> storePartsSettlement(@RequestBody StorePartSettlementRequest storePartSettlementRequest) {
+        try {
+            partStoreService.storeSettlement(storePartSettlementRequest);
+            return new ResponseEntity<>("Done", HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
