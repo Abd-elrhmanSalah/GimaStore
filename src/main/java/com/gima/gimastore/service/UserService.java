@@ -6,6 +6,7 @@ import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.UserPrivileges;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
+import com.gima.gimastore.model.PartSearchSupplyResponse;
 import com.gima.gimastore.model.UserDTO;
 import com.gima.gimastore.model.UserPrivilegesDTO;
 import com.gima.gimastore.repository.RoleRepository;
@@ -15,12 +16,14 @@ import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -109,7 +112,7 @@ public class UserService {
 
     }
 
-    public Page<User> getAllUsers(Pageable pageable) {
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
 
         Page<User> all = userRepo.findAll(pageable);
         all.getContent().stream().forEach(user -> {
@@ -119,7 +122,17 @@ public class UserService {
             }
 
         });
-        return all;
+        List<UserDTO> userDtoList = new ArrayList<>();
+        all.getContent().forEach(user -> {
+            UserDTO userDto = ObjectMapperUtils.map(user, UserDTO.class);
+            UserPrivileges userPrivileges = userPrivilegesRepo.findByUser(user);
+            userDto.setUserPrivileges(ObjectMapperUtils.map(userPrivileges, UserPrivilegesDTO.class));
+            userDtoList.add(userDto);
+        });
+
+
+        PageImpl<UserDTO> userDTOS = new PageImpl<>(userDtoList, pageable, userDtoList.size());
+        return userDTOS;
     }
 
     public UserDTO getUserById(Long id) throws IOException, DataFormatException {
