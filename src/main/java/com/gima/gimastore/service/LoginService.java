@@ -52,7 +52,7 @@ public class LoginService {
             if (!byUserAndIsLocked.isEmpty())
                 userDto.setStoreId(byUserAndIsLocked.get().getId());
         }
-        UserPrivileges byUser = userPrivilegesRepo.findByUser(byUserNameAndPassword.get());
+        UserPrivileges byUser = userPrivilegesRepo.findByUser(byUserNameAndPassword.get()).get();
         userDto.setUserPrivileges(ObjectMapperUtils.map(byUser, UserPrivilegesDTO.class));
         return userDto;
     }

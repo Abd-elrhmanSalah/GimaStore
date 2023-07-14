@@ -92,7 +92,7 @@ public class UserService {
         userPrivilegesDTO.setUser(savedUser);
 
         UserPrivileges userPrivileges = ObjectMapperUtils.map(userPrivilegesDTO, UserPrivileges.class);
-        UserPrivileges userPrivilegesDB = userPrivilegesRepo.findByUser(savedUser);
+        UserPrivileges userPrivilegesDB = userPrivilegesRepo.findByUser(savedUser).get();
         userPrivileges.setUser(savedUser);
         userPrivileges.setId(userPrivilegesDB.getId());
         userRepo.save(savedUser);
@@ -125,9 +125,12 @@ public class UserService {
         List<UserDTO> userDtoList = new ArrayList<>();
         all.getContent().forEach(user -> {
             UserDTO userDto = ObjectMapperUtils.map(user, UserDTO.class);
-            UserPrivileges userPrivileges = userPrivilegesRepo.findByUser(user);
-            userDto.setUserPrivileges(ObjectMapperUtils.map(userPrivileges, UserPrivilegesDTO.class));
-            userDtoList.add(userDto);
+            Optional<UserPrivileges> userPrivileges = userPrivilegesRepo.findByUser(user);
+            if (!userPrivileges.isEmpty()) {
+
+                userDto.setUserPrivileges(ObjectMapperUtils.map(userPrivileges, UserPrivilegesDTO.class));
+                userDtoList.add(userDto);
+            }
         });
 
 
@@ -150,7 +153,7 @@ public class UserService {
             if (!byUserAndIsLocked.isEmpty())
                 userDto.setStoreId(byUserAndIsLocked.get().getId());
         }
-        UserPrivileges userPrivileges = userPrivilegesRepo.findByUser(userById.get());
+        UserPrivileges userPrivileges = userPrivilegesRepo.findByUser(userById.get()).get();
         userDto.setUserPrivileges(ObjectMapperUtils.map(userPrivileges, UserPrivilegesDTO.class));
         return userDto;
     }
