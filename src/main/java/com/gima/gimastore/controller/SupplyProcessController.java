@@ -2,6 +2,7 @@ package com.gima.gimastore.controller;
 
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
+import com.gima.gimastore.model.supplyProcess.SupplyProcessPartsReturnsRequest;
 import com.gima.gimastore.service.SupplyProcessService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
@@ -134,11 +135,30 @@ public class SupplyProcessController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/searchSupplyProcessByPart")
     public ResponseEntity<?> searchSupplyProcessByPart(@RequestParam Map<String, String> params, Pageable pageable) {
         try {
 
             return new ResponseEntity<>(supplyProcessService.searchByPartInSupplyProcess(params, pageable), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/supplyProcessReturns")
+    public ResponseEntity<?> supplyProcessReturns(@RequestBody SupplyProcessPartsReturnsRequest returnsRequest) {
+        try {
+            supplyProcessService.supplyProcessPartsReturns(returnsRequest);
+            return new ResponseEntity<>("Done", HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

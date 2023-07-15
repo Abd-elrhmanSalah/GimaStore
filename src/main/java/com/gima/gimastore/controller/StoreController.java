@@ -159,5 +159,22 @@ public class StoreController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("/getStoresByPart")
+    public ResponseEntity<?> getStoresByPart(@RequestParam Long partId) {
+        try {
+
+            return new ResponseEntity<>(partStoreService.findStoresByPart(partId), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

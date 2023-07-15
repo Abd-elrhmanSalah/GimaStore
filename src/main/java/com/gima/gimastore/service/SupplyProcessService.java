@@ -1,15 +1,19 @@
 package com.gima.gimastore.service;
 
 import com.gima.gimastore.entity.Part;
+import com.gima.gimastore.entity.StorePart;
 import com.gima.gimastore.entity.Supplier;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
+import com.gima.gimastore.entity.supplyProcess.SupplyProcessPartsReturns;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartDTO;
 import com.gima.gimastore.model.PartSearchSupplyResponse;
 import com.gima.gimastore.model.supplyProcess.*;
+import com.gima.gimastore.repository.StorePartRepository;
 import com.gima.gimastore.repository.SupplyProcessPartsRepository;
+import com.gima.gimastore.repository.SupplyProcessPartsReturnsRepository;
 import com.gima.gimastore.repository.SupplyProcessRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
@@ -41,10 +45,14 @@ public class SupplyProcessService {
 
     private SupplyProcessRepository supplyProcessRepo;
     private SupplyProcessPartsRepository supplyProcessPartsRepo;
+    private SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo;
+    private StorePartRepository storePartRepo;
 
-    public SupplyProcessService(SupplyProcessRepository supplyProcessRepo, SupplyProcessPartsRepository supplyProcessPartsRepo) {
+    public SupplyProcessService(SupplyProcessRepository supplyProcessRepo, SupplyProcessPartsRepository supplyProcessPartsRepo, SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo, StorePartRepository storePartRepo) {
         this.supplyProcessRepo = supplyProcessRepo;
         this.supplyProcessPartsRepo = supplyProcessPartsRepo;
+        this.supplyProcessPartsReturnsRepo = supplyProcessPartsReturnsRepo;
+        this.storePartRepo = storePartRepo;
     }
 
     public void add(SupplyProcessRequest request, MultipartFile file) throws IOException {
@@ -205,7 +213,6 @@ public class SupplyProcessService {
                                 predicates.add(cb.equal(supplyProcessPartPartJoin.get("id"), params.get("partId")));
 
 
-
                         if (params.containsKey("supplierId"))
                             if (!params.get("supplierId").equals(""))
                                 predicates.add(cb.equal(processSupplierJoin.get("id"), params.get("supplierId")));
@@ -246,6 +253,26 @@ public class SupplyProcessService {
 
         PageImpl<PartSearchSupplyResponse> partSearchResponses = new PageImpl<>(supplyProcessList, pageable, supplyProcessPage.getTotalElements());
         return partSearchResponses;
+
+    }
+
+    @Transactional
+    public void supplyProcessPartsReturns(SupplyProcessPartsReturnsRequest returnsRequest) {
+        returnsRequest.getParts().forEach(partsReturnRequest -> {
+            SupplyProcessPartsReturns supplyProcessPartsReturns = new SupplyProcessPartsReturns();
+            supplyProcessPartsReturns.setCreationDate(returnsRequest.getCreationDate());
+            supplyProcessPartsReturns.setCreatedBy(returnsRequest.getCreatedBy());
+            supplyProcessPartsReturns.setPart(partsReturnRequest.getPart());
+            supplyProcessPartsReturns.setAmountReturn(partsReturnRequest.getAmountReturn());
+            supplyProcessPartsReturns.setAmountIncoming(partsReturnRequest.getAmountIncoming());
+            supplyProcessPartsReturns.setSupplyProcess(returnsRequest.getSupplyProcess());
+            supplyProcessPartsReturnsRepo.save(supplyProcessPartsReturns);
+            partsReturnRequest.getStoreAmounts().forEach(storeAmount -> {
+                StorePart byStoreAndPart = storePartRepo.findByStoreAndPart(storeAmount.getStore(), partsReturnRequest.getPart()).get();
+                byStoreAndPart.setAmount(byStoreAndPart.getAmount()-storeAmount.getAmount());
+                storePartRepo.save(byStoreAndPart);
+            });
+        });
 
     }
 

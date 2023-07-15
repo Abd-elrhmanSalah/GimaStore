@@ -30,7 +30,6 @@ public class SupplyProcess implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
-    @Nationalized
     private User createdBy;
 
     @Column(name = "CREATION_DATE")

@@ -128,7 +128,7 @@ public class UserService {
             Optional<UserPrivileges> userPrivileges = userPrivilegesRepo.findByUser(user);
             if (!userPrivileges.isEmpty()) {
 
-                userDto.setUserPrivileges(ObjectMapperUtils.map(userPrivileges, UserPrivilegesDTO.class));
+                userDto.setUserPrivileges(ObjectMapperUtils.map(userPrivileges.get(), UserPrivilegesDTO.class));
                 userDtoList.add(userDto);
             }
         });

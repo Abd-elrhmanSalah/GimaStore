@@ -4,6 +4,7 @@ import com.gima.gimastore.entity.StorePart;
 import com.gima.gimastore.entity.StorePartSettlement;
 import com.gima.gimastore.model.StorePartSettlementDTO;
 import com.gima.gimastore.model.StorePartSettlementRequest;
+import com.gima.gimastore.repository.PartRepository;
 import com.gima.gimastore.repository.StorePartRepository;
 import com.gima.gimastore.repository.StorePartSettlementRepository;
 import com.gima.gimastore.repository.StoreRepository;
@@ -22,11 +23,13 @@ public class PartStoreService {
     private StorePartRepository storePartRepo;
     private StoreRepository storeRepo;
     private StorePartSettlementRepository storePartSettlementRepo;
+    private PartRepository partRepo;
 
-    public PartStoreService(StorePartRepository storePartRepo, StoreRepository storeRepo, StorePartSettlementRepository storePartSettlementRepo) {
+    public PartStoreService(StorePartRepository storePartRepo, StoreRepository storeRepo, StorePartSettlementRepository storePartSettlementRepo, PartRepository partRepo) {
         this.storePartRepo = storePartRepo;
         this.storeRepo = storeRepo;
         this.storePartSettlementRepo = storePartSettlementRepo;
+        this.partRepo = partRepo;
     }
 
     public Page<StorePart> findPartsByStore(Long storeId, Pageable pageable) {
@@ -36,6 +39,11 @@ public class PartStoreService {
                 storePart.getPart().setPicture(ImageUtil.decompressImage(storePart.getPart().getPicture()));
         });
         return byStore;
+    }
+
+    public List<StorePart> findStoresByPart(Long partId) {
+        return storePartRepo.findStorePartByPart(partRepo.findById(partId).get());
+
     }
 
     @Transactional
