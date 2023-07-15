@@ -6,6 +6,7 @@ import com.gima.gimastore.entity.productProcess.ProductionRequest;
 import com.gima.gimastore.entity.productProcess.ProductionRequestParts;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
+import com.gima.gimastore.entity.supplyProcess.SupplyProcessPartsReturns;
 import com.gima.gimastore.model.PartReportResponse;
 import com.gima.gimastore.model.PartSearchSupplyResponse;
 import com.gima.gimastore.repository.*;
@@ -30,13 +31,15 @@ public class ReportService {
     private StorePartRepository storePartRepository;
     private SupplyProcessPartsRepository supplyProcessPartsRepository;
     private StorePartSettlementRepository storePartSettlementRepo;
+    private SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo;
 
-    public ReportService(PartRepository partRepository, ProductionRequestPartsRepository productionRequestPartsRepository, StorePartRepository storePartRepository, SupplyProcessPartsRepository supplyProcessPartsRepository, StorePartSettlementRepository storePartSettlementRepo) {
+    public ReportService(PartRepository partRepository, ProductionRequestPartsRepository productionRequestPartsRepository, StorePartRepository storePartRepository, SupplyProcessPartsRepository supplyProcessPartsRepository, StorePartSettlementRepository storePartSettlementRepo, SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo) {
         this.partRepository = partRepository;
         this.productionRequestPartsRepository = productionRequestPartsRepository;
         this.storePartRepository = storePartRepository;
         this.supplyProcessPartsRepository = supplyProcessPartsRepository;
         this.storePartSettlementRepo = storePartSettlementRepo;
+        this.supplyProcessPartsReturnsRepo = supplyProcessPartsReturnsRepo;
     }
 
     public PartReportResponse getPartReport(Map<String, String> params, Pageable pageable) {
@@ -180,5 +183,48 @@ public class ReportService {
                 }, pageable);
 
         return storePartSettlements;
+    }
+
+    public Page<SupplyProcessPartsReturns> getSupplyProcessPartsReturns(Map<String, String> params, Pageable pageable) {
+
+
+        Page<SupplyProcessPartsReturns> supplyProcessPartsReturns = supplyProcessPartsReturnsRepo.findAll(
+                (Specification<SupplyProcessPartsReturns>) (root, query, cb) -> {
+                    try {
+                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                        List<Predicate> predicates = new ArrayList<>();
+
+                        Join<SupplyProcessPartsReturns, Part> supplyProcessPartsReturnsPartJoin = root.join("part");
+                        Join<SupplyProcessPartsReturns, SupplyProcess> supplyProcessPartsReturnsSupplyProcessJoin =
+                                root.join("supplyProcess");
+//                        Join<StorePartSettlement, User> storePartSettlementUserJoin = root.join("user");
+
+
+                        if (params.containsKey("FromDate"))
+                            if (!params.get("FromDate").equals(""))
+                                predicates.add(cb.greaterThanOrEqualTo(
+                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
+
+
+                        if (params.containsKey("ToDate"))
+                            if (!params.get("ToDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(
+                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
+
+                        if (params.containsKey("partId"))
+                            if (!params.get("partId").equals(""))
+                                predicates.add(cb.equal(supplyProcessPartsReturnsPartJoin.get("id"), params.get("partId")));
+
+                        if (params.containsKey("supplyProcessId"))
+                            if (!params.get("supplyProcessId").equals(""))
+                                predicates.add(cb.equal(supplyProcessPartsReturnsSupplyProcessJoin.get("id"), params.get("supplyProcessId")));
+
+                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, pageable);
+
+        return supplyProcessPartsReturns;
     }
 }
