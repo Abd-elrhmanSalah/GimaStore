@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.gima.gimastore.constant.ResponseCodes.*;
@@ -94,6 +95,27 @@ public class ProductProcessService {
 
     public void getProductionRequestsByStore(Long storeId) {
         Store store = storeRepo.findById(storeId).get();
+//        productionPartsStoreRequestRepo.findAll()
+//                .parallelStream()
+//                .map(partsStoreRequest -> new ProductionPartsStoreRequest()
+//                .collect(
+//                        Collectors.toMap(
+//                                sum -> sum.getYear(),
+//                                Function.identity(),
+//                                (sum1, sum2) -> new YearReportSum(
+//                                        sum1.getYear(),
+//                                        sum1.getSmallSum().add(sum2.getSmallSum()),
+//                                        sum1.getMajorSum().add(sum2.getMajorSum()),
+//                                        sum1.getTotalSum().add(sum2.getTotalSum())
+//                                )
+//                        )
+//                )
+//                .values()
+//                .stream()
+//                .sorted(Comparator.comparing(YearReportSum::getYear))
+//                .collect(Collectors.toList())
+//        ;
+//    }
 //        List<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo.findAllByStoreAndAndFullOut(store, false);
         List<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo.findByStoreAndISFullOutNot(store, false);
         productionPartsStoreRequests.forEach(objects -> {
@@ -216,9 +238,7 @@ public class ProductProcessService {
             storePartByPart.forEach(storePart -> {
                 StoreAmount storeAmount = new StoreAmount();
                 storeAmount.setAmount(storePart.getAmount());
-                Store store = storePart.getStore();
-                store.setUser(null);
-                storeAmount.setStore(store);
+                storeAmount.setStore(storePart.getStore());
                 storeAmountList.add(storeAmount);
             });
             productPartResponse.setStores(storeAmountList);
