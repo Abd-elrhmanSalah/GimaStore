@@ -30,11 +30,10 @@ public class ProductionProcessController {
     }
 
     @GetMapping("/productParts")
-    public ResponseEntity<?> getProductParts(@RequestParam Long productId, @RequestParam Integer expectedAmount,
-                                             @RequestParam Long storeId) {
+    public ResponseEntity<?> getProductParts(@RequestParam Long productId, @RequestParam Integer expectedAmount) {
         try {
 
-            return new ResponseEntity<>(productProcessService.getProductParts(productId, expectedAmount, storeId), HttpStatus.OK);
+            return new ResponseEntity<>(productProcessService.getProductParts(productId, expectedAmount), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

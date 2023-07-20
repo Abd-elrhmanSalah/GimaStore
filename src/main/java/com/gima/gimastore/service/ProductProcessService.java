@@ -196,43 +196,34 @@ public class ProductProcessService {
 //    }
 
     @Transactional
-    public List<ProductPartResponse> getProductParts(Long productId, Integer expectedAmount, Long storeId) {
+    public List<ProductPartResponse> getProductParts(Long productId, Integer expectedAmount) {
         Product product = validateExistProduct(productId).get();
-        Store store = validateExistStore(storeId).get();
-        List<ProductPart> allByProduct = productPartRepo.findAllByProduct(product);
-        allByProduct.forEach(productPart -> {
-            Optional<StorePart> byStoreAndPart = storePartRepo.findByStoreAndPart(store, productPart.getPart());
-            if (byStoreAndPart.isEmpty())
-                throw new ApplicationException(new StatusResponse(NO_STORE_WITH_PART.getCode(),
-                        NO_STORE_WITH_PART.getKey(), NO_STORE_WITH_PART.getMessage()));
+        List<ProductPart> productParts = productPartRepo.findAllByProduct(product);
 
-        });
         List<ProductPartResponse> productPartResponseList = new ArrayList<>();
-        allByProduct.forEach(productPart -> {
-            Optional<StorePart> byStoreAndPart = storePartRepo.findByStoreAndPart(store, productPart.getPart());
-            Part part = productPart.getPart();
+        productParts.forEach(productPart -> {
+
             Integer partAmountPerProduct = productPart.getAmount();
             Integer totalAmountRequested = partAmountPerProduct * expectedAmount;
-            if (byStoreAndPart.get().getPart().equals(part)) {
-                if (totalAmountRequested > byStoreAndPart.get().getAmount())
-                    throw new ApplicationException(new StatusResponse(NO_AMOUNT_IN_STORE_TO_PRODUCT.getCode(),
-                            NO_AMOUNT_IN_STORE_TO_PRODUCT.getKey(), NO_AMOUNT_IN_STORE_TO_PRODUCT.getMessage()));
-                ProductPartResponse productPartResponse = new ProductPartResponse();
-                productPartResponse.setPart(part);
-                productPartResponse.setRequestedAmount(totalAmountRequested);
 
-                List<StoreAmount> storeAmountList = new ArrayList<>();
+            ProductPartResponse productPartResponse = new ProductPartResponse();
 
-                List<StorePart> storePartByPart = storePartRepo.findStorePartByPart(part);
-                storePartByPart.forEach(storePart -> {
-                    StoreAmount storeAmount = new StoreAmount();
-                    storeAmount.setAmount(storePart.getAmount());
-                    storeAmount.setStore(storePart.getStore());
-                    storeAmountList.add(storeAmount);
-                });
-                productPartResponse.setStores(storeAmountList);
-                productPartResponseList.add(productPartResponse);
-            }
+            productPartResponse.setPart(productPart.getPart());
+            productPartResponse.setRequestedAmount(totalAmountRequested);
+
+            List<StoreAmount> storeAmountList = new ArrayList<>();
+            List<StorePart> storePartByPart = storePartRepo.findStorePartByPart(productPart.getPart());
+            storePartByPart.forEach(storePart -> {
+                StoreAmount storeAmount = new StoreAmount();
+                storeAmount.setAmount(storePart.getAmount());
+                Store store = storePart.getStore();
+                store.setUser(null);
+                storeAmount.setStore(store);
+                storeAmountList.add(storeAmount);
+            });
+            productPartResponse.setStores(storeAmountList);
+            productPartResponseList.add(productPartResponse);
+
         });
 
         return productPartResponseList;
