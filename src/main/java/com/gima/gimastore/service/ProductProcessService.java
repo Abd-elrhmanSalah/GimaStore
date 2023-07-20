@@ -12,6 +12,7 @@ import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartSearchSupplyResponse;
 import com.gima.gimastore.model.ProductPartReturnedResponse;
 import com.gima.gimastore.model.productionProcess.*;
+import com.gima.gimastore.model.supplyProcess.StoreAmount;
 import com.gima.gimastore.repository.*;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.data.domain.Page;
@@ -95,9 +96,9 @@ public class ProductProcessService {
         Store store = storeRepo.findById(storeId).get();
 //        List<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo.findAllByStoreAndAndFullOut(store, false);
         List<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo.findByStoreAndISFullOutNot(store, false);
-       productionPartsStoreRequests.forEach(objects -> {
+        productionPartsStoreRequests.forEach(objects -> {
 //           productionPartsStoreRequestRepo.findById(objects.)
-       });
+        });
 
     }
 
@@ -219,6 +220,17 @@ public class ProductProcessService {
                 ProductPartResponse productPartResponse = new ProductPartResponse();
                 productPartResponse.setPart(part);
                 productPartResponse.setRequestedAmount(totalAmountRequested);
+
+                List<StoreAmount> storeAmountList = new ArrayList<>();
+
+                List<StorePart> storePartByPart = storePartRepo.findStorePartByPart(part);
+                storePartByPart.forEach(storePart -> {
+                    StoreAmount storeAmount = new StoreAmount();
+                    storeAmount.setAmount(storePart.getAmount());
+                    storeAmount.setStore(storePart.getStore());
+                    storeAmountList.add(storeAmount);
+                });
+                productPartResponse.setStores(storeAmountList);
                 productPartResponseList.add(productPartResponse);
             }
         });
