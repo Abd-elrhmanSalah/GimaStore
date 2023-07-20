@@ -306,7 +306,7 @@ public class SupplyProcessService {
             supPart.setCost(partRequest.getCost());
             supPart.setRemainAmount(partRequest.getAmount());
             supPart.setDistAmount(0);
-            supPart.setAmountAfterReturn(0);
+            supPart.setAmountAfterReturn(partRequest.getAmount() );
             supplyProcessPartsRepo.save(supPart);
         });
 
