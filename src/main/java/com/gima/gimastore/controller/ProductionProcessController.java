@@ -69,10 +69,10 @@ public class ProductionProcessController {
     }
 
     @PostMapping("/productPartsReturn")
-    public ResponseEntity<?> productPartsReturn(@RequestParam String requestId, @RequestParam Integer exactlyProduction) {
+    public ResponseEntity<?> productPartsReturn(@RequestParam Long storeId) {
         try {
-
-            return new ResponseEntity<>(productProcessService.productPartsReturn(requestId, exactlyProduction), HttpStatus.OK);
+productProcessService.getProductionRequestsByStore(storeId);
+            return new ResponseEntity<>("Done", HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -163,22 +163,22 @@ public class ProductionProcessController {
 
     }
 
-    @PostMapping("/productionReturn")
-    public ResponseEntity<?> productionReturn(@RequestBody ProductionReturnRequest productionReturnRequest) {
-        try {
-            productProcessService.addProductionRequestReturn(productionReturnRequest);
-            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تأكيد طلب الإنتاج" + SUCCESS.getMessage()), HttpStatus.OK);
-
-        } catch (ApplicationException e) {
-            logger.error(e.getMessage(), e);
-            e.printStackTrace();
-            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
-            ex.printStackTrace();
-            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
+//    @PostMapping("/productionReturn")
+//    public ResponseEntity<?> productionReturn(@RequestBody ProductionReturnRequest productionReturnRequest) {
+//        try {
+//            productProcessService.addProductionRequestReturn(productionReturnRequest);
+//            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تأكيد طلب الإنتاج" + SUCCESS.getMessage()), HttpStatus.OK);
+//
+//        } catch (ApplicationException e) {
+//            logger.error(e.getMessage(), e);
+//            e.printStackTrace();
+//            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+//        } catch (Exception ex) {
+//            logger.error(ex.getMessage(), ex);
+//            ex.printStackTrace();
+//            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//
+//    }
 }

@@ -1,35 +1,27 @@
-package com.gima.gimastore.model.productionProcess;
+package com.gima.gimastore.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gima.gimastore.entity.Department;
-import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.Supervisor;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.productProcess.Product;
+import org.springframework.lang.Nullable;
 
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
-public class ProductionRequestDTO implements Serializable {
-
+public class ProductionStoreRequest implements Serializable {
     private Long id;
-    @NotNull
     private String requestID;
     private Product product;
-    @NotNull
     private Department department;
-    @NotNull
     private Supervisor supervisor;
-    @NotNull
     private Integer expectedProduction;
-    private Integer exactlyProduction;
     private User createdBy;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Date creationDate = new Date();
-    private Boolean isLocked = false;
-    private Boolean isCompleted = false;
-    private Boolean isItProduct;
+    private Date creationDate;
 
     public Long getId() {
         return id;
@@ -55,16 +47,6 @@ public class ProductionRequestDTO implements Serializable {
         this.product = product;
     }
 
-
-    public Boolean getLocked() {
-        return isLocked;
-    }
-
-    public void setLocked(Boolean locked) {
-        isLocked = locked;
-    }
-
-
     public Department getDepartment() {
         return department;
     }
@@ -89,14 +71,6 @@ public class ProductionRequestDTO implements Serializable {
         this.expectedProduction = expectedProduction;
     }
 
-    public Integer getExactlyProduction() {
-        return exactlyProduction;
-    }
-
-    public void setExactlyProduction(Integer exactlyProduction) {
-        this.exactlyProduction = exactlyProduction;
-    }
-
     public User getCreatedBy() {
         return createdBy;
     }
@@ -111,21 +85,5 @@ public class ProductionRequestDTO implements Serializable {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
-    }
-
-    public Boolean getItProduct() {
-        return isItProduct;
-    }
-
-    public void setItProduct(Boolean itProduct) {
-        isItProduct = itProduct;
-    }
-
-    public Boolean getCompleted() {
-        return isCompleted;
-    }
-
-    public void setCompleted(Boolean completed) {
-        isCompleted = completed;
     }
 }

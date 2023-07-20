@@ -1,10 +1,8 @@
 package com.gima.gimastore.entity.productProcess;
 
 import com.gima.gimastore.entity.Department;
-import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.Supervisor;
 import com.gima.gimastore.entity.User;
-import org.hibernate.annotations.Nationalized;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -29,10 +27,6 @@ public class ProductionRequest implements Serializable {
     @JoinColumn(name = "PRODUCT_ID")
     @Nullable
     private Product product;
-    @ManyToOne
-    @JoinColumn(name = "STORE_ID")
-    @NotNull
-    private Store store;
 
     @ManyToOne
     @JoinColumn(name = "DEPARTMENT_ID")
@@ -60,12 +54,11 @@ public class ProductionRequest implements Serializable {
     @NotNull
     private Boolean isItProduct = false;
 
-    @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
-    private Boolean isLocked = false;
+    @Column(name = "IS_FULL_OUT", columnDefinition = "BIT DEFAULT 0")
+    private Boolean isFullOut = false;
 
     @Column(name = "IS_COMPLETED", columnDefinition = "BIT DEFAULT 0")
     private Boolean isCompleted = false;
-
 
     public Long getId() {
         return id;
@@ -89,12 +82,12 @@ public class ProductionRequest implements Serializable {
     }
 
 
-    public Boolean getLocked() {
-        return isLocked;
+    public Boolean getFullOut() {
+        return isFullOut;
     }
 
-    public void setLocked(Boolean locked) {
-        isLocked = locked;
+    public void setFullOut(Boolean fullOut) {
+        isFullOut = fullOut;
     }
 
     public void setProduct(@Nullable Product product) {
@@ -119,15 +112,6 @@ public class ProductionRequest implements Serializable {
 
     public Integer getExpectedProduction() {
         return expectedProduction;
-    }
-
-
-    public Store getStore() {
-        return store;
-    }
-
-    public void setStore(@Nullable Store store) {
-        this.store = store;
     }
 
     public void setExpectedProduction(Integer expectedProduction) {

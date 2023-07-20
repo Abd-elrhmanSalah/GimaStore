@@ -29,25 +29,6 @@ public class ProductionRequestParts implements Serializable {
     @NotNull
     private Integer requestedAmount;
 
-    @Column(name = "USED_AMOUNT")
-    @NotNull
-    private Integer usedAmount;
-
-    @Column(name = "RETURNED_AMOUNT")
-    @NotNull
-    private Integer returnedAmount;
-
-    @Column(name = "HARMED_AMOUNT")
-    @NotNull
-    private Integer harmedAmount;
-
-    @Column(name = "UNHARMED_AMOUNT")
-    @NotNull
-    private Integer unharmedAmount;
-
-    @Column(name = "IS_HAVE_RETURNED", columnDefinition = "BIT DEFAULT 0")
-    @NotNull
-    private Boolean isHaveReturned = false;
 
     public Long getId() {
         return id;
@@ -81,45 +62,5 @@ public class ProductionRequestParts implements Serializable {
 
     public void setRequestedAmount(Integer requestedAmount) {
         this.requestedAmount = requestedAmount;
-    }
-
-    public Integer getUsedAmount() {
-        return usedAmount;
-    }
-
-    public void setUsedAmount(Integer usedAmount) {
-        this.usedAmount = usedAmount;
-    }
-
-    public Integer getReturnedAmount() {
-        return returnedAmount;
-    }
-
-    public void setReturnedAmount(Integer returnedAmount) {
-        this.returnedAmount = returnedAmount;
-    }
-
-    public Integer getHarmedAmount() {
-        return harmedAmount;
-    }
-
-    public void setHarmedAmount(Integer harmedAmount) {
-        this.harmedAmount = harmedAmount;
-    }
-
-    public Integer getUnharmedAmount() {
-        return unharmedAmount;
-    }
-
-    public void setUnharmedAmount(Integer unharmedAmount) {
-        this.unharmedAmount = unharmedAmount;
-    }
-
-    public Boolean getHaveReturned() {
-        return isHaveReturned;
-    }
-
-    public void setHaveReturned(Boolean haveReturned) {
-        isHaveReturned = haveReturned;
     }
 }

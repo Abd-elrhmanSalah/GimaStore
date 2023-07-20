@@ -28,7 +28,8 @@ public class SupplyProcessPart implements Serializable {
 
     @Column(name = "AMOUNT")
     private Integer amount;
-
+    @Column(name = "AFTER_RETURN_AMOUNT")
+    private Integer amountAfterReturn;
     @Column(name = "DIST_AMOUNT")
     private Integer distAmount;
 
@@ -112,5 +113,13 @@ public class SupplyProcessPart implements Serializable {
 
     public void setPartialDist(Boolean partialDist) {
         isPartialDist = partialDist;
+    }
+
+    public Integer getAmountAfterReturn() {
+        return amountAfterReturn;
+    }
+
+    public void setAmountAfterReturn(Integer amountAfterReturn) {
+        this.amountAfterReturn = amountAfterReturn;
     }
 }

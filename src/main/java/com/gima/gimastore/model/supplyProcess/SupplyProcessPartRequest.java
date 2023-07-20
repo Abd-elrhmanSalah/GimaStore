@@ -10,6 +10,7 @@ public class SupplyProcessPartRequest implements Serializable {
     private PartDTO part;
     private BigDecimal cost;
     private Integer amount;
+private Integer amountAfterReturn;
     private Integer distAmount = 0;
     private Integer remainAmount = 0;
     private Boolean isFullDist;
@@ -80,5 +81,13 @@ public class SupplyProcessPartRequest implements Serializable {
 
     public void setPartialDist(Boolean partialDist) {
         isPartialDist = partialDist;
+    }
+
+    public Integer getAmountAfterReturn() {
+        return amountAfterReturn;
+    }
+
+    public void setAmountAfterReturn(Integer amountAfterReturn) {
+        this.amountAfterReturn = amountAfterReturn;
     }
 }

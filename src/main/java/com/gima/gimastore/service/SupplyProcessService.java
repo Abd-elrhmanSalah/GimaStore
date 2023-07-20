@@ -117,7 +117,7 @@ public class SupplyProcessService {
             partRequest.setDistAmount(supplyProcessPart.getDistAmount());
             partRequest.setFullDist(supplyProcessPart.getFullDist());
             partRequest.setPartialDist(supplyProcessPart.getPartialDist());
-
+            partRequest.setAmountAfterReturn(supplyProcessPart.getAmountAfterReturn());
             response.getSupplyProcessParts().getParts().add(partRequest);
 
         });
@@ -267,12 +267,19 @@ public class SupplyProcessService {
             supplyProcessPartsReturns.setAmountIncoming(partsReturnRequest.getAmountIncoming());
             supplyProcessPartsReturns.setSupplyProcess(returnsRequest.getSupplyProcess());
             supplyProcessPartsReturnsRepo.save(supplyProcessPartsReturns);
+
+            SupplyProcessPart bySupplyProcessAndPart = supplyProcessPartsRepo.findBySupplyProcessAndPart(
+                    supplyProcessPartsReturns.getSupplyProcess(), partsReturnRequest.getPart());
+            bySupplyProcessAndPart.setAmountAfterReturn(bySupplyProcessAndPart.getAmount() - partsReturnRequest.getAmountReturn());
+            supplyProcessPartsRepo.save(bySupplyProcessAndPart);
+
             partsReturnRequest.getStoreAmounts().forEach(storeAmount -> {
                 StorePart byStoreAndPart = storePartRepo.findByStoreAndPart(storeAmount.getStore(), partsReturnRequest.getPart()).get();
-                byStoreAndPart.setAmount(byStoreAndPart.getAmount()-storeAmount.getAmount());
+                byStoreAndPart.setAmount(byStoreAndPart.getAmount() - storeAmount.getAmount());
                 storePartRepo.save(byStoreAndPart);
             });
         });
+
 
     }
 
@@ -299,6 +306,7 @@ public class SupplyProcessService {
             supPart.setCost(partRequest.getCost());
             supPart.setRemainAmount(partRequest.getAmount());
             supPart.setDistAmount(0);
+            supPart.setAmountAfterReturn(0);
             supplyProcessPartsRepo.save(supPart);
         });
 

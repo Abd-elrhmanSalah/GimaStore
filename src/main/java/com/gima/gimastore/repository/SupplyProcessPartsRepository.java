@@ -1,5 +1,6 @@
 package com.gima.gimastore.repository;
 
+import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.storePartDist.StoresPartDist;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
@@ -14,6 +15,8 @@ import java.util.List;
 @Repository
 public interface SupplyProcessPartsRepository extends JpaRepository<SupplyProcessPart, Long> {
     List<SupplyProcessPart> findBySupplyProcess(SupplyProcess supplyProcess);
+
+    SupplyProcessPart findBySupplyProcessAndPart(SupplyProcess supplyProcess, Part part);
 
     void deleteAllBySupplyProcess(SupplyProcess supplyProcess);
 
