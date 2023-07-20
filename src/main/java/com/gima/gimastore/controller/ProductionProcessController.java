@@ -67,11 +67,11 @@ public class ProductionProcessController {
 
     }
 
-    @PostMapping("/productPartsReturn")
-    public ResponseEntity<?> productPartsReturn(@RequestParam Long storeId) {
+    @PostMapping("/getAllProductionRequest")
+    public ResponseEntity<?> getAllProductionRequest(@RequestParam Long storeId) {
         try {
-            productProcessService.getProductionRequestsByStore(storeId);
-            return new ResponseEntity<>("Done", HttpStatus.OK);
+            ;
+            return new ResponseEntity<>(productProcessService.getProductionRequestsByStore(storeId), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

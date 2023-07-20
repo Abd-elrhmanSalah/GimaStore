@@ -28,12 +28,11 @@ import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.gima.gimastore.constant.ResponseCodes.*;
 import static com.gima.gimastore.constant.ResponseCodes.NO_STORE_ID;
@@ -93,37 +92,25 @@ public class ProductProcessService {
 
     }
 
-    public void getProductionRequestsByStore(Long storeId) {
-        Store store = storeRepo.findById(storeId).get();
-//        productionPartsStoreRequestRepo.findAll()
-//                .parallelStream()
-//                .map(partsStoreRequest -> new ProductionPartsStoreRequest()
-//                .collect(
-//                        Collectors.toMap(
-//                                sum -> sum.getYear(),
-//                                Function.identity(),
-//                                (sum1, sum2) -> new YearReportSum(
-//                                        sum1.getYear(),
-//                                        sum1.getSmallSum().add(sum2.getSmallSum()),
-//                                        sum1.getMajorSum().add(sum2.getMajorSum()),
-//                                        sum1.getTotalSum().add(sum2.getTotalSum())
-//                                )
-//                        )
-//                )
-//                .values()
-//                .stream()
-//                .sorted(Comparator.comparing(YearReportSum::getYear))
-//                .collect(Collectors.toList())
-//        ;
-//    }
-//        List<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo.findAllByStoreAndAndFullOut(store, false);
-        List<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo.findByStoreAndISFullOutNot(store, false);
-        productionPartsStoreRequests.forEach(objects -> {
-//           productionPartsStoreRequestRepo.findById(objects.)
-        });
+    public static <T> java.util.function.Predicate<T> distinctByKey(
+            Function<? super T, ?> keyExtractor) {
 
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
+
+    public List<ProductionRequest> getProductionRequestsByStore(Long storeId) {
+        Store store = storeRepo.findById(storeId).get();
+        List<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo.findAllByStoreAndIsFullOut(store, false);
+        List<ProductionPartsStoreRequest> requests = productionPartsStoreRequests.stream().
+                filter(distinctByKey(p -> p.getProductionRequest())).collect(Collectors.toList());
+        List<ProductionRequest> productionRequests = new ArrayList<>();
+        requests.forEach(partsStoreRequest -> {
+            productionRequests.add(productionRequestRepo.findById(partsStoreRequest.getProductionRequest().getId()).get());
+        });
+        return productionRequests;
+    }
 //    @Transactional
 //    public void addProductionRequestReturn(ProductionReturnRequest productionReturnRequest) {
 //        ProductionRequest productionRequest = productionRequestRepo.findByRequestID(productionReturnRequest.getRequestID()).get();

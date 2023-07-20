@@ -43,6 +43,7 @@ public class ProductionPartsStoreRequest implements Serializable {
     private Date lastUpdateDate;
     @Column(name = "IS_FULL_OUT", columnDefinition = "BIT DEFAULT 0")
     private Boolean isFullOut = false;
+
     public Long getId() {
         return id;
     }
@@ -58,6 +59,21 @@ public class ProductionPartsStoreRequest implements Serializable {
 
     public void setProductionRequest(@Nullable ProductionRequest productionRequest) {
         this.productionRequest = productionRequest;
+    }
+
+    public ProductionPartsStoreRequest() {
+    }
+
+    public ProductionPartsStoreRequest(Long id, @Nullable ProductionRequest productionRequest, @Nullable Part part, Store store, Integer requestedAmount, Integer outedAmount, User lastUpdatedBy, Date lastUpdateDate, Boolean isFullOut) {
+        this.id = id;
+        this.productionRequest = productionRequest;
+        this.part = part;
+        this.store = store;
+        this.requestedAmount = requestedAmount;
+        this.outedAmount = outedAmount;
+        this.lastUpdatedBy = lastUpdatedBy;
+        this.lastUpdateDate = lastUpdateDate;
+        this.isFullOut = isFullOut;
     }
 
     @Nullable
@@ -116,4 +132,19 @@ public class ProductionPartsStoreRequest implements Serializable {
     public void setFullOut(Boolean fullOut) {
         isFullOut = fullOut;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ProductionPartsStoreRequest psr = (ProductionPartsStoreRequest) o;
+
+        return getProductionRequest() == psr.getProductionRequest();
+    }
+
+//    @Override
+//    public int hashCode() {
+//        return productionRequest.getId();
+//    }
 }
