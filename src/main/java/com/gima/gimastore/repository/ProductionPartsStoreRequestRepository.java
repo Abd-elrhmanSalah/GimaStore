@@ -2,6 +2,9 @@ package com.gima.gimastore.repository;
 
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.productProcess.ProductionPartsStoreRequest;
+import com.gima.gimastore.entity.productProcess.ProductionRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,8 +16,7 @@ import java.util.Set;
 @Repository
 public interface ProductionPartsStoreRequestRepository extends JpaRepository<ProductionPartsStoreRequest, Long> {
 
-    List<ProductionPartsStoreRequest> findAllByStoreAndIsFullOut(Store store, Boolean fullOut);
+    Page<ProductionPartsStoreRequest> findAllByStoreAndIsFullOut(Store store, Boolean fullOut, Pageable pageable);
 
-    @Query("select  p.id,avg (p.outedAmount),p.productionRequest,p.isFullOut,p.lastUpdateDate,p.lastUpdatedBy,p.outedAmount,p.part,p.requestedAmount,p.store from ProductionPartsStoreRequest p where p.store = :store and p.isFullOut=:fullOut group by p.productionRequest")
-    List<ProductionPartsStoreRequest> findByStoreAndISFullOutNot(@Param("store") Store store, @Param("fullOut") Boolean isFullOut);
+    ProductionPartsStoreRequest findByStoreAndProductionRequest(Store store, ProductionRequest productionRequest);
 }

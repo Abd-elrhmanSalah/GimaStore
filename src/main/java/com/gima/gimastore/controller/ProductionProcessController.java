@@ -68,10 +68,10 @@ public class ProductionProcessController {
     }
 
     @PostMapping("/getAllProductionRequest")
-    public ResponseEntity<?> getAllProductionRequest(@RequestParam Long storeId) {
+    public ResponseEntity<?> getAllProductionRequest(@RequestParam Long storeId,Pageable pageable) {
         try {
             ;
-            return new ResponseEntity<>(productProcessService.getProductionRequestsByStore(storeId), HttpStatus.OK);
+            return new ResponseEntity<>(productProcessService.getProductionRequestsByStore(storeId,pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

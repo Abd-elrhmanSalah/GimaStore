@@ -11,6 +11,7 @@ import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartSearchSupplyResponse;
 import com.gima.gimastore.model.ProductPartReturnedResponse;
+import com.gima.gimastore.model.UserDTO;
 import com.gima.gimastore.model.productionProcess.*;
 import com.gima.gimastore.model.supplyProcess.StoreAmount;
 import com.gima.gimastore.repository.*;
@@ -100,17 +101,32 @@ public class ProductProcessService {
     }
 
 
-    public List<ProductionRequest> getProductionRequestsByStore(Long storeId) {
+    public Page<ProductionRequest> getProductionRequestsByStore(Long storeId, Pageable pageable) {
         Store store = storeRepo.findById(storeId).get();
-        List<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo.findAllByStoreAndIsFullOut(store, false);
-        List<ProductionPartsStoreRequest> requests = productionPartsStoreRequests.stream().
+        Page<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo
+                .findAllByStoreAndIsFullOut(store, false, pageable);
+        List<ProductionPartsStoreRequest> requests = productionPartsStoreRequests.getContent().stream().
                 filter(distinctByKey(p -> p.getProductionRequest())).collect(Collectors.toList());
         List<ProductionRequest> productionRequests = new ArrayList<>();
         requests.forEach(partsStoreRequest -> {
             productionRequests.add(productionRequestRepo.findById(partsStoreRequest.getProductionRequest().getId()).get());
         });
-        return productionRequests;
+        PageImpl<ProductionRequest> productionRequestpage = new PageImpl<>(productionRequests, pageable, productionRequests.size());
+
+        return productionRequestpage;
     }
+
+//    public List<ProductionRequest> getRequestsByStoreAndRequesId(Long storeId, String requestId) {
+//        Store store = storeRepo.findById(storeId).get();
+//        List<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo.findByStoreAndProductionRequest(store, false);
+//        List<ProductionPartsStoreRequest> requests = productionPartsStoreRequests.stream().
+//                filter(distinctByKey(p -> p.getProductionRequest())).collect(Collectors.toList());
+//        List<ProductionRequest> productionRequests = new ArrayList<>();
+//        requests.forEach(partsStoreRequest -> {
+//            productionRequests.add(productionRequestRepo.findById(partsStoreRequest.getProductionRequest().getId()).get());
+//        });
+//        return productionRequests;
+//    }
 //    @Transactional
 //    public void addProductionRequestReturn(ProductionReturnRequest productionReturnRequest) {
 //        ProductionRequest productionRequest = productionRequestRepo.findByRequestID(productionReturnRequest.getRequestID()).get();
