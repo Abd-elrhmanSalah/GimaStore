@@ -223,7 +223,6 @@ public class ProductProcessService {
             });
             productPartResponse.setStores(storeAmountList);
             productPartResponseList.add(productPartResponse);
-
         });
 
         return productPartResponseList;
