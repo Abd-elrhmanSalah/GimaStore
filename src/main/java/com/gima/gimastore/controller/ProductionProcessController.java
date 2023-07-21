@@ -68,7 +68,7 @@ public class ProductionProcessController {
 
     }
 
-    @GetMapping("/getAllProductionRequest")
+    @GetMapping("/getAllProductionRequestByStore")
     public ResponseEntity<?> getAllProductionRequest(@RequestParam Long storeId, Pageable pageable) {
         try {
             ;
@@ -106,24 +106,24 @@ public class ProductionProcessController {
 
     }
 
-//    @GetMapping("/getAllProductionRequest")
-//    public ResponseEntity<?> getAllProductionRequest(@RequestParam Map<String, String> params, Pageable pageable) {
-//        try {
-//
-//            return new ResponseEntity<>(productProcessService.getAllProductionRequest(params, pageable), HttpStatus.OK);
-//
-//        } catch (ApplicationException e) {
-//            logger.error(e.getMessage(), e);
-//            e.printStackTrace();
-//            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
-//        } catch (Exception ex) {
-//            logger.error(ex.getMessage(), ex);
-//            ex.printStackTrace();
-//            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
-//                    HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//
-//    }
+    @GetMapping("/getAllProductionRequest")
+    public ResponseEntity<?> getAllProductionRequest(@RequestParam Map<String, String> params, Pageable pageable) {
+        try {
+
+            return new ResponseEntity<>(productProcessService.getAllProductionRequest(params, pageable), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
     @GetMapping("/getAllProductionRequestIds")
     public ResponseEntity<?> getAllProductionRequestIds() {
@@ -162,6 +162,7 @@ public class ProductionProcessController {
         }
 
     }
+
     @PostMapping("/confirmProductionRequestInStore")
     public ResponseEntity<?> confirmProductionRequestInStore(@RequestBody StorePartProductionRequest request) {
         try {
@@ -180,6 +181,7 @@ public class ProductionProcessController {
         }
 
     }
+
     @PostMapping("/confirmProductionRequest")
     public ResponseEntity<?> confirmProductionRequest(@RequestParam String requestId) {
         try {

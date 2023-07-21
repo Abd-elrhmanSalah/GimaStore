@@ -93,13 +93,6 @@ public class ProductProcessService {
 
     }
 
-    public static <T> java.util.function.Predicate<T> distinctByKey(
-            Function<? super T, ?> keyExtractor) {
-
-        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
-        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
-    }
-
 
     public Page<ProductionRequest> getProductionRequestsByStore(Long storeId, Pageable pageable) {
         Store store = storeRepo.findById(storeId).get();
@@ -279,8 +272,6 @@ public class ProductProcessService {
                         SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
                         List<Predicate> predicates = new ArrayList<>();
 
-                        Join<ProductionRequest, Store> productionRequestStoreJoin = root.join("store");
-
                         Join<ProductionRequest, Product> productionRequestProductJoin = root.join("product");
 
                         if (params.containsKey("FromDate"))
@@ -293,10 +284,6 @@ public class ProductProcessService {
                             if (!params.get("ToDate").equals(""))
                                 predicates.add(cb.lessThanOrEqualTo(
                                         root.get("creationDate"), formate.parse(params.get("ToDate"))));
-
-                        if (params.containsKey("storeId"))
-                            if (!params.get("storeId").equals(""))
-                                predicates.add(cb.equal(productionRequestStoreJoin.get("id"), params.get("storeId")));
 
 
                         if (params.containsKey("requestId"))
@@ -314,6 +301,12 @@ public class ProductProcessService {
                                 else
                                     predicates.add(cb.equal(root.get("isCompleted"), true));
 
+                        if (params.containsKey("isFullOut"))
+                            if (!params.get("isFullOut").equals(""))
+                                if (params.get("isFullOut").equalsIgnoreCase("false"))
+                                    predicates.add(cb.equal(root.get("isFullOut"), false));
+                                else
+                                    predicates.add(cb.equal(root.get("isFullOut"), true));
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {
@@ -369,4 +362,12 @@ public class ProductProcessService {
             throw new ApplicationException(new StatusResponse(NO_STORE_ID.getCode(), NO_STORE_ID.getKey(), NO_STORE_ID.getMessage()));
         return storeById;
     }
+
+    public static <T> java.util.function.Predicate<T> distinctByKey(
+            Function<? super T, ?> keyExtractor) {
+
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
 }
