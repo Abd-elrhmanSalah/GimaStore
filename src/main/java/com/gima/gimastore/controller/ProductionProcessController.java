@@ -4,6 +4,7 @@ import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.productionProcess.ProductionAPIRequest;
 import com.gima.gimastore.model.productionProcess.ProductionReturnRequest;
+import com.gima.gimastore.model.productionProcess.StorePartProductionRequest;
 import com.gima.gimastore.service.ProductProcessService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
@@ -67,11 +68,11 @@ public class ProductionProcessController {
 
     }
 
-    @PostMapping("/getAllProductionRequest")
-    public ResponseEntity<?> getAllProductionRequest(@RequestParam Long storeId,Pageable pageable) {
+    @GetMapping("/getAllProductionRequest")
+    public ResponseEntity<?> getAllProductionRequest(@RequestParam Long storeId, Pageable pageable) {
         try {
             ;
-            return new ResponseEntity<>(productProcessService.getProductionRequestsByStore(storeId,pageable), HttpStatus.OK);
+            return new ResponseEntity<>(productProcessService.getProductionRequestsByStore(storeId, pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -86,11 +87,11 @@ public class ProductionProcessController {
 
     }
 
-    @GetMapping("/getAllProductionRequest")
-    public ResponseEntity<?> getAllProductionRequest(@RequestParam Map<String, String> params, Pageable pageable) {
+    @GetMapping("/getRequestsByStoreAndRequestId")
+    public ResponseEntity<?> getRequestsByStoreAndRequestId(@RequestParam Long storeId, @RequestParam Long requestId) {
         try {
 
-            return new ResponseEntity<>(productProcessService.getAllProductionRequest(params, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(productProcessService.getRequestsByStoreAndRequestId(storeId, requestId), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -104,6 +105,25 @@ public class ProductionProcessController {
         }
 
     }
+
+//    @GetMapping("/getAllProductionRequest")
+//    public ResponseEntity<?> getAllProductionRequest(@RequestParam Map<String, String> params, Pageable pageable) {
+//        try {
+//
+//            return new ResponseEntity<>(productProcessService.getAllProductionRequest(params, pageable), HttpStatus.OK);
+//
+//        } catch (ApplicationException e) {
+//            logger.error(e.getMessage(), e);
+//            e.printStackTrace();
+//            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+//        } catch (Exception ex) {
+//            logger.error(ex.getMessage(), ex);
+//            ex.printStackTrace();
+//            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//
+//    }
 
     @GetMapping("/getAllProductionRequestIds")
     public ResponseEntity<?> getAllProductionRequestIds() {
@@ -142,7 +162,24 @@ public class ProductionProcessController {
         }
 
     }
+    @PostMapping("/confirmProductionRequestInStore")
+    public ResponseEntity<?> confirmProductionRequestInStore(@RequestBody StorePartProductionRequest request) {
+        try {
+            productProcessService.confirmProductionRequestInStore(request);
+            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تأكيد الخروج" + SUCCESS.getMessage()), HttpStatus.OK);
 
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
     @PostMapping("/confirmProductionRequest")
     public ResponseEntity<?> confirmProductionRequest(@RequestParam String requestId) {
         try {

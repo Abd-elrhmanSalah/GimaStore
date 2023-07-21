@@ -116,18 +116,16 @@ public class ProductProcessService {
         return productionRequestpage;
     }
 
-//    public List<ProductionRequest> getRequestsByStoreAndRequesId(Long storeId, String requestId) {
-//        Store store = storeRepo.findById(storeId).get();
-//        List<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo.findByStoreAndProductionRequest(store, false);
-//        List<ProductionPartsStoreRequest> requests = productionPartsStoreRequests.stream().
-//                filter(distinctByKey(p -> p.getProductionRequest())).collect(Collectors.toList());
-//        List<ProductionRequest> productionRequests = new ArrayList<>();
-//        requests.forEach(partsStoreRequest -> {
-//            productionRequests.add(productionRequestRepo.findById(partsStoreRequest.getProductionRequest().getId()).get());
-//        });
-//        return productionRequests;
-//    }
-//    @Transactional
+    public List<ProductionPartsStoreRequest> getRequestsByStoreAndRequestId(Long storeId, Long requestId) {
+        Store store = storeRepo.findById(storeId).get();
+        ProductionRequest productionRequest = productionRequestRepo.findById(requestId).get();
+        List<ProductionPartsStoreRequest> productionPartsStoreRequest = productionPartsStoreRequestRepo
+                .findByStoreAndProductionRequest(store, productionRequest);
+
+        return productionPartsStoreRequest;
+    }
+
+    //    @Transactional
 //    public void addProductionRequestReturn(ProductionReturnRequest productionReturnRequest) {
 //        ProductionRequest productionRequest = productionRequestRepo.findByRequestID(productionReturnRequest.getRequestID()).get();
 //
@@ -151,6 +149,28 @@ public class ProductProcessService {
 //
 //        }
 //    }
+    @Transactional
+    public void confirmProductionRequestInStore(StorePartProductionRequest request) {
+        ProductionPartsStoreRequest productionStoreRequest = productionPartsStoreRequestRepo.findById(request.getId()).get();
+        productionStoreRequest.setOutedAmount(request.getOutedAmount() + productionStoreRequest.getOutedAmount());
+        productionStoreRequest.setLastUpdateDate(request.getLastUpdateDate());
+        productionStoreRequest.setLastUpdatedBy(request.getLastUpdatedBy());
+        if (request.getOutedAmount().equals(productionStoreRequest.getRequestedAmount()))
+            productionStoreRequest.setFullOut(true);
+        productionPartsStoreRequestRepo.save(productionStoreRequest);
+        StorePart storePart = storePartRepo.findByStoreAndPart(productionStoreRequest.getStore(), productionStoreRequest.getPart()).get();
+        storePart.setAmount(storePart.getAmount() - request.getOutedAmount());
+        storePartRepo.save(storePart);
+        List<ProductionPartsStoreRequest> byProductionRequest = productionPartsStoreRequestRepo
+                .findByProductionRequest(productionStoreRequest.getProductionRequest());
+        boolean allFullOut = byProductionRequest.stream().allMatch(pr -> pr.getFullOut());
+        if (allFullOut) {
+            ProductionRequest productionRequestById = productionRequestRepo
+                    .findById(productionStoreRequest.getProductionRequest().getId()).get();
+            productionRequestById.setFullOut(true);
+            productionRequestRepo.save(productionRequestById);
+        }
+    }
 
     public void confirmProductionRequest(String requestId) {
         ProductionRequest productionRequest = productionRequestRepo.findByRequestID(requestId).get();

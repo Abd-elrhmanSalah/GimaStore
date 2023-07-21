@@ -18,5 +18,6 @@ public interface ProductionPartsStoreRequestRepository extends JpaRepository<Pro
 
     Page<ProductionPartsStoreRequest> findAllByStoreAndIsFullOut(Store store, Boolean fullOut, Pageable pageable);
 
-    ProductionPartsStoreRequest findByStoreAndProductionRequest(Store store, ProductionRequest productionRequest);
+    List<ProductionPartsStoreRequest> findByStoreAndProductionRequest(Store store, ProductionRequest productionRequest);
+    List<ProductionPartsStoreRequest>   findByProductionRequest(ProductionRequest productionRequest);
 }
