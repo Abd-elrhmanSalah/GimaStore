@@ -69,7 +69,7 @@ public class ReturnsController {
     public ResponseEntity<?> getHarmedParts(@RequestParam Map<String, String> params, Pageable pageable) {
         try {
 
-            return new ResponseEntity<>(returnPartService.getHarmedParts(params, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(returnPartService.getDetailedHarmedParts(params, pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
@@ -88,7 +88,44 @@ public class ReturnsController {
     public ResponseEntity<?> getReturnedParts(@RequestParam Map<String, String> params, Pageable pageable) {
         try {
 
-            return new ResponseEntity<>(returnPartService.getReturnedPart(params, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(returnPartService.getDetailedReturnedPart(params, pageable), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @GetMapping("/getTotalReturnedParts")
+    public ResponseEntity<?> getTotalReturnedParts(@RequestParam Map<String, String> params, Pageable pageable) {
+        try {
+
+            return new ResponseEntity<>(returnPartService.getTotalReturnedPart(params, pageable), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+    @GetMapping("/getTotalHarmedParts")
+    public ResponseEntity<?> getTotalHarmedParts(@RequestParam Map<String, String> params, Pageable pageable) {
+        try {
+
+            return new ResponseEntity<>(returnPartService.getTotalHarmedParts(params, pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);
