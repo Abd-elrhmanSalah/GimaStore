@@ -145,10 +145,11 @@ public class ProductProcessService {
     @Transactional
     public void confirmProductionRequestInStore(StorePartProductionRequest request) {
         ProductionPartsStoreRequest productionStoreRequest = productionPartsStoreRequestRepo.findById(request.getId()).get();
-        productionStoreRequest.setOutedAmount(request.getOutedAmount() + productionStoreRequest.getOutedAmount());
+        int updatedAmount = request.getOutedAmount() + productionStoreRequest.getOutedAmount();
+        productionStoreRequest.setOutedAmount(updatedAmount);
         productionStoreRequest.setLastUpdateDate(request.getLastUpdateDate());
         productionStoreRequest.setLastUpdatedBy(request.getLastUpdatedBy());
-        if (request.getOutedAmount().equals(productionStoreRequest.getRequestedAmount()))
+        if (updatedAmount == productionStoreRequest.getRequestedAmount())
             productionStoreRequest.setFullOut(true);
         productionPartsStoreRequestRepo.save(productionStoreRequest);
         StorePart storePart = storePartRepo.findByStoreAndPart(productionStoreRequest.getStore(), productionStoreRequest.getPart()).get();
@@ -176,62 +177,6 @@ public class ProductProcessService {
         });
     }
 
-//    public List<ProductPartReturnedResponse> productPartsReturn(String requestId, Integer exactlyProduction) {
-//        ProductionRequest productionRequest = productionRequestRepo.findByRequestID(requestId).get();
-//        ProductionRequestDTO productionRequestDTO = ObjectMapperUtils.map(productionRequest, ProductionRequestDTO.class);
-//
-//        if (exactlyProduction > productionRequest.getExpectedProduction())
-//            throw new ApplicationException(new StatusResponse(INVALID_GREATER_EXACTLYAMOUNT.getCode(),
-//                    INVALID_GREATER_EXACTLYAMOUNT.getKey(), INVALID_GREATER_EXACTLYAMOUNT.getMessage()));
-//
-//        if (exactlyProduction == productionRequest.getExpectedProduction())
-//            throw new ApplicationException(new StatusResponse(INVALID_EQUALITY_EXACTLYAMOUNT.getCode(),
-//                    INVALID_EQUALITY_EXACTLYAMOUNT.getKey(), INVALID_EQUALITY_EXACTLYAMOUNT.getMessage()));
-//
-//        productionRequestDTO.setExactlyProduction(exactlyProduction);
-//
-//        List<ProductPart> allByProduct = productPartRepo.findAllByProduct(productionRequestDTO.getProduct());
-//
-//        List<ProductPartResponse> exactlyProductPartResponseList = new ArrayList<>();
-//        allByProduct.forEach(productPart -> {
-////            Optional<StorePart> byStoreAndPart = storePartRepo.findByStoreAndPart(productionRequestDTO.getStore(),
-////                    productPart.getPart());
-//
-//            Part part = productPart.getPart();
-//            Integer partAmountPerProduct = productPart.getAmount();
-//            Integer totalAmountRequested = partAmountPerProduct * productionRequestDTO.getExactlyProduction();
-////            if (byStoreAndPart.get().getPart().getId() == part.getId()) {
-////                ProductPartResponse productPartResponse = new ProductPartResponse();
-////
-////                productPartResponse.setPart(part);
-////                productPartResponse.setRequestedAmount(totalAmountRequested);
-////                exactlyProductPartResponseList.add(productPartResponse);
-////            }
-//        });
-//
-//        List<ProductPartReturnedResponse> returnedProductPartResponseList = new ArrayList<>();
-//
-//        List<ProductionRequestParts> allByProductionRequest = productionRequestPartsRepo.findAllByProductionRequest(
-//                ObjectMapperUtils.map(productionRequestDTO, ProductionRequest.class));
-//        for (int i = 0; i < allByProductionRequest.size(); i++) {
-//            ProductPartReturnedResponse productPartResponse = new ProductPartReturnedResponse();
-//
-//            if (allByProductionRequest.get(i).getPart().getId() == exactlyProductPartResponseList.get(i).getPart().getId()) {
-//                Integer amountToReturn = allByProductionRequest.get(i).getRequestedAmount() -
-//                        exactlyProductPartResponseList.get(i).getRequestedAmount();
-//                ProductionRequestParts productionRequestParts = productionRequestPartsRepo.findAllByProductionRequestAndPart(productionRequest, allByProductionRequest.get(i).getPart());
-//                productPartResponse.setId(productionRequestParts.getId());
-//                productPartResponse.setPart(allByProductionRequest.get(i).getPart());
-//                productPartResponse.setReturnedAmount(amountToReturn);
-//                productPartResponse.setRequestedAmount(productionRequestParts.getRequestedAmount());
-//
-//
-//                returnedProductPartResponseList.add(productPartResponse);
-//            }
-//
-//        }
-//        return returnedProductPartResponseList;
-//    }
 
     @Transactional
     public List<ProductPartResponse> getProductParts(Long productId, Integer expectedAmount) {
@@ -317,14 +262,70 @@ public class ProductProcessService {
         return list;
     }
 
-    public List<String> getAllRequestIds() {
-        List<ProductionRequest> productionRequests = productionRequestRepo.findAll(Sort.by("id"));
-        List<String> requestIdList = new ArrayList<>();
-        productionRequests.stream().forEach(productionRequest -> {
-            requestIdList.add(productionRequest.getRequestID());
-        });
-        return requestIdList;
-    }
+//    public List<String> getAllRequestIds() {
+//        List<ProductionRequest> productionRequests = productionRequestRepo.findAll(Sort.by("id"));
+//        List<String> requestIdList = new ArrayList<>();
+//        productionRequests.stream().forEach(productionRequest -> {
+//            requestIdList.add(productionRequest.getRequestID());
+//        });
+//        return requestIdList;
+//    }
+    //    public List<ProductPartReturnedResponse> productPartsReturn(String requestId, Integer exactlyProduction) {
+//        ProductionRequest productionRequest = productionRequestRepo.findByRequestID(requestId).get();
+//        ProductionRequestDTO productionRequestDTO = ObjectMapperUtils.map(productionRequest, ProductionRequestDTO.class);
+//
+//        if (exactlyProduction > productionRequest.getExpectedProduction())
+//            throw new ApplicationException(new StatusResponse(INVALID_GREATER_EXACTLYAMOUNT.getCode(),
+//                    INVALID_GREATER_EXACTLYAMOUNT.getKey(), INVALID_GREATER_EXACTLYAMOUNT.getMessage()));
+//
+//        if (exactlyProduction == productionRequest.getExpectedProduction())
+//            throw new ApplicationException(new StatusResponse(INVALID_EQUALITY_EXACTLYAMOUNT.getCode(),
+//                    INVALID_EQUALITY_EXACTLYAMOUNT.getKey(), INVALID_EQUALITY_EXACTLYAMOUNT.getMessage()));
+//
+//        productionRequestDTO.setExactlyProduction(exactlyProduction);
+//
+//        List<ProductPart> allByProduct = productPartRepo.findAllByProduct(productionRequestDTO.getProduct());
+//
+//        List<ProductPartResponse> exactlyProductPartResponseList = new ArrayList<>();
+//        allByProduct.forEach(productPart -> {
+////            Optional<StorePart> byStoreAndPart = storePartRepo.findByStoreAndPart(productionRequestDTO.getStore(),
+////                    productPart.getPart());
+//
+//            Part part = productPart.getPart();
+//            Integer partAmountPerProduct = productPart.getAmount();
+//            Integer totalAmountRequested = partAmountPerProduct * productionRequestDTO.getExactlyProduction();
+////            if (byStoreAndPart.get().getPart().getId() == part.getId()) {
+////                ProductPartResponse productPartResponse = new ProductPartResponse();
+////
+////                productPartResponse.setPart(part);
+////                productPartResponse.setRequestedAmount(totalAmountRequested);
+////                exactlyProductPartResponseList.add(productPartResponse);
+////            }
+//        });
+//
+//        List<ProductPartReturnedResponse> returnedProductPartResponseList = new ArrayList<>();
+//
+//        List<ProductionRequestParts> allByProductionRequest = productionRequestPartsRepo.findAllByProductionRequest(
+//                ObjectMapperUtils.map(productionRequestDTO, ProductionRequest.class));
+//        for (int i = 0; i < allByProductionRequest.size(); i++) {
+//            ProductPartReturnedResponse productPartResponse = new ProductPartReturnedResponse();
+//
+//            if (allByProductionRequest.get(i).getPart().getId() == exactlyProductPartResponseList.get(i).getPart().getId()) {
+//                Integer amountToReturn = allByProductionRequest.get(i).getRequestedAmount() -
+//                        exactlyProductPartResponseList.get(i).getRequestedAmount();
+//                ProductionRequestParts productionRequestParts = productionRequestPartsRepo.findAllByProductionRequestAndPart(productionRequest, allByProductionRequest.get(i).getPart());
+//                productPartResponse.setId(productionRequestParts.getId());
+//                productPartResponse.setPart(allByProductionRequest.get(i).getPart());
+//                productPartResponse.setReturnedAmount(amountToReturn);
+//                productPartResponse.setRequestedAmount(productionRequestParts.getRequestedAmount());
+//
+//
+//                returnedProductPartResponseList.add(productPartResponse);
+//            }
+//
+//        }
+//        return returnedProductPartResponseList;
+//    }
 
     public List<ProductionPartsAPIRequest> getProductPartsByRequestId(String requestId) {
         List<ProductionRequestParts> allByProductionRequest = productionRequestPartsRepo.findAllByProductionRequest(productionRequestRepo.findByRequestID(requestId).get());
@@ -346,7 +347,6 @@ public class ProductProcessService {
 
         return returnedProductPartResponseList;
     }
-
 
     private Optional<Product> validateExistProduct(Long id) {
         Optional<Product> productById = productRepo.findById(id);
