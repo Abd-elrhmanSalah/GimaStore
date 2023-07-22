@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ReturnsService {
@@ -43,9 +44,17 @@ public class ReturnsService {
                 returnPart.setAmountReturned(storeAmount.getAmount());
                 returnPart.setPart(request.getPart());
                 returnPartRepo.save(returnPart);
-                StorePart storePart = storePartRepo.findByStoreAndPart(storeAmount.getStore(), request.getPart()).get();
-                storePart.setAmount(storePart.getAmount() + storeAmount.getAmount());
-                storePartRepo.save(storePart);
+                Optional<StorePart> storePart = storePartRepo.findByStoreAndPart(storeAmount.getStore(), request.getPart());
+                if(storePart.isEmpty()){
+                    StorePart storePart1=new StorePart();
+                    storePart1.setAmount(storeAmount.getAmount());
+                    storePart1.setPart(request.getPart());
+                    storePart1.setStore(storeAmount.getStore());
+                    storePartRepo.save(storePart1);
+                }else {
+                    storePart.get().setAmount(storePart.get().getAmount() + storeAmount.getAmount());
+                    storePartRepo.save(storePart.get());
+                }
             });
         });
     }
