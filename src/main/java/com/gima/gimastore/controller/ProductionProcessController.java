@@ -183,9 +183,9 @@ public class ProductionProcessController {
     }
 
     @PostMapping("/confirmProductionRequest")
-    public ResponseEntity<?> confirmProductionRequest(@RequestParam String requestId) {
+    public ResponseEntity<?> confirmProductionRequest(@RequestParam String requestId, @RequestParam Integer exactlyAmount) {
         try {
-            productProcessService.confirmProductionRequest(requestId);
+            productProcessService.confirmProductionRequest(requestId, exactlyAmount);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تأكيد طلب الإنتاج" + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {

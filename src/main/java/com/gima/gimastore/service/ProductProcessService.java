@@ -166,15 +166,11 @@ public class ProductProcessService {
         }
     }
 
-    public void confirmProductionRequest(String requestId) {
+    public void confirmProductionRequest(String requestId, Integer exactlyAmount) {
         ProductionRequest productionRequest = productionRequestRepo.findByRequestID(requestId).get();
         productionRequest.setCompleted(true);
+        productionRequest.setExactlyProduction(exactlyAmount);
         productionRequestRepo.save(productionRequest);
-        List<ProductionRequestParts> allByProductionRequest = productionRequestPartsRepo.findAllByProductionRequest(productionRequest);
-        allByProductionRequest.forEach(productionRequestParts -> {
-//            productionRequestParts.setUsedAmount(productionRequestParts.getRequestedAmount());
-            productionRequestPartsRepo.save(productionRequestParts);
-        });
     }
 
 
