@@ -125,25 +125,6 @@ public class ProductionProcessController {
 
     }
 
-//    @GetMapping("/getAllProductionRequestIds")
-//    public ResponseEntity<?> getAllProductionRequestIds() {
-//        try {
-//
-//            return new ResponseEntity<>(productProcessService.getAllRequestIds(), HttpStatus.OK);
-//
-//        } catch (ApplicationException e) {
-//            logger.error(e.getMessage(), e);
-//            e.printStackTrace();
-//            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
-//        } catch (Exception ex) {
-//            logger.error(ex.getMessage(), ex);
-//            ex.printStackTrace();
-//            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
-//                    HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//
-//    }
-
     @GetMapping("/getProductPartsByRequestId")
     public ResponseEntity<?> getProductPartsByRequestId(@RequestParam String requestId) {
         try {
