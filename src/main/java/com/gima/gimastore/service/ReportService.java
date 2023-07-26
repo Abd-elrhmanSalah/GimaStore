@@ -1,14 +1,14 @@
 package com.gima.gimastore.service;
 
 import com.gima.gimastore.entity.*;
-import com.gima.gimastore.entity.productProcess.Product;
-import com.gima.gimastore.entity.productProcess.ProductionRequest;
-import com.gima.gimastore.entity.productProcess.ProductionRequestParts;
+import com.gima.gimastore.entity.productProcess.*;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPartsReturns;
 import com.gima.gimastore.model.PartReportResponse;
 import com.gima.gimastore.model.PartSearchSupplyResponse;
+import com.gima.gimastore.model.UserDTO;
+import com.gima.gimastore.model.productionProcess.ProductBalanceResponse;
 import com.gima.gimastore.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,20 +26,23 @@ import java.util.Map;
 
 @Service
 public class ReportService {
-    private PartRepository partRepository;
+
     private ProductionRequestPartsRepository productionRequestPartsRepository;
+    private ProductionRequestRepository productionRequestRepo;
     private StorePartRepository storePartRepository;
     private SupplyProcessPartsRepository supplyProcessPartsRepository;
     private StorePartSettlementRepository storePartSettlementRepo;
     private SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo;
+    private ProductOutProductsRepository productOutProductsRepo;
 
-    public ReportService(PartRepository partRepository, ProductionRequestPartsRepository productionRequestPartsRepository, StorePartRepository storePartRepository, SupplyProcessPartsRepository supplyProcessPartsRepository, StorePartSettlementRepository storePartSettlementRepo, SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo) {
-        this.partRepository = partRepository;
+    public ReportService(ProductionRequestPartsRepository productionRequestPartsRepository, ProductionRequestRepository productionRequestRepo, StorePartRepository storePartRepository, SupplyProcessPartsRepository supplyProcessPartsRepository, StorePartSettlementRepository storePartSettlementRepo, SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo, ProductOutProductsRepository productOutProductsRepo) {
         this.productionRequestPartsRepository = productionRequestPartsRepository;
+        this.productionRequestRepo = productionRequestRepo;
         this.storePartRepository = storePartRepository;
         this.supplyProcessPartsRepository = supplyProcessPartsRepository;
         this.storePartSettlementRepo = storePartSettlementRepo;
         this.supplyProcessPartsReturnsRepo = supplyProcessPartsReturnsRepo;
+        this.productOutProductsRepo = productOutProductsRepo;
     }
 
     public PartReportResponse getPartReport(Map<String, String> params, Pageable pageable) {
@@ -226,5 +229,121 @@ public class ReportService {
                 }, pageable);
 
         return supplyProcessPartsReturns;
+    }
+
+    public Page<ProductOutProducts> getProductsOut(Map<String, String> params, Pageable pageable) {
+
+
+        Page<ProductOutProducts> productOutProducts = productOutProductsRepo.findAll(
+                (Specification<ProductOutProducts>) (root, query, cb) -> {
+                    try {
+                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                        List<Predicate> predicates = new ArrayList<>();
+
+                        Join<ProductOutProducts, Product> productJoin = root.join("product");
+
+                        if (params.containsKey("FromDate"))
+                            if (!params.get("FromDate").equals(""))
+                                predicates.add(cb.greaterThanOrEqualTo(
+                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
+
+
+                        if (params.containsKey("ToDate"))
+                            if (!params.get("ToDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(
+                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
+
+                        if (params.containsKey("productId"))
+                            if (!params.get("productId").equals(""))
+                                predicates.add(cb.equal(productJoin.get("id"), params.get("productId")));
+
+                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, pageable);
+
+        return productOutProducts;
+    }
+
+    public ProductBalanceResponse productBalance(Map<String, String> params, Pageable pageable) {
+
+
+        Page<ProductionRequest> productionRequests = productionRequestRepo.findAll(
+                (Specification<ProductionRequest>) (root, query, cb) -> {
+                    try {
+                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                        List<Predicate> predicates = new ArrayList<>();
+
+                        Join<ProductionRequest, Product> productJoin = root.join("product");
+
+                        if (params.containsKey("FromDate"))
+                            if (!params.get("FromDate").equals(""))
+                                predicates.add(cb.greaterThanOrEqualTo(
+                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
+
+
+                        if (params.containsKey("ToDate"))
+                            if (!params.get("ToDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(
+                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
+
+                        if (params.containsKey("productId"))
+                            if (!params.get("productId").equals(""))
+                                predicates.add(cb.equal(productJoin.get("id"), params.get("productId")));
+
+                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, pageable);
+        Page<ProductOutProducts> productsOut = productOutProductsRepo.findAll(
+                (Specification<ProductOutProducts>) (root, query, cb) -> {
+                    try {
+                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                        List<Predicate> predicates = new ArrayList<>();
+
+                        Join<ProductOutProducts, Product> productJoin = root.join("product");
+
+                        if (params.containsKey("FromDate"))
+                            if (!params.get("FromDate").equals(""))
+                                predicates.add(cb.greaterThanOrEqualTo(
+                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
+
+
+                        if (params.containsKey("ToDate"))
+                            if (!params.get("ToDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(
+                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
+
+                        if (params.containsKey("productId"))
+                            if (!params.get("productId").equals(""))
+                                predicates.add(cb.equal(productJoin.get("id"), params.get("productId")));
+
+                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, pageable);
+
+        if (productionRequests.getContent().size() != 0) {
+            ProductBalanceResponse productBalanceResponse = new ProductBalanceResponse();
+            productBalanceResponse.setProduct(productionRequests.getContent().get(0).getProduct());
+            ///////////
+            productBalanceResponse.setAmountRequested(0);
+            productionRequests.getContent().forEach(productionRequest -> {
+                productBalanceResponse.setAmountRequested(productBalanceResponse.getAmountRequested()
+                        + productionRequest.getExpectedProduction());
+            });
+            ////////////
+            productBalanceResponse.setAmountOut(0);
+            productsOut.getContent().forEach(productOut -> {
+                productBalanceResponse.setAmountOut(productBalanceResponse.getAmountOut()
+                        + productOut.getAmount());
+            });
+            return productBalanceResponse;
+        }
+        return null;
+
     }
 }

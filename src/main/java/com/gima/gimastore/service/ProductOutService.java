@@ -34,6 +34,7 @@ public class ProductOutService {
     private ProductOutProductsRepository productOutProductsRepo;
     @Autowired
     EntityManager em;
+
     public ProductOutService(ProductOutRepository productOutRepo, ProductOutProductsRepository productOutProductsRepo) {
         this.productOutRepo = productOutRepo;
         this.productOutProductsRepo = productOutProductsRepo;
@@ -105,18 +106,8 @@ public class ProductOutService {
                         List<Predicate> predicates = new ArrayList<>();
 
                         Join<ProductOut, User> productOutUserJoin = root.join("responsibleBy");
-///////////////////////////////////////
-                        CriteriaBuilder cb2 = em.getCriteriaBuilder();
-                        CriteriaQuery<ProductOutProducts> cq2 = cb2.createQuery(ProductOutProducts.class);
-                        Root<ProductOutProducts> productOutProductsRoot = cq2.from(ProductOutProducts.class);
+                        Join<ProductOut, ProductOutProducts> outProductOutProductsJoin = root.join("productOut");
 
-//                        Join<ProductOut, ProductOutProducts> outProductOutProductsJoin = productOutProductsRoot.join("productOut");
-//                        Join<ProductOutProducts, Product> productOutProductJoin = outProductOutProductsJoin.
-//                                join("product");
-///////////////////////////////////
-                        Join<ProductOut, ProductOutProducts> outProductOutProductsJoin = productOutProductsRoot.join("productOut");
-//                        Join<ProductOutProducts, Product> productOutProductJoin = outProductOutProductsJoin.
-//                                join("product");
                         if (params.containsKey("FromDate"))
                             if (!params.get("FromDate").equals(""))
                                 predicates.add(cb.greaterThanOrEqualTo(
@@ -143,10 +134,6 @@ public class ProductOutService {
                         if (params.containsKey("responsibleBy"))
                             if (!params.get("responsibleBy").equals(""))
                                 predicates.add(cb.equal(productOutUserJoin.get("id"), params.get("responsibleBy")));
-
-                        if (params.containsKey("productId"))
-                            if (!params.get("productId").equals(""))
-                                predicates.add(cb.equal(outProductOutProductsJoin.get("id"), params.get("productId")));
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {
