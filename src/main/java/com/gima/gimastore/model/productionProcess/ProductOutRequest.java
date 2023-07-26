@@ -19,7 +19,9 @@ public class ProductOutRequest implements Serializable {
     private String destinationName;
     private String driverName;
     private String note;
+    private String requestId;
     private User createdBy;
+    private User responsibleBy;
     private Date creationDate = new Date();
     private List<ProductAmount> productAmounts;
 
@@ -77,5 +79,21 @@ public class ProductOutRequest implements Serializable {
 
     public void setProductAmounts(List<ProductAmount> productAmounts) {
         this.productAmounts = productAmounts;
+    }
+
+    public User getResponsibleBy() {
+        return responsibleBy;
+    }
+
+    public void setResponsibleBy(User responsibleBy) {
+        this.responsibleBy = responsibleBy;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 }
