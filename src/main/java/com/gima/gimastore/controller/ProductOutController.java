@@ -86,6 +86,23 @@ public class ProductOutController {
         }
 
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findSProductOutById(@PathVariable Long id) {
+        try {
+
+            return new ResponseEntity<>(productOutService.findSProductOutById(id), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
 

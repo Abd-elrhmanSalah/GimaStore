@@ -217,7 +217,7 @@ public class ReportService {
 
                         if (params.containsKey("supplyProcessId"))
                             if (!params.get("supplyProcessId").equals(""))
-                                predicates.add(cb.equal(supplyProcessPartsReturnsSupplyProcessJoin.get("id"), params.get("supplyProcessId")));
+                                predicates.add(cb.equal(supplyProcessPartsReturnsSupplyProcessJoin.get("billId"), params.get("supplyProcessId")));
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {

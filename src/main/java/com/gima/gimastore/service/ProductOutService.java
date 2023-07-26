@@ -10,13 +10,14 @@ import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.productionProcess.ProductOutRequest;
 import com.gima.gimastore.repository.ProductOutProductsRepository;
 import com.gima.gimastore.repository.ProductOutRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,7 +32,8 @@ import static com.gima.gimastore.constant.ResponseCodes.REPEATED_PARTNAME;
 public class ProductOutService {
     private ProductOutRepository productOutRepo;
     private ProductOutProductsRepository productOutProductsRepo;
-
+    @Autowired
+    EntityManager em;
     public ProductOutService(ProductOutRepository productOutRepo, ProductOutProductsRepository productOutProductsRepo) {
         this.productOutRepo = productOutRepo;
         this.productOutProductsRepo = productOutProductsRepo;
@@ -90,6 +92,11 @@ public class ProductOutService {
         });
     }
 
+    public List<ProductOutProducts> findSProductOutById(Long productOut) {
+        return productOutProductsRepo.findByProductOut(productOutRepo.findById(productOut).get());
+
+    }
+
     public Page<ProductOut> getProductsOut(Map<String, String> params, Pageable pageable) {
         Page<ProductOut> list = productOutRepo.findAll(
                 (Specification<ProductOut>) (root, query, cb) -> {
@@ -98,7 +105,18 @@ public class ProductOutService {
                         List<Predicate> predicates = new ArrayList<>();
 
                         Join<ProductOut, User> productOutUserJoin = root.join("responsibleBy");
+///////////////////////////////////////
+                        CriteriaBuilder cb2 = em.getCriteriaBuilder();
+                        CriteriaQuery<ProductOutProducts> cq2 = cb2.createQuery(ProductOutProducts.class);
+                        Root<ProductOutProducts> productOutProductsRoot = cq2.from(ProductOutProducts.class);
 
+//                        Join<ProductOut, ProductOutProducts> outProductOutProductsJoin = productOutProductsRoot.join("productOut");
+//                        Join<ProductOutProducts, Product> productOutProductJoin = outProductOutProductsJoin.
+//                                join("product");
+///////////////////////////////////
+                        Join<ProductOut, ProductOutProducts> outProductOutProductsJoin = productOutProductsRoot.join("productOut");
+//                        Join<ProductOutProducts, Product> productOutProductJoin = outProductOutProductsJoin.
+//                                join("product");
                         if (params.containsKey("FromDate"))
                             if (!params.get("FromDate").equals(""))
                                 predicates.add(cb.greaterThanOrEqualTo(
@@ -125,6 +143,10 @@ public class ProductOutService {
                         if (params.containsKey("responsibleBy"))
                             if (!params.get("responsibleBy").equals(""))
                                 predicates.add(cb.equal(productOutUserJoin.get("id"), params.get("responsibleBy")));
+
+                        if (params.containsKey("productId"))
+                            if (!params.get("productId").equals(""))
+                                predicates.add(cb.equal(outProductOutProductsJoin.get("id"), params.get("productId")));
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {
