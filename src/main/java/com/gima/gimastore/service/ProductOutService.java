@@ -106,7 +106,6 @@ public class ProductOutService {
                         List<Predicate> predicates = new ArrayList<>();
 
                         Join<ProductOut, User> productOutUserJoin = root.join("responsibleBy");
-                        Join<ProductOut, ProductOutProducts> outProductOutProductsJoin = root.join("productOut");
 
                         if (params.containsKey("FromDate"))
                             if (!params.get("FromDate").equals(""))

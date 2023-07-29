@@ -84,28 +84,46 @@ public class UserPrivileges implements Serializable {
     private Boolean addSupplierProcess;
     @Column(name = "EDIT_SUPPLIERPROCESS", columnDefinition = "BIT DEFAULT 0")
     private Boolean editSupplierProcess;
-    @Column(name = "BLOCK_SUPPLIERPROCESS", columnDefinition = "BIT DEFAULT 0")
-    private Boolean blockSupplierProcess;
     @Column(name = "SEARCH_SUPPLIERPROCESS", columnDefinition = "BIT DEFAULT 0")
-    private Boolean searchSupplierProcess;
+    private Boolean returnSupplierProcess;
     @Column(name = "VIEW_SUPPLIERPROCESS", columnDefinition = "BIT DEFAULT 0")
     private Boolean viewSupplierProcess;
-    //////////////////////////////////////////////////////////////////////////////
-    //For SupplyProcessDistribution
     @Column(name = "HAVE_SUPPLIERPROCESS_DISTRIBUTION", columnDefinition = "BIT DEFAULT 0")
     private Boolean haveSupplierProcessDist;
-    @Column(name = "ACCEPT_SUPPLIERPROCESS_DISTRIBUTION", columnDefinition = "BIT DEFAULT 0")
-    private Boolean acceptSupplierProcessDist;
-    @Column(name = "REJECT_SUPPLIERPROCESS_DISTRIBUTION", columnDefinition = "BIT DEFAULT 0")
-    private Boolean rejectSupplierProcessDist;
+
     //////////////////////////////////////////////////////////////////////////////
     //For StorePartsDistribution
     @Column(name = "HAVE_STOREPARTS_DISTRIBUTION", columnDefinition = "BIT DEFAULT 0")
     private Boolean haveStorePartsDist;
-    @Column(name = "ACCEPT_STOREPARTS_DISTRIBUTION", columnDefinition = "BIT DEFAULT 0")
-    private Boolean acceptStorePartsDist;
-    @Column(name = "REJECT_STOREPARTS_DISTRIBUTION", columnDefinition = "BIT DEFAULT 0")
-    private Boolean rejectStorePartsDist;
+    /////////////////////////////////////////////////////////////////////////////
+    //For Production
+    @Column(name = "HAVE_PRODUCTIONPROCESS", columnDefinition = "BIT DEFAULT 0")
+    private Boolean haveProductionProcess;
+    @Column(name = "ADD_PRODUCTIONPROCESS", columnDefinition = "BIT DEFAULT 0")
+    private Boolean addProductionProcess;
+    /////////////////////////////////////////////////////////////////////////////
+    //For Stores
+    @Column(name = "HAVE_STOREDETAILS", columnDefinition = "BIT DEFAULT 0")
+    private Boolean haveStoreDetails;
+    @Column(name = "SETTLEMENT_STORE", columnDefinition = "BIT DEFAULT 0")
+    private Boolean settlementStore;
+    /////////////////////////////////////////////////////////////////////////////
+    //For ProductOuts
+    @Column(name = "HAVE_PRODUCTOUT", columnDefinition = "BIT DEFAULT 0")
+    private Boolean haveProductOut;
+    @Column(name = "EDIT_PRODUCTOUT", columnDefinition = "BIT DEFAULT 0")
+    private Boolean editProductOut;
+    @Column(name = "ADD_PRODUCTOUT", columnDefinition = "BIT DEFAULT 0")
+    private Boolean addProductOut;
+    /////////////////////////////////////////////////////////////////////////////
+    //For Returns
+    @Column(name = "HAVE_RETURNS", columnDefinition = "BIT DEFAULT 0")
+    private Boolean haveReturns;
+    /////////////////////////////////////////////////////////////////////////////
+    //For Reports
+    @Column(name = "HAVE_REPORTS", columnDefinition = "BIT DEFAULT 0")
+    private Boolean haveReports;
+
 
     public Long getId() {
         return id;
@@ -371,22 +389,6 @@ public class UserPrivileges implements Serializable {
         this.editSupplierProcess = editSupplierProcess;
     }
 
-    public Boolean getBlockSupplierProcess() {
-        return blockSupplierProcess;
-    }
-
-    public void setBlockSupplierProcess(Boolean blockSupplierProcess) {
-        this.blockSupplierProcess = blockSupplierProcess;
-    }
-
-    public Boolean getSearchSupplierProcess() {
-        return searchSupplierProcess;
-    }
-
-    public void setSearchSupplierProcess(Boolean searchSupplierProcess) {
-        this.searchSupplierProcess = searchSupplierProcess;
-    }
-
     public Boolean getViewSupplierProcess() {
         return viewSupplierProcess;
     }
@@ -403,22 +405,6 @@ public class UserPrivileges implements Serializable {
         this.haveSupplierProcessDist = haveSupplierProcessDist;
     }
 
-    public Boolean getAcceptSupplierProcessDist() {
-        return acceptSupplierProcessDist;
-    }
-
-    public void setAcceptSupplierProcessDist(Boolean acceptSupplierProcessDist) {
-        this.acceptSupplierProcessDist = acceptSupplierProcessDist;
-    }
-
-    public Boolean getRejectSupplierProcessDist() {
-        return rejectSupplierProcessDist;
-    }
-
-    public void setRejectSupplierProcessDist(Boolean rejectSupplierProcessDist) {
-        this.rejectSupplierProcessDist = rejectSupplierProcessDist;
-    }
-
     public Boolean getHaveStorePartsDist() {
         return haveStorePartsDist;
     }
@@ -427,19 +413,83 @@ public class UserPrivileges implements Serializable {
         this.haveStorePartsDist = haveStorePartsDist;
     }
 
-    public Boolean getAcceptStorePartsDist() {
-        return acceptStorePartsDist;
+    public Boolean getReturnSupplierProcess() {
+        return returnSupplierProcess;
     }
 
-    public void setAcceptStorePartsDist(Boolean acceptStorePartsDist) {
-        this.acceptStorePartsDist = acceptStorePartsDist;
+    public void setReturnSupplierProcess(Boolean returnSupplierProcess) {
+        this.returnSupplierProcess = returnSupplierProcess;
     }
 
-    public Boolean getRejectStorePartsDist() {
-        return rejectStorePartsDist;
+    public Boolean getHaveProductionProcess() {
+        return haveProductionProcess;
     }
 
-    public void setRejectStorePartsDist(Boolean rejectStorePartsDist) {
-        this.rejectStorePartsDist = rejectStorePartsDist;
+    public void setHaveProductionProcess(Boolean haveProductionProcess) {
+        this.haveProductionProcess = haveProductionProcess;
+    }
+
+    public Boolean getAddProductionProcess() {
+        return addProductionProcess;
+    }
+
+    public void setAddProductionProcess(Boolean addProductionProcess) {
+        this.addProductionProcess = addProductionProcess;
+    }
+
+    public Boolean getHaveStoreDetails() {
+        return haveStoreDetails;
+    }
+
+    public void setHaveStoreDetails(Boolean haveStoreDetails) {
+        this.haveStoreDetails = haveStoreDetails;
+    }
+
+    public Boolean getSettlementStore() {
+        return settlementStore;
+    }
+
+    public void setSettlementStore(Boolean settlementStore) {
+        this.settlementStore = settlementStore;
+    }
+
+    public Boolean getHaveProductOut() {
+        return haveProductOut;
+    }
+
+    public void setHaveProductOut(Boolean haveProductOut) {
+        this.haveProductOut = haveProductOut;
+    }
+
+    public Boolean getEditProductOut() {
+        return editProductOut;
+    }
+
+    public void setEditProductOut(Boolean editProductOut) {
+        this.editProductOut = editProductOut;
+    }
+
+    public Boolean getAddProductOut() {
+        return addProductOut;
+    }
+
+    public void setAddProductOut(Boolean addProductOut) {
+        this.addProductOut = addProductOut;
+    }
+
+    public Boolean getHaveReturns() {
+        return haveReturns;
+    }
+
+    public void setHaveReturns(Boolean haveReturns) {
+        this.haveReturns = haveReturns;
+    }
+
+    public Boolean getHaveReports() {
+        return haveReports;
+    }
+
+    public void setHaveReports(Boolean haveReports) {
+        this.haveReports = haveReports;
     }
 }

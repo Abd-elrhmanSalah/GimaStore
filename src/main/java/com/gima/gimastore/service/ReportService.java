@@ -302,19 +302,19 @@ public class ReportService {
                     try {
                         SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
                         List<Predicate> predicates = new ArrayList<>();
-
                         Join<ProductOutProducts, Product> productJoin = root.join("product");
+                        Join<ProductOutProducts, ProductOut> j = root.join("productOut");
 
                         if (params.containsKey("FromDate"))
                             if (!params.get("FromDate").equals(""))
                                 predicates.add(cb.greaterThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
+                                        j.get("creationDate"), formate.parse(params.get("FromDate"))));
 
 
                         if (params.containsKey("ToDate"))
                             if (!params.get("ToDate").equals(""))
                                 predicates.add(cb.lessThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
+                                        j.get("creationDate"), formate.parse(params.get("ToDate"))));
 
                         if (params.containsKey("productId"))
                             if (!params.get("productId").equals(""))

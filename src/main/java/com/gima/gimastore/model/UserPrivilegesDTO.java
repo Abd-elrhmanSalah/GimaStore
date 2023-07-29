@@ -42,24 +42,38 @@ public class UserPrivilegesDTO implements Serializable {
     private Boolean addSupplier = false;
     private Boolean editSupplier = false;
     private Boolean blockSupplier = false;
-    //////////////////////////////////////////////////////////////////////////////
-    //For SupplyProcess
+    ////////////////////////////////////////////////////////////////////////////////////
+    // For SupplyProcess
     private Boolean haveSupplierProcess = false;
     private Boolean addSupplierProcess = false;
     private Boolean editSupplierProcess = false;
-    private Boolean blockSupplierProcess = false;
-    private Boolean searchSupplierProcess = false;
+    private Boolean returnSupplierProcess = false;
     private Boolean viewSupplierProcess = false;
-    //////////////////////////////////////////////////////////////////////////////
-    //For SupplyProcessDistribution
     private Boolean haveSupplierProcessDist = false;
-    private Boolean acceptSupplierProcessDist = false;
-    private Boolean rejectSupplierProcessDist = false;
+
     //////////////////////////////////////////////////////////////////////////////
     //For StorePartsDistribution
     private Boolean haveStorePartsDist = false;
-    private Boolean acceptStorePartsDist = false;
-    private Boolean rejectStorePartsDist = false;
+    /////////////////////////////////////////////////////////////////////////////
+    //For Production
+
+    private Boolean haveProductionProcess = false;
+    private Boolean addProductionProcess = false;
+    /////////////////////////////////////////////////////////////////////////////
+    //For Stores
+    private Boolean haveStoreDetails = false;
+    private Boolean settlementStore = false;
+    /////////////////////////////////////////////////////////////////////////////
+    //For ProductOuts
+    private Boolean haveProductOut = false;
+    private Boolean editProductOut = false;
+    private Boolean addProductOut = false;
+    /////////////////////////////////////////////////////////////////////////////
+    //For Returns
+    private Boolean haveReturns = false;
+    /////////////////////////////////////////////////////////////////////////////
+    //For Reports
+    private Boolean haveReports = false;
 
     public User getUser() {
         return user;
@@ -317,22 +331,6 @@ public class UserPrivilegesDTO implements Serializable {
         this.editSupplierProcess = editSupplierProcess;
     }
 
-    public Boolean getBlockSupplierProcess() {
-        return blockSupplierProcess;
-    }
-
-    public void setBlockSupplierProcess(Boolean blockSupplierProcess) {
-        this.blockSupplierProcess = blockSupplierProcess;
-    }
-
-    public Boolean getSearchSupplierProcess() {
-        return searchSupplierProcess;
-    }
-
-    public void setSearchSupplierProcess(Boolean searchSupplierProcess) {
-        this.searchSupplierProcess = searchSupplierProcess;
-    }
-
     public Boolean getViewSupplierProcess() {
         return viewSupplierProcess;
     }
@@ -349,22 +347,6 @@ public class UserPrivilegesDTO implements Serializable {
         this.haveSupplierProcessDist = haveSupplierProcessDist;
     }
 
-    public Boolean getAcceptSupplierProcessDist() {
-        return acceptSupplierProcessDist;
-    }
-
-    public void setAcceptSupplierProcessDist(Boolean acceptSupplierProcessDist) {
-        this.acceptSupplierProcessDist = acceptSupplierProcessDist;
-    }
-
-    public Boolean getRejectSupplierProcessDist() {
-        return rejectSupplierProcessDist;
-    }
-
-    public void setRejectSupplierProcessDist(Boolean rejectSupplierProcessDist) {
-        this.rejectSupplierProcessDist = rejectSupplierProcessDist;
-    }
-
     public Boolean getHaveStorePartsDist() {
         return haveStorePartsDist;
     }
@@ -373,27 +355,91 @@ public class UserPrivilegesDTO implements Serializable {
         this.haveStorePartsDist = haveStorePartsDist;
     }
 
-    public Boolean getAcceptStorePartsDist() {
-        return acceptStorePartsDist;
-    }
-
-    public void setAcceptStorePartsDist(Boolean acceptStorePartsDist) {
-        this.acceptStorePartsDist = acceptStorePartsDist;
-    }
-
-    public Boolean getRejectStorePartsDist() {
-        return rejectStorePartsDist;
-    }
-
-    public void setRejectStorePartsDist(Boolean rejectStorePartsDist) {
-        this.rejectStorePartsDist = rejectStorePartsDist;
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Boolean getReturnSupplierProcess() {
+        return returnSupplierProcess;
+    }
+
+    public void setReturnSupplierProcess(Boolean returnSupplierProcess) {
+        this.returnSupplierProcess = returnSupplierProcess;
+    }
+
+    public Boolean getHaveProductionProcess() {
+        return haveProductionProcess;
+    }
+
+    public void setHaveProductionProcess(Boolean haveProductionProcess) {
+        this.haveProductionProcess = haveProductionProcess;
+    }
+
+    public Boolean getAddProductionProcess() {
+        return addProductionProcess;
+    }
+
+    public void setAddProductionProcess(Boolean addProductionProcess) {
+        this.addProductionProcess = addProductionProcess;
+    }
+
+    public Boolean getHaveStoreDetails() {
+        return haveStoreDetails;
+    }
+
+    public void setHaveStoreDetails(Boolean haveStoreDetails) {
+        this.haveStoreDetails = haveStoreDetails;
+    }
+
+    public Boolean getSettlementStore() {
+        return settlementStore;
+    }
+
+    public void setSettlementStore(Boolean settlementStore) {
+        this.settlementStore = settlementStore;
+    }
+
+    public Boolean getHaveProductOut() {
+        return haveProductOut;
+    }
+
+    public void setHaveProductOut(Boolean haveProductOut) {
+        this.haveProductOut = haveProductOut;
+    }
+
+    public Boolean getEditProductOut() {
+        return editProductOut;
+    }
+
+    public void setEditProductOut(Boolean editProductOut) {
+        this.editProductOut = editProductOut;
+    }
+
+    public Boolean getAddProductOut() {
+        return addProductOut;
+    }
+
+    public void setAddProductOut(Boolean addProductOut) {
+        this.addProductOut = addProductOut;
+    }
+
+    public Boolean getHaveReturns() {
+        return haveReturns;
+    }
+
+    public void setHaveReturns(Boolean haveReturns) {
+        this.haveReturns = haveReturns;
+    }
+
+    public Boolean getHaveReports() {
+        return haveReports;
+    }
+
+    public void setHaveReports(Boolean haveReports) {
+        this.haveReports = haveReports;
     }
 }
