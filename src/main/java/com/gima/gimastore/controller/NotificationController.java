@@ -10,7 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/notification")
@@ -28,6 +31,11 @@ public class NotificationController {
     @SendTo("/topic/messages")
     public void getMessage() {
 
+    }
+    @MessageMapping("/private-notification")
+    @SendToUser("/topic/private-notification")
+    public void getPrivateMessage(final Principal principal) {
+//        System.out.println("we are here");
     }
 
     @ResponseBody

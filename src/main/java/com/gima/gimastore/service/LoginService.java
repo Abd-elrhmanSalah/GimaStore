@@ -1,5 +1,6 @@
 package com.gima.gimastore.service;
 
+import com.gima.gimastore.config.UserHandshakeHandler;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.UserPrivileges;
@@ -54,6 +55,7 @@ public class LoginService {
         }
         UserPrivileges byUser = userPrivilegesRepo.findByUser(byUserNameAndPassword.get()).get();
         userDto.setUserPrivileges(ObjectMapperUtils.map(byUser, UserPrivilegesDTO.class));
+        UserHandshakeHandler.userId = Long.toString(userDto.getId());
         return userDto;
     }
 }

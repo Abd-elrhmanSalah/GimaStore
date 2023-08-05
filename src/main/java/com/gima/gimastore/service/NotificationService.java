@@ -44,14 +44,17 @@ public class NotificationService {
         List<String> privileges = getPrivilegesByUser(user);
 
         List<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user);
-        messagingTemplate.convertAndSend("/topic/messages", response);
+        messagingTemplate.convertAndSendToUser(Long.toString(userId), "/topic/private-notification", response);
+//        messagingTemplate.convertAndSend("/topic/message", response);
+
+
     }
 
-//    public void sendNotification(Notification notification, String userId) throws JsonProcessingException {
-//        ObjectMapper mapper = new ObjectMapper();
-//        String json = mapper.writeValueAsString(notification);
-//        messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", json);
-//    }
+    public void sendNotification(Notification notification, String userId) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(notification);
+        messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", json);
+    }
 
     private List<String> getPrivilegesByUser(User user) {
         UserPrivileges userPrivileges = userPrivilegesRepo.findByUser(user).get();
