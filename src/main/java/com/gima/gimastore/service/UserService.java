@@ -1,9 +1,6 @@
 package com.gima.gimastore.service;
 
-import com.gima.gimastore.entity.Role;
-import com.gima.gimastore.entity.Store;
-import com.gima.gimastore.entity.User;
-import com.gima.gimastore.entity.UserPrivileges;
+import com.gima.gimastore.entity.*;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.PartSearchSupplyResponse;

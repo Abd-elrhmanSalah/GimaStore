@@ -62,6 +62,8 @@ public class UserPrivilegesDTO implements Serializable {
     /////////////////////////////////////////////////////////////////////////////
     //For Stores
     private Boolean haveStoreDetails = false;
+    private Boolean haveDistStoreParts = false;
+
     private Boolean settlementStore = false;
     /////////////////////////////////////////////////////////////////////////////
     //For ProductOuts
@@ -74,6 +76,8 @@ public class UserPrivilegesDTO implements Serializable {
     /////////////////////////////////////////////////////////////////////////////
     //For Reports
     private Boolean haveReports = false;
+
+    private Boolean haveEntities = false;
 
     public User getUser() {
         return user;
@@ -441,5 +445,21 @@ public class UserPrivilegesDTO implements Serializable {
 
     public void setHaveReports(Boolean haveReports) {
         this.haveReports = haveReports;
+    }
+
+    public Boolean getHaveDistStoreParts() {
+        return haveDistStoreParts;
+    }
+
+    public void setHaveDistStoreParts(Boolean haveDistStoreParts) {
+        this.haveDistStoreParts = haveDistStoreParts;
+    }
+
+    public Boolean getHaveEntities() {
+        return haveEntities;
+    }
+
+    public void setHaveEntities(Boolean haveEntities) {
+        this.haveEntities = haveEntities;
     }
 }

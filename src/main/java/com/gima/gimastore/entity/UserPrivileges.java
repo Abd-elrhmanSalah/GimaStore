@@ -124,6 +124,12 @@ public class UserPrivileges implements Serializable {
     @Column(name = "HAVE_REPORTS", columnDefinition = "BIT DEFAULT 0")
     private Boolean haveReports;
 
+    @Column(name = "HAVE_DISTSTOREPARTS", columnDefinition = "BIT DEFAULT 0")
+    private Boolean haveDistStoreParts;
+
+    @Column(name = "HAVE_ENTITIES", columnDefinition = "BIT DEFAULT 0")
+    private Boolean haveEntities;
+
 
     public Long getId() {
         return id;
@@ -491,5 +497,21 @@ public class UserPrivileges implements Serializable {
 
     public void setHaveReports(Boolean haveReports) {
         this.haveReports = haveReports;
+    }
+
+    public Boolean getHaveDistStoreParts() {
+        return haveDistStoreParts;
+    }
+
+    public void setHaveDistStoreParts(Boolean haveDistStoreParts) {
+        this.haveDistStoreParts = haveDistStoreParts;
+    }
+
+    public Boolean getHaveEntities() {
+        return haveEntities;
+    }
+
+    public void setHaveEntities(Boolean haveEntities) {
+        this.haveEntities = haveEntities;
     }
 }
