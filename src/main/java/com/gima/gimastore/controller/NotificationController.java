@@ -62,7 +62,7 @@ public class NotificationController {
     }
 
     @MessageMapping("/message/{room}")
-//    @SendTo("/topic/messages")
+   @SendTo("/topic/message/{room}")
     public void handleMessage(@DestinationVariable String room) {
         // Access session attributes
         logger.error("ana2");
@@ -80,6 +80,7 @@ public class NotificationController {
     @GetMapping("/getNotificationsByUser")
     public void getNotificationsByUser(@RequestParam Long userId) {
         notificationService.notifyFrontend(userId);
+
     }
 
     @PostMapping
