@@ -17,9 +17,10 @@ public class NotificationDTO implements Serializable {
     private String privilege;
     private String readBy;
     private User createdBy;
-    private Date creationDate=new Date();
+    private Date creationDate = new Date();
 
     private String routeName;
+    private Long receiver;
 
     public Long getId() {
         return id;
@@ -83,5 +84,13 @@ public class NotificationDTO implements Serializable {
 
     public void setRouteName(String routeName) {
         this.routeName = routeName;
+    }
+
+    public Long getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(Long receiver) {
+        this.receiver = receiver;
     }
 }

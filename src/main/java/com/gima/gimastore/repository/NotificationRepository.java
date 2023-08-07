@@ -11,9 +11,9 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    //    List<Notification> findAllByPrivilegeAndCreatedByNot(String privilege, User suer);
-    @Query(nativeQuery = true, value = "SELECT * FROM Notification as e WHERE e.PRIVILEGE IN (:privileges) and e.CREATED_BY !=(:user)")
-    // 3. Spring JPA In cause using native query
+    List<Notification> findAllByReceiverAndCreatedByNot(Long receiver, User suer);
+
+    @Query(nativeQuery = true, value = "SELECT * FROM Notification as e WHERE e.PRIVILEGE IN (:privileges) and e.CREATED_BY !=(:user) orderBy e.CREATION_DATE DESC")
     List<Notification> findAllByPrivilegeAndCreatedByNot(@Param("privileges") List<String> privileges,
                                                          @Param("user") User user);
 }

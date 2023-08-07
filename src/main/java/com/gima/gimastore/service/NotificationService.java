@@ -6,11 +6,14 @@ import com.gima.gimastore.entity.Notification;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.UserPrivileges;
 import com.gima.gimastore.model.NotificationDTO;
+import com.gima.gimastore.model.PartSearchSupplyResponse;
 import com.gima.gimastore.repository.NotificationRepository;
 import com.gima.gimastore.repository.UserPrivilegesRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -33,25 +36,25 @@ public class NotificationService {
         this.userPrivilegesRepo = userPrivilegesRepo;
     }
 
-   
+
     public void addNotification(NotificationDTO notificationDTO) {
-
         notificationRepo.save(ObjectMapperUtils.map(notificationDTO, Notification.class));
-
-      
-//        notifyFrontend(Long.parseLong(notificationDTO.getReadBy()));
-
     }
 
-    public void notifyFrontend(Long userId) {
-//        Notification response;
+    public void notifyFrontend(Long userId, Pageable pageable) {
+
         User user = userRepo.findById(userId).get();
-        List<String> privileges = getPrivilegesByUser(user);
+        if (user.getRole().getRoleName().equals(3)) {
+            List<Notification> response = notificationRepo.findAllByReceiverAndCreatedByNot(userId, user);
+            messagingTemplate.convertAndSend("/topic/message/" + userId + "", response);
+        } else {
+            List<String> privileges = getPrivilegesByUser(user);
 
-        List<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user);
-//        messagingTemplate.convertAndSendToUser(Long.toString(6L), "/topic/private-notification", response);
-        messagingTemplate.convertAndSend("/topic/message/" + userId + "", response);
+            List<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user);
+            PageImpl<Notification> notificationPage = new PageImpl<>(response, pageable, response.size());
 
+            messagingTemplate.convertAndSend("/topic/message/" + userId + "", notificationPage);
+        }
 
     }
 

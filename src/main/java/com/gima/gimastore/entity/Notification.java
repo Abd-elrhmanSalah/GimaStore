@@ -2,6 +2,7 @@ package com.gima.gimastore.entity;
 
 import com.gima.gimastore.entity.User;
 import org.hibernate.annotations.Nationalized;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -42,6 +43,10 @@ public class Notification implements Serializable {
     private Date creationDate;
     @Column(name = "ROUTE_NAME")
     private String routeName;
+    @Column(name = "RECEIVER")
+    @Nullable
+    private Long receiver;
+
     public Long getId() {
         return id;
     }
@@ -104,5 +109,13 @@ public class Notification implements Serializable {
 
     public void setRouteName(String routeName) {
         this.routeName = routeName;
+    }
+
+    public Long getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(Long receiver) {
+        this.receiver = receiver;
     }
 }

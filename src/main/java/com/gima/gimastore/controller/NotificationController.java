@@ -6,6 +6,7 @@ import com.gima.gimastore.service.NotificationService;
 import com.gima.gimastore.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServerHttpRequest;
@@ -47,6 +48,7 @@ public class NotificationController {
         this.notificationService = notificationService;
         this.messagingTemplate = messagingTemplate;
     }
+
     public List<String> getIdList() {
         return idList;
     }
@@ -89,18 +91,18 @@ public class NotificationController {
 
     @ResponseBody
     @GetMapping("/getNotificationsByUser")
-    public void getNotificationsByUser(@RequestParam Long userId) {
-        notificationService.notifyFrontend(userId);
-        
+    public void getNotificationsByUser(@RequestParam Long userId, Pageable pageable) {
+        notificationService.notifyFrontend(userId,pageable);
+
         boolean b = idList.stream().anyMatch(id ->
-        id.equalsIgnoreCase(userId.toString()));
-if (!b)
-    getIdList().add(userId.toString());
+                id.equalsIgnoreCase(userId.toString()));
+        if (!b)
+            getIdList().add(userId.toString());
 
-idList.forEach(id -> {
+        idList.forEach(id -> {
 
-     System.err.println(id);
- });
+            System.err.println(id);
+        });
     }
 
     @PostMapping
@@ -109,11 +111,11 @@ idList.forEach(id -> {
 
 
             notificationService.addNotification(notificationDTO);
-         
-    idList.forEach(id -> {
-       notificationService. notifyFrontend(Long.parseLong(id));
-        System.err.println(id);
-    });
+
+            idList.forEach(id -> {
+                notificationService.notifyFrontend(Long.parseLong(id),null);
+                System.err.println(id);
+            });
 
 
             return new ResponseEntity<>("done", HttpStatus.OK);
