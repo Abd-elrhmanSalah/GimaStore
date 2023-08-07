@@ -96,6 +96,10 @@ public class NotificationController {
     @PostMapping
     public ResponseEntity<?> addNotification(@RequestBody NotificationDTO notificationDTO) {
         try {
+
+
+            notificationService.addNotification(notificationDTO);
+
             boolean b = idList.stream().anyMatch(id ->
                     id.equalsIgnoreCase(notificationDTO.getCreatedBy().getId().toString()));
             if (!b)
@@ -105,9 +109,6 @@ public class NotificationController {
                     notificationService.notifyFrontend(Long.parseLong(id));
                 System.out.println(id);
             });
-
-
-            notificationService.addNotification(notificationDTO);
 
             return new ResponseEntity<>("done", HttpStatus.OK);
 
