@@ -40,7 +40,7 @@ import java.util.Map;
 public class NotificationController {
     private NotificationService notificationService;
     private SimpMessagingTemplate messagingTemplate;
-    private List<String> idList = new ArrayList<>();
+
     private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
 
     public NotificationController(NotificationService notificationService, SimpMessagingTemplate messagingTemplate) {
@@ -48,13 +48,6 @@ public class NotificationController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public List<String> getIdList() {
-        return idList;
-    }
-
-    public void setIdList(List<String> idList) {
-        this.idList = idList;
-    }
 
     //    @MessageMapping("/message")
 //    @SendTo("/topic/messages")
@@ -100,15 +93,7 @@ public class NotificationController {
 
             notificationService.addNotification(notificationDTO);
 
-            boolean b = idList.stream().anyMatch(id ->
-                    id.equalsIgnoreCase(notificationDTO.getCreatedBy().getId().toString()));
-            if (!b)
-                getIdList().add(notificationDTO.getCreatedBy().getId().toString());
-            idList.forEach(id -> {
-                if (!notificationDTO.getCreatedBy().getId().toString().equalsIgnoreCase(id))
-                    notificationService.notifyFrontend(Long.parseLong(id));
-                System.out.println(id);
-            });
+
 
             return new ResponseEntity<>("done", HttpStatus.OK);
 

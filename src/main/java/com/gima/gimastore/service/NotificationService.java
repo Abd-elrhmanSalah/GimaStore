@@ -24,6 +24,7 @@ public class NotificationService {
     private SimpMessagingTemplate messagingTemplate;
     private UserRepository userRepo;
     private UserPrivilegesRepository userPrivilegesRepo;
+    private List<String> idList = new ArrayList<>();
 
     public NotificationService(NotificationRepository notificationRepo, SimpMessagingTemplate messagingTemplate, UserRepository userRepo, UserPrivilegesRepository userPrivilegesRepo) {
         this.notificationRepo = notificationRepo;
@@ -32,10 +33,29 @@ public class NotificationService {
         this.userPrivilegesRepo = userPrivilegesRepo;
     }
 
+    public List<String> getIdList() {
+        return idList;
+    }
+
+    public void setIdList(List<String> idList) {
+        this.idList = idList;
+    }
+
     public void addNotification(NotificationDTO notificationDTO) {
 
         notificationRepo.save(ObjectMapperUtils.map(notificationDTO, Notification.class));
-        notifyFrontend(Long.parseLong(notificationDTO.getReadBy()));
+
+        boolean b = idList.stream().anyMatch(id ->
+                id.equalsIgnoreCase(notificationDTO.getCreatedBy().getId().toString()));
+        if (!b)
+            getIdList().add(notificationDTO.getCreatedBy().getId().toString());
+
+        idList.forEach(id -> {
+            notifyFrontend(Long.parseLong(id));
+            System.out.println(id);
+        });
+//        notifyFrontend(Long.parseLong(notificationDTO.getReadBy()));
+
     }
 
     public void notifyFrontend(Long userId) {
