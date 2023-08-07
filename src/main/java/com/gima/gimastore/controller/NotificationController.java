@@ -91,21 +91,21 @@ public class NotificationController {
     @GetMapping("/getNotificationsByUser")
     public void getNotificationsByUser(@RequestParam Long userId) {
         notificationService.notifyFrontend(userId);
-        boolean b = idList.stream().anyMatch(id ->
-                id.equalsIgnoreCase(userId.toString()));
-        if (!b)
-            getIdList().add(userId.toString());
-        idList.forEach(id -> {
-            if (!userId.toString().equalsIgnoreCase(id))
-                notificationService.notifyFrontend(Long.parseLong(id));
-            System.out.println(id);
-        });
-
     }
 
     @PostMapping
     public ResponseEntity<?> addNotification(@RequestBody NotificationDTO notificationDTO) {
         try {
+            boolean b = idList.stream().anyMatch(id ->
+                    id.equalsIgnoreCase(notificationDTO.getCreatedBy().getId().toString()));
+            if (!b)
+                getIdList().add(notificationDTO.getCreatedBy().getId().toString());
+            idList.forEach(id -> {
+                if (!notificationDTO.getCreatedBy().getId().toString().equalsIgnoreCase(id))
+                    notificationService.notifyFrontend(Long.parseLong(id));
+                System.out.println(id);
+            });
+
 
             notificationService.addNotification(notificationDTO);
 
