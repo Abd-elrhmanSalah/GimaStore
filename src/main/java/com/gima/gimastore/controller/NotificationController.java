@@ -30,6 +30,8 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -38,11 +40,20 @@ import java.util.Map;
 public class NotificationController {
     private NotificationService notificationService;
     private SimpMessagingTemplate messagingTemplate;
+    private List<String> idList = new ArrayList<>();
     private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
 
     public NotificationController(NotificationService notificationService, SimpMessagingTemplate messagingTemplate) {
         this.notificationService = notificationService;
         this.messagingTemplate = messagingTemplate;
+    }
+
+    public List<String> getIdList() {
+        return idList;
+    }
+
+    public void setIdList(List<String> idList) {
+        this.idList = idList;
     }
 
     //    @MessageMapping("/message")
@@ -62,7 +73,7 @@ public class NotificationController {
     }
 
     @MessageMapping("/message/{room}")
-   @SendTo("/topic/message/{room}")
+    @SendTo("/topic/message/{room}")
     public void handleMessage(@DestinationVariable String room) {
         // Access session attributes
         logger.error("ana2");
@@ -80,6 +91,15 @@ public class NotificationController {
     @GetMapping("/getNotificationsByUser")
     public void getNotificationsByUser(@RequestParam Long userId) {
         notificationService.notifyFrontend(userId);
+        boolean b = idList.stream().anyMatch(id ->
+                id.equalsIgnoreCase(userId.toString()));
+        if (!b)
+            getIdList().add(userId.toString());
+        idList.forEach(id -> {
+            if (!userId.toString().equalsIgnoreCase(id))
+                notificationService.notifyFrontend(Long.parseLong(id));
+            System.out.println(id);
+        });
 
     }
 
