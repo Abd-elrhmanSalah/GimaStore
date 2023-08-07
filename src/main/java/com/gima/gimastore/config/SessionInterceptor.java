@@ -18,10 +18,10 @@ public class SessionInterceptor extends HttpSessionHandshakeInterceptor {
         // Your session management logic here
         // Store session attributes in a user session map or Spring Session
         if (request instanceof ServletServerHttpRequest) {
-            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-            HttpSession session = servletRequest.getServletRequest().getSession();
-            attributes.put("sessionId", session.getId());
-            log.error("==========="+session.getId());
+       //     ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
+       //     HttpSession session = servletRequest.getServletRequest().getSession();
+        //    attributes.put("sessionId", session.getId());
+       //     log.error("==========="+session.getId());
         }
         return super.beforeHandshake(request, response, wsHandler, attributes);
     }

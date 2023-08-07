@@ -40,12 +40,19 @@ import java.util.Map;
 public class NotificationController {
     private NotificationService notificationService;
     private SimpMessagingTemplate messagingTemplate;
-
+    private List<String> idList = new ArrayList<>();
     private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
 
     public NotificationController(NotificationService notificationService, SimpMessagingTemplate messagingTemplate) {
         this.notificationService = notificationService;
         this.messagingTemplate = messagingTemplate;
+    }
+    public List<String> getIdList() {
+        return idList;
+    }
+
+    public void setIdList(List<String> idList) {
+        this.idList = idList;
     }
 
 
@@ -84,6 +91,16 @@ public class NotificationController {
     @GetMapping("/getNotificationsByUser")
     public void getNotificationsByUser(@RequestParam Long userId) {
         notificationService.notifyFrontend(userId);
+        
+        boolean b = idList.stream().anyMatch(id ->
+        id.equalsIgnoreCase(userId.toString()));
+if (!b)
+    getIdList().add(userId.toString());
+
+idList.forEach(id -> {
+
+     System.err.println(id);
+ });
     }
 
     @PostMapping
@@ -92,7 +109,11 @@ public class NotificationController {
 
 
             notificationService.addNotification(notificationDTO);
-
+         
+    idList.forEach(id -> {
+       notificationService. notifyFrontend(Long.parseLong(id));
+        System.err.println(id);
+    });
 
 
             return new ResponseEntity<>("done", HttpStatus.OK);
