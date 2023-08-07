@@ -1,6 +1,7 @@
 package com.gima.gimastore.service;
 
 import com.gima.gimastore.config.UserHandshakeHandler;
+import com.gima.gimastore.config.WebSocketConfig;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.UserPrivileges;
@@ -36,7 +37,7 @@ public class LoginService {
         this.userPrivilegesRepo = userPrivilegesRepo;
     }
 
-    public UserDTO login(String username, String password) throws DataFormatException, IOException {
+    public UserDTO login(String username, String password){
         Optional<User> byUserNameAndPassword = userRepo.findByUserNameAndPassword(username, password);
         if (byUserNameAndPassword.isEmpty())
             throw new ApplicationException(new StatusResponse(LOGIN_FAILED.getCode(), LOGIN_FAILED.getKey(), LOGIN_FAILED.getMessage()));
@@ -55,7 +56,9 @@ public class LoginService {
         }
         UserPrivileges byUser = userPrivilegesRepo.findByUser(byUserNameAndPassword.get()).get();
         userDto.setUserPrivileges(ObjectMapperUtils.map(byUser, UserPrivilegesDTO.class));
-        UserHandshakeHandler.userId = Long.toString(userDto.getId());
+        WebSocketConfig a=new WebSocketConfig();
+        a.setUserId(userDto.getId().toString());
+
         return userDto;
     }
 }

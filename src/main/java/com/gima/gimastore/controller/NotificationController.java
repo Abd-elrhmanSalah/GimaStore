@@ -8,35 +8,73 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.security.Principal;
+import java.util.Map;
 
-@RestController
+@Controller
 @RequestMapping("/notification")
 @CrossOrigin(origins = "*")
 public class NotificationController {
     private NotificationService notificationService;
-
+    private SimpMessagingTemplate messagingTemplate;
     private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
 
-    public NotificationController(NotificationService notificationService) {
+    public NotificationController(NotificationService notificationService, SimpMessagingTemplate messagingTemplate) {
         this.notificationService = notificationService;
+        this.messagingTemplate = messagingTemplate;
     }
 
-    @MessageMapping("/message")
-    @SendTo("/topic/messages")
-    public void getMessage() {
-
+    //    @MessageMapping("/message")
+//    @SendTo("/topic/messages")
+    public void getMessage(SimpMessageHeaderAccessor headerAccessor) {
+        String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
+        System.out.println("we are here");
     }
+
     @MessageMapping("/private-notification")
-    @SendToUser("/topic/private-notification")
-    public void getPrivateMessage(final Principal principal) {
+    @SendToUser("topic/private-notification")
+    public void getPrivateMessage() {
+        logger.error("ana1");
+//       ContextHolder.getContext().getAuthentication().getPrincipal();
+//        String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
 //        System.out.println("we are here");
     }
+
+    @MessageMapping("/message/{room}")
+//    @SendTo("/topic/messages")
+    public void handleMessage(@DestinationVariable String room) {
+        // Access session attributes
+        logger.error("ana2");
+//        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+//        messagingTemplate.convertAndSendToUser(sessionAttributes.get("sessionId").toString(),
+//                "/topic/private-notification", "Alla");
+//        logger.error(sessionAttributes.get("sessionId").toString());
+
+        System.out.println("i'am here");
+
+    }
+
 
     @ResponseBody
     @GetMapping("/getNotificationsByUser")

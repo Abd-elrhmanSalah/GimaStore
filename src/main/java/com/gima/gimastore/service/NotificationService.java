@@ -44,8 +44,8 @@ public class NotificationService {
         List<String> privileges = getPrivilegesByUser(user);
 
         List<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user);
-        messagingTemplate.convertAndSendToUser(Long.toString(userId), "/topic/private-notification", response);
-//        messagingTemplate.convertAndSend("/topic/message", response);
+//        messagingTemplate.convertAndSendToUser(Long.toString(6L), "/topic/private-notification", response);
+        messagingTemplate.convertAndSend("/topic/message/" + userId + "", response);
 
 
     }
