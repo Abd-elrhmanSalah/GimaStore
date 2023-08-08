@@ -1,6 +1,7 @@
 package com.gima.gimastore.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.data.domain.Sort;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gima.gimastore.entity.Notification;
 import com.gima.gimastore.entity.User;
@@ -11,8 +12,11 @@ import com.gima.gimastore.repository.NotificationRepository;
 import com.gima.gimastore.repository.UserPrivilegesRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ObjectMapperUtils;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -44,13 +48,16 @@ public class NotificationService {
     public void notifyFrontend(Long userId, Pageable pageable) {
 
         User user = userRepo.findById(userId).get();
-        if (user.getRole().getRoleName().equals(3)) {
-            List<Notification> response = notificationRepo.findAllByReceiverAndCreatedByNot(userId, user);
-            messagingTemplate.convertAndSend("/topic/message/" + userId + "", response);
+        if (user.getRole().getId()==3) {
+            List<Notification> response = notificationRepo.findAllByReceiver(userId
+            		,PageRequest.of(0, 1000, Sort.Direction.DESC, "creation_date"));
+            PageImpl<Notification> notificationPage = new PageImpl<>(response, pageable, response.size());
+            messagingTemplate.convertAndSend("/topic/message/" + userId + "", notificationPage);
         } else {
             List<String> privileges = getPrivilegesByUser(user);
 
-            List<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user);
+            List<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user,
+            		PageRequest.of(0, 1000, Sort.Direction.DESC, "creation_date"));
             PageImpl<Notification> notificationPage = new PageImpl<>(response, pageable, response.size());
 
             messagingTemplate.convertAndSend("/topic/message/" + userId + "", notificationPage);

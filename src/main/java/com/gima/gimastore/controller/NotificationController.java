@@ -106,14 +106,14 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addNotification(@RequestBody NotificationDTO notificationDTO) {
+    public ResponseEntity<?> addNotification(@RequestBody NotificationDTO notificationDTO,Pageable p) {
         try {
 
 
             notificationService.addNotification(notificationDTO);
 
             idList.forEach(id -> {
-                notificationService.notifyFrontend(Long.parseLong(id),null);
+                notificationService.notifyFrontend(Long.parseLong(id),p);
                 System.err.println(id);
             });
 
