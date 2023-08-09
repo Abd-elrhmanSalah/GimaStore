@@ -105,12 +105,21 @@ public class NotificationService {
     }
 
     public Page<Notification> getAllNotification(Long userId, Pageable pageable) {
+
         User user = userRepo.findById(userId).get();
-        List<String> privileges = getPrivilegesByUser(user);
-        List<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user,
-                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
-        PageImpl<Notification> notificationPage = new PageImpl<>(response, pageable, response.size());
-        return notificationPage;
+        if (user.getRole().getId() == 3) {
+            List<Notification> response = notificationRepo.findAllByReceiver(userId
+                    , PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
+
+            PageImpl<Notification> notificationPage = new PageImpl<>(response, pageable, response.size());
+            return notificationPage;
+        } else {
+            List<String> privileges = getPrivilegesByUser(user);
+            List<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user,
+                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
+            PageImpl<Notification> notificationPage = new PageImpl<>(response, pageable, response.size());
+            return notificationPage;
+        }
     }
 
     private List<String> getPrivilegesByUser(User user) {
