@@ -6,6 +6,7 @@ import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.StorePart;
 import com.gima.gimastore.entity.Supplier;
+import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.productProcess.*;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
@@ -51,11 +52,13 @@ public class ProductProcessService {
     private ProductionPartsStoreRequestRepository productionPartsStoreRequestRepo;
     private NotificationController notificationController;
     private NotificationRepository notificationRepo;
+    private UserRepository userRepo;
+    private PartRepository partRepo;
 
     public ProductProcessService(ProductionRequestRepository productionRequestRepo, ProductionRequestPartsRepository productionRequestPartsRepo,
             ProductRepository productRepo, StoreRepository storeRepo, ProductPartRepository productPartRepo, StorePartRepository storePartRepo,
             ProductionPartsStoreRequestRepository productionPartsStoreRequestRepo, NotificationController notificationController,
-            NotificationRepository notificationRepo) {
+            NotificationRepository notificationRepo,UserRepository userRepo,PartRepository partRepo) {
         this.productionRequestRepo = productionRequestRepo;
         this.productionRequestPartsRepo = productionRequestPartsRepo;
         this.productRepo = productRepo;
@@ -65,6 +68,8 @@ public class ProductProcessService {
         this.productionPartsStoreRequestRepo = productionPartsStoreRequestRepo;
         this.notificationController = notificationController;
         this.notificationRepo = notificationRepo;
+        this.userRepo=userRepo;
+        this.partRepo=partRepo;
     }
 
     @Transactional
@@ -98,16 +103,22 @@ public class ProductProcessService {
                 //////////////////////////////////////////////////////////////
                 //Notification part
                 Notification notification = new Notification();
-                notification.setTitle("تم إضافة اذن صرف جديد");
+                notification.setTitle("طلب مخرجات اذن صرف");
+              User user=  userRepo.findById(savedProductionRequest.getCreatedBy().getId()).get();
+              Part part=partRepo.findById(partApiRequest.getPart().getId()).get();
                 notification.setMessage("قام " +
-                        savedProductionRequest.getCreatedBy().getFirstName() +
-                        " " + savedProductionRequest.getCreatedBy().getLastName() +
-                        " " + "بإضافة اذن صرف رقم" + partsStoreRequest.getProductionRequest().getRequestID());
+                        user.getFirstName() +
+                        " " + user.getLastName() +
+                        " " + "بارسال طلب اخراج " +" كمية"+storeAmount.getAmount()+ " من"+" "+part.getPartName()+
+                        " من مخزنك خاص برقم صرف"+" "+
+                        partsStoreRequest.getProductionRequest().getRequestID());
                 notification.setCreationDate(savedProductionRequest.getCreationDate());
                 notification.setCreatedBy(savedProductionRequest.getCreatedBy());
                 notification.setPrivilege("haveDistStoreParts");
-                notification.setReceiver(storeAmount.getStore().getUser().getId());
-                notification.setRouteName("/store-production-requests");
+                Store store = storeRepo.findById(storeAmount.getStore().getId()).get();
+                notification.setReceiver(store.getUser().getId());
+                              notification.setRouteName("/store-production-requests");
+                              notification.setReadBy(savedProductionRequest.getCreatedBy().getId().toString());
                 notificationRepo.save(notification);
 
 notificationController.refreshTunles();

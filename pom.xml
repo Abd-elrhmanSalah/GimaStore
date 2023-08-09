@@ -49,12 +49,13 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
 
-        <dependency>
+<!-- <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+        -->
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
