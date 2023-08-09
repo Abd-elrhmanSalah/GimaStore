@@ -63,8 +63,8 @@ public class NotificationController {
 
     @ResponseBody
     @GetMapping("/notifyByUser")
-    public void getNotificationsByUser(@RequestParam Long userId, Pageable pageable) {
-        notificationService.notifyFrontend(userId, pageable);
+    public void getNotificationsByUser(@RequestParam Long userId) {
+        notificationService.notifyFrontend(userId);
 
         boolean userIdExist = idList.stream().anyMatch(id ->
                 id.equalsIgnoreCase(userId.toString()));
@@ -73,11 +73,11 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addNotification(@RequestBody NotificationDTO notificationDTO, Pageable p) {
+    public ResponseEntity<?> addNotification(@RequestBody NotificationDTO notificationDTO) {
         try {
 
             notificationService.addNotification(notificationDTO);
-            refreshTunles(p);
+            refreshTunles();
             return new ResponseEntity<>("done", HttpStatus.OK);
 
         } catch (ApplicationException e) {
@@ -109,23 +109,23 @@ public class NotificationController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-//    @GetMapping("/testList")
-//    public ResponseEntity<?> testList(@RequestParam Long userId, Pageable p) {
-//        try {
-//
-//            return new ResponseEntity<>(notificationService.testList(userId, p), HttpStatus.OK);
-//
-//        } catch (ApplicationException e) {
-//            logger.error(e.getMessage(), e);
-//            e.printStackTrace();
-//            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
-//        } catch (Exception ex) {
-//            logger.error(ex.getMessage(), ex);
-//            ex.printStackTrace();
-//            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
-//                    HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @GetMapping("/testList")
+    public ResponseEntity<?> testList(@RequestParam Long userId, Pageable p) {
+        try {
+
+            return new ResponseEntity<>(notificationService.testList(userId, p), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @PatchMapping("/updateNotification")
     public ResponseEntity<?> updateNotification(@RequestParam Long notificationId, @RequestParam Long userId, Pageable pageable) {
@@ -133,7 +133,7 @@ public class NotificationController {
 
             notificationService.updateNotificationToRead(notificationId, userId);
 
-            refreshTunles(pageable);
+            refreshTunles();
             return new ResponseEntity<>("done", HttpStatus.OK);
 
         } catch (ApplicationException e) {
@@ -148,7 +148,7 @@ public class NotificationController {
         }
     }
 
-    public void refreshTunles(Pageable p) {
-        idList.forEach(id -> notificationService.notifyFrontend(Long.parseLong(id), p));
+    public void refreshTunles() {
+        idList.forEach(id -> notificationService.notifyFrontend(Long.parseLong(id)));
     }
 }

@@ -41,12 +41,12 @@ public class NotificationService {
         notificationRepo.save(ObjectMapperUtils.map(notificationDTO, Notification.class));
     }
 
-    public void notifyFrontend(Long userId, Pageable pageable) {
+    public void notifyFrontend(Long userId) {
 
         User user = userRepo.findById(userId).get();
         if (user.getRole().getId() == 3) {
             List<Notification> notifications = notificationRepo.findAllByReceiver(userId
-                    , PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
+                    , PageRequest.of(0, 1000000000, Sort.Direction.DESC, "creation_date"));
 
             AtomicInteger totalUnread = new AtomicInteger();
 
@@ -58,18 +58,20 @@ public class NotificationService {
                     totalUnread.set(totalUnread.get() + 1);
             });
 
-            List<NotificationResponse> notificationResponse = new ArrayList<>();
-            notificationResponse.add(new NotificationResponse());
-            notificationResponse.get(0).setNotifications(notifications);
-            notificationResponse.get(0).setTotalUnread(totalUnread.get());
+            List<Notification> notificationsToSend = new ArrayList<>();
+            for (int i = 0; i < notifications.size() && i < 3; i++)
+                notificationsToSend.add(notifications.get(i));
 
-            PageImpl<NotificationResponse> notificationPage = new PageImpl<>(notificationResponse, pageable, notifications.size());
-            messagingTemplate.convertAndSend("/topic/message/" + userId + "", notificationPage);
+            NotificationResponse notificationResponse = new NotificationResponse();
+            notificationResponse.setNotifications(notificationsToSend);
+            notificationResponse.setTotalUnread(totalUnread.get());
+
+            messagingTemplate.convertAndSend("/topic/message/" + userId + "", notificationResponse);
         } else {
             List<String> privileges = getPrivilegesByUser(user);
 
             List<Notification> notifications = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user,
-                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
+                    PageRequest.of(0, 1000000000, Sort.Direction.DESC, "creation_date"));
 
             AtomicInteger totalUnread = new AtomicInteger();
 
@@ -81,13 +83,15 @@ public class NotificationService {
                     totalUnread.set(totalUnread.get() + 1);
             });
 
-            List<NotificationResponse> notificationResponse = new ArrayList<>();
-            notificationResponse.add(new NotificationResponse());
-            notificationResponse.get(0).setNotifications(notifications);
-            notificationResponse.get(0).setTotalUnread(totalUnread.get());
+            List<Notification> notificationsToSend = new ArrayList<>();
+            for (int i = 0; i < notifications.size() && i < 3; i++)
+                notificationsToSend.add(notifications.get(i));
 
-            PageImpl<NotificationResponse> notificationPage = new PageImpl<>(notificationResponse, pageable, notifications.size());
-            messagingTemplate.convertAndSend("/topic/message/" + userId + "", notificationPage);
+            NotificationResponse notificationResponse = new NotificationResponse();
+            notificationResponse.setNotifications(notificationsToSend);
+            notificationResponse.setTotalUnread(totalUnread.get());
+
+            messagingTemplate.convertAndSend("/topic/message/" + userId + "", notificationResponse);
         }
 
     }
@@ -255,31 +259,32 @@ public class NotificationService {
         return privileges;
     }
 
-//    public Page<NotificationResponse> testList(Long userId, Pageable pageable) {
-//
-//        User user = userRepo.findById(userId).get();
-//        if (user.getRole().getId() == 3) {
-//            List<Notification> notifications = notificationRepo.findAllByReceiver(userId
-//                    , PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
-//
-//            AtomicInteger totalUnread = new AtomicInteger();
-//
-//            notifications.stream().forEach(notification -> {
-//                List<String> items = Arrays.asList(notification.getReadBy().split("\\s*,\\s*"));
-//                boolean isExist = items.stream().anyMatch(readedby ->
-//                        readedby.equals(Long.toString(userId)));
-//                if (!isExist)
-//                    totalUnread.set(totalUnread.get() + 1);
-//            });
-//
-//            List<NotificationResponse> notificationResponse = new ArrayList<>();
-//            notificationResponse.add(new NotificationResponse());
-//            notificationResponse.get(0).setNotifications(notifications);
-//            notificationResponse.get(0).setTotalUnread(totalUnread.get());
-//
-//            PageImpl<NotificationResponse> notificationPage = new PageImpl<>(notificationResponse, pageable, notifications.size());
-//            return notificationPage;
-//        }
-//        return null;
-//    }
+    public NotificationResponse testList(Long userId, Pageable pageable) {
+
+        User user = userRepo.findById(userId).get();
+        if (user.getRole().getId() == 3) {
+            List<Notification> notifications = notificationRepo.findAllByReceiver(userId
+                    , PageRequest.of(0, 100000000, Sort.Direction.DESC, "creation_date"));
+
+            AtomicInteger totalUnread = new AtomicInteger();
+
+            notifications.stream().forEach(notification -> {
+                List<String> items = Arrays.asList(notification.getReadBy().split("\\s*,\\s*"));
+                boolean isExist = items.stream().anyMatch(readedby ->
+                        readedby.equals(Long.toString(userId)));
+                if (!isExist)
+                    totalUnread.set(totalUnread.get() + 1);
+            });
+            List<Notification> notificationsToSend = new ArrayList<>();
+            for (int i = 0; i < notifications.size() && i < 3; i++)
+                notificationsToSend.add(notifications.get(i));
+
+            NotificationResponse notificationResponse = new NotificationResponse();
+            notificationResponse.setNotifications(notificationsToSend);
+            notificationResponse.setTotalUnread(totalUnread.get());
+
+            return notificationResponse;
+        }
+        return null;
+    }
 }

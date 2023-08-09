@@ -68,7 +68,7 @@ public class ProductProcessService {
     }
 
     @Transactional
-    public void addProductionRequest(ProductionAPIRequest productionAPIRequest,Pageable pageable) {
+    public void addProductionRequest(ProductionAPIRequest productionAPIRequest) {
         Optional<ProductionRequest> byRequestID = productionRequestRepo.findByRequestID(productionAPIRequest.getProductionRequestDTO().getRequestID());
         if (!byRequestID.isEmpty())
             throw new ApplicationException(new StatusResponse(REPEATED_REQUESTEDID.getCode(), REPEATED_REQUESTEDID.getKey()
@@ -110,7 +110,7 @@ public class ProductProcessService {
                 notification.setRouteName("/store-production-requests");
                 notificationRepo.save(notification);
 
-notificationController.refreshTunles(pageable);
+notificationController.refreshTunles();
             });
 
         });

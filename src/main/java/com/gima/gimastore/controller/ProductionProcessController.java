@@ -50,9 +50,9 @@ public class ProductionProcessController {
     }
 
     @PostMapping("/productionRequest")
-    public ResponseEntity<?> addProductRequest(@RequestBody ProductionAPIRequest productionAPIRequest, Pageable pageable) {
+    public ResponseEntity<?> addProductRequest(@RequestBody ProductionAPIRequest productionAPIRequest) {
         try {
-            productProcessService.addProductionRequest(productionAPIRequest, pageable);
+            productProcessService.addProductionRequest(productionAPIRequest);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت إضافة طلب الإنتاج " + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
