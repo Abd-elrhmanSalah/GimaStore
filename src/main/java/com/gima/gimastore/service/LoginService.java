@@ -1,6 +1,5 @@
 package com.gima.gimastore.service;
 
-import com.gima.gimastore.config.UserHandshakeHandler;
 import com.gima.gimastore.config.WebSocketConfig;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
@@ -16,10 +15,8 @@ import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.zip.DataFormatException;
 
 import static com.gima.gimastore.constant.ResponseCodes.LOGIN_FAILED;
 import static com.gima.gimastore.constant.ResponseCodes.LOGIN_USER_LOCKED;
@@ -56,9 +53,6 @@ public class LoginService {
         }
         UserPrivileges byUser = userPrivilegesRepo.findByUser(byUserNameAndPassword.get()).get();
         userDto.setUserPrivileges(ObjectMapperUtils.map(byUser, UserPrivilegesDTO.class));
-        WebSocketConfig a=new WebSocketConfig();
-        a.setUserId(userDto.getId().toString());
-
         return userDto;
     }
 }

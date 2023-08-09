@@ -40,13 +40,12 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class NotificationController {
     private NotificationService notificationService;
-    private SimpMessagingTemplate messagingTemplate;
+
     private List<String> idList = new ArrayList<>();
     private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
 
-    public NotificationController(NotificationService notificationService, SimpMessagingTemplate messagingTemplate) {
+    public NotificationController(NotificationService notificationService) {
         this.notificationService = notificationService;
-        this.messagingTemplate = messagingTemplate;
     }
 
     public List<String> getIdList() {
@@ -57,67 +56,28 @@ public class NotificationController {
         this.idList = idList;
     }
 
-
-    //    @MessageMapping("/message")
-//    @SendTo("/topic/messages")
-    public void getMessage(SimpMessageHeaderAccessor headerAccessor) {
-        String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
-        System.out.println("we are here");
-    }
-
-    @MessageMapping("/private-notification")
-    @SendToUser("topic/private-notification")
-    public void getPrivateMessage() {
-        logger.error("ana1");
-//       ContextHolder.getContext().getAuthentication().getPrincipal();
-//        String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
-//        System.out.println("we are here");
-    }
-
     @MessageMapping("/message/{room}")
     @SendTo("/topic/message/{room}")
     public void handleMessage(@DestinationVariable String room) {
-        // Access session attributes
-        logger.error("ana2");
-//        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
-//        messagingTemplate.convertAndSendToUser(sessionAttributes.get("sessionId").toString(),
-//                "/topic/private-notification", "Alla");
-//        logger.error(sessionAttributes.get("sessionId").toString());
-
-        System.out.println("i'am here");
-
     }
 
-
     @ResponseBody
-    @GetMapping("/getNotificationsByUser")
+    @GetMapping("/notifyByUser")
     public void getNotificationsByUser(@RequestParam Long userId, Pageable pageable) {
-        notificationService.notifyFrontend(userId,pageable);
+        notificationService.notifyFrontend(userId, pageable);
 
-        boolean b = idList.stream().anyMatch(id ->
+        boolean userIdExist = idList.stream().anyMatch(id ->
                 id.equalsIgnoreCase(userId.toString()));
-        if (!b)
+        if (!userIdExist)
             getIdList().add(userId.toString());
-
-        idList.forEach(id -> {
-
-            System.err.println(id);
-        });
     }
 
     @PostMapping
-    public ResponseEntity<?> addNotification(@RequestBody NotificationDTO notificationDTO,Pageable p) {
+    public ResponseEntity<?> addNotification(@RequestBody NotificationDTO notificationDTO, Pageable p) {
         try {
 
-
             notificationService.addNotification(notificationDTO);
-
-            idList.forEach(id -> {
-                notificationService.notifyFrontend(Long.parseLong(id),p);
-                System.err.println(id);
-            });
-
-
+            refreshTunles(p);
             return new ResponseEntity<>("done", HttpStatus.OK);
 
         } catch (ApplicationException e) {
@@ -132,4 +92,63 @@ public class NotificationController {
         }
     }
 
+    @GetMapping("/getAllNotifications")
+    public ResponseEntity<?> getAllnotifications(@RequestParam Long userId, Pageable p) {
+        try {
+
+            return new ResponseEntity<>(notificationService.getAllNotification(userId, p), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+//    @GetMapping("/testList")
+//    public ResponseEntity<?> testList(@RequestParam Long userId, Pageable p) {
+//        try {
+//
+//            return new ResponseEntity<>(notificationService.testList(userId, p), HttpStatus.OK);
+//
+//        } catch (ApplicationException e) {
+//            logger.error(e.getMessage(), e);
+//            e.printStackTrace();
+//            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+//        } catch (Exception ex) {
+//            logger.error(ex.getMessage(), ex);
+//            ex.printStackTrace();
+//            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
+    @PatchMapping("/updateNotification")
+    public ResponseEntity<?> updateNotification(@RequestParam Long notificationId, @RequestParam Long userId, Pageable pageable) {
+        try {
+
+            notificationService.updateNotificationToRead(notificationId, userId);
+
+            refreshTunles(pageable);
+            return new ResponseEntity<>("done", HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public void refreshTunles(Pageable p) {
+        idList.forEach(id -> notificationService.notifyFrontend(Long.parseLong(id), p));
+    }
 }

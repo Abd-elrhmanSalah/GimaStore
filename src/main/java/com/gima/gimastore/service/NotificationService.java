@@ -1,20 +1,16 @@
 package com.gima.gimastore.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.gima.gimastore.model.NotificationResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gima.gimastore.entity.Notification;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.UserPrivileges;
 import com.gima.gimastore.model.NotificationDTO;
-import com.gima.gimastore.model.PartSearchSupplyResponse;
 import com.gima.gimastore.repository.NotificationRepository;
 import com.gima.gimastore.repository.UserPrivilegesRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ObjectMapperUtils;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +18,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class NotificationService {
@@ -32,14 +29,13 @@ public class NotificationService {
     private UserRepository userRepo;
     private UserPrivilegesRepository userPrivilegesRepo;
 
-
-    public NotificationService(NotificationRepository notificationRepo, SimpMessagingTemplate messagingTemplate, UserRepository userRepo, UserPrivilegesRepository userPrivilegesRepo) {
+    public NotificationService(NotificationRepository notificationRepo, SimpMessagingTemplate messagingTemplate, UserRepository userRepo,
+            UserPrivilegesRepository userPrivilegesRepo) {
         this.notificationRepo = notificationRepo;
         this.messagingTemplate = messagingTemplate;
         this.userRepo = userRepo;
         this.userPrivilegesRepo = userPrivilegesRepo;
     }
-
 
     public void addNotification(NotificationDTO notificationDTO) {
         notificationRepo.save(ObjectMapperUtils.map(notificationDTO, Notification.class));
@@ -48,27 +44,69 @@ public class NotificationService {
     public void notifyFrontend(Long userId, Pageable pageable) {
 
         User user = userRepo.findById(userId).get();
-        if (user.getRole().getId()==3) {
-            List<Notification> response = notificationRepo.findAllByReceiver(userId
-            		,PageRequest.of(0, 1000, Sort.Direction.DESC, "creation_date"));
-            PageImpl<Notification> notificationPage = new PageImpl<>(response, pageable, response.size());
+        if (user.getRole().getId() == 3) {
+            List<Notification> notifications = notificationRepo.findAllByReceiver(userId
+                    , PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
+
+            AtomicInteger totalUnread = new AtomicInteger();
+
+            notifications.stream().forEach(notification -> {
+                List<String> items = Arrays.asList(notification.getReadBy().split("\\s*,\\s*"));
+                boolean isExist = items.stream().anyMatch(readedby ->
+                        readedby.equals(Long.toString(userId)));
+                if (!isExist)
+                    totalUnread.set(totalUnread.get() + 1);
+            });
+
+            List<NotificationResponse> notificationResponse = new ArrayList<>();
+            notificationResponse.add(new NotificationResponse());
+            notificationResponse.get(0).setNotifications(notifications);
+            notificationResponse.get(0).setTotalUnread(totalUnread.get());
+
+            PageImpl<NotificationResponse> notificationPage = new PageImpl<>(notificationResponse, pageable, notifications.size());
             messagingTemplate.convertAndSend("/topic/message/" + userId + "", notificationPage);
         } else {
             List<String> privileges = getPrivilegesByUser(user);
 
-            List<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user,
-            		PageRequest.of(0, 1000, Sort.Direction.DESC, "creation_date"));
-            PageImpl<Notification> notificationPage = new PageImpl<>(response, pageable, response.size());
+            List<Notification> notifications = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user,
+                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
 
+            AtomicInteger totalUnread = new AtomicInteger();
+
+            notifications.stream().forEach(notification -> {
+                List<String> items = Arrays.asList(notification.getReadBy().split("\\s*,\\s*"));
+                boolean isExist = items.stream().anyMatch(readedby ->
+                        readedby.equals(Long.toString(userId)));
+                if (!isExist)
+                    totalUnread.set(totalUnread.get() + 1);
+            });
+
+            List<NotificationResponse> notificationResponse = new ArrayList<>();
+            notificationResponse.add(new NotificationResponse());
+            notificationResponse.get(0).setNotifications(notifications);
+            notificationResponse.get(0).setTotalUnread(totalUnread.get());
+
+            PageImpl<NotificationResponse> notificationPage = new PageImpl<>(notificationResponse, pageable, notifications.size());
             messagingTemplate.convertAndSend("/topic/message/" + userId + "", notificationPage);
         }
 
     }
 
-    public void sendNotification(Notification notification, String userId) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(notification);
-        messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", json);
+    public void updateNotificationToRead(Long notificationId, Long userId) {
+        Notification notification = notificationRepo.findById(notificationId).get();
+        String readBy = notification.getReadBy();
+        readBy = readBy + "," + userId;
+        notification.setReadBy(readBy);
+        notificationRepo.save(notification);
+    }
+
+    public Page<Notification> getAllNotification(Long userId, Pageable pageable) {
+        User user = userRepo.findById(userId).get();
+        List<String> privileges = getPrivilegesByUser(user);
+        List<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user,
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
+        PageImpl<Notification> notificationPage = new PageImpl<>(response, pageable, response.size());
+        return notificationPage;
     }
 
     private List<String> getPrivilegesByUser(User user) {
@@ -216,4 +254,32 @@ public class NotificationService {
 
         return privileges;
     }
+
+//    public Page<NotificationResponse> testList(Long userId, Pageable pageable) {
+//
+//        User user = userRepo.findById(userId).get();
+//        if (user.getRole().getId() == 3) {
+//            List<Notification> notifications = notificationRepo.findAllByReceiver(userId
+//                    , PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
+//
+//            AtomicInteger totalUnread = new AtomicInteger();
+//
+//            notifications.stream().forEach(notification -> {
+//                List<String> items = Arrays.asList(notification.getReadBy().split("\\s*,\\s*"));
+//                boolean isExist = items.stream().anyMatch(readedby ->
+//                        readedby.equals(Long.toString(userId)));
+//                if (!isExist)
+//                    totalUnread.set(totalUnread.get() + 1);
+//            });
+//
+//            List<NotificationResponse> notificationResponse = new ArrayList<>();
+//            notificationResponse.add(new NotificationResponse());
+//            notificationResponse.get(0).setNotifications(notifications);
+//            notificationResponse.get(0).setTotalUnread(totalUnread.get());
+//
+//            PageImpl<NotificationResponse> notificationPage = new PageImpl<>(notificationResponse, pageable, notifications.size());
+//            return notificationPage;
+//        }
+//        return null;
+//    }
 }

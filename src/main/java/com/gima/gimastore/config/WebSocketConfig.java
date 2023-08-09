@@ -29,7 +29,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(final StompEndpointRegistry registry) {
         registry.addEndpoint("/our-websocket");
         registry.addEndpoint("/our-websocket/")
-                .setAllowedOrigins("http://localhost:8080").addInterceptors(new SessionInterceptor())
+                .setAllowedOrigins("http://localhost:8080")
                 .withSockJS();
     }
 

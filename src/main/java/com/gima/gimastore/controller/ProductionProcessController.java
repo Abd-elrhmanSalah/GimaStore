@@ -50,9 +50,9 @@ public class ProductionProcessController {
     }
 
     @PostMapping("/productionRequest")
-    public ResponseEntity<?> addProductRequest(@RequestBody ProductionAPIRequest productionAPIRequest) {
+    public ResponseEntity<?> addProductRequest(@RequestBody ProductionAPIRequest productionAPIRequest, Pageable pageable) {
         try {
-            productProcessService.addProductionRequest(productionAPIRequest);
+            productProcessService.addProductionRequest(productionAPIRequest, pageable);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت إضافة طلب الإنتاج " + SUCCESS.getMessage()), HttpStatus.OK);
 
         } catch (ApplicationException e) {
@@ -182,22 +182,22 @@ public class ProductionProcessController {
 
     }
 
-//    @PostMapping("/productionReturn")
-//    public ResponseEntity<?> productionReturn(@RequestBody ProductionReturnRequest productionReturnRequest) {
-//        try {
-//            productProcessService.addProductionRequestReturn(productionReturnRequest);
-//            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تأكيد طلب الإنتاج" + SUCCESS.getMessage()), HttpStatus.OK);
-//
-//        } catch (ApplicationException e) {
-//            logger.error(e.getMessage(), e);
-//            e.printStackTrace();
-//            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
-//        } catch (Exception ex) {
-//            logger.error(ex.getMessage(), ex);
-//            ex.printStackTrace();
-//            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
-//                    HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//
-//    }
+    //    @PostMapping("/productionReturn")
+    //    public ResponseEntity<?> productionReturn(@RequestBody ProductionReturnRequest productionReturnRequest) {
+    //        try {
+    //            productProcessService.addProductionRequestReturn(productionReturnRequest);
+    //            return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تم تأكيد طلب الإنتاج" + SUCCESS.getMessage()), HttpStatus.OK);
+    //
+    //        } catch (ApplicationException e) {
+    //            logger.error(e.getMessage(), e);
+    //            e.printStackTrace();
+    //            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+    //        } catch (Exception ex) {
+    //            logger.error(ex.getMessage(), ex);
+    //            ex.printStackTrace();
+    //            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+    //                    HttpStatus.INTERNAL_SERVER_ERROR);
+    //        }
+    //
+    //    }
 }
