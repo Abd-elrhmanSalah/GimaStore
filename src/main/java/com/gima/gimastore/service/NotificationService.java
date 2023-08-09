@@ -45,12 +45,12 @@ public class NotificationService {
 
         User user = userRepo.findById(userId).get();
         if (user.getRole().getId() == 3) {
-            List<Notification> notifications = notificationRepo.findAllByReceiver(userId
+            Page<Notification> notifications = notificationRepo.findAllByReceiver(userId
                     , PageRequest.of(0, 1000000000, Sort.Direction.DESC, "creation_date"));
 
             AtomicInteger totalUnread = new AtomicInteger();
 
-            notifications.stream().forEach(notification -> {
+            notifications.getContent().stream().forEach(notification -> {
                 List<String> items = Arrays.asList(notification.getReadBy().split("\\s*,\\s*"));
                 boolean isExist = items.stream().anyMatch(readedby ->
                         readedby.equals(Long.toString(userId)));
@@ -59,8 +59,8 @@ public class NotificationService {
             });
 
             List<Notification> notificationsToSend = new ArrayList<>();
-            for (int i = 0; i < notifications.size() && i < 20; i++)
-                notificationsToSend.add(notifications.get(i));
+            for (int i = 0; i < notifications.getContent().size() && i < 20; i++)
+                notificationsToSend.add(notifications.getContent().get(i));
 
             NotificationResponse notificationResponse = new NotificationResponse();
             notificationResponse.setNotifications(notificationsToSend);
@@ -70,12 +70,12 @@ public class NotificationService {
         } else {
             List<String> privileges = getPrivilegesByUser(user);
 
-            List<Notification> notifications = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user,
+            Page<Notification> notifications = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user,
                     PageRequest.of(0, 1000000000, Sort.Direction.DESC, "creation_date"));
 
             AtomicInteger totalUnread = new AtomicInteger();
 
-            notifications.stream().forEach(notification -> {
+            notifications.getContent().stream().forEach(notification -> {
                 List<String> items = Arrays.asList(notification.getReadBy().split("\\s*,\\s*"));
                 boolean isExist = items.stream().anyMatch(readedby ->
                         readedby.equals(Long.toString(userId)));
@@ -84,8 +84,8 @@ public class NotificationService {
             });
 
             List<Notification> notificationsToSend = new ArrayList<>();
-            for (int i = 0; i < notifications.size() && i < 20; i++)
-                notificationsToSend.add(notifications.get(i));
+            for (int i = 0; i < notifications.getContent().size() && i < 20; i++)
+                notificationsToSend.add(notifications.getContent().get(i));
 
             NotificationResponse notificationResponse = new NotificationResponse();
             notificationResponse.setNotifications(notificationsToSend);
@@ -108,17 +108,16 @@ public class NotificationService {
 
         User user = userRepo.findById(userId).get();
         if (user.getRole().getId() == 3) {
-            List<Notification> response = notificationRepo.findAllByReceiver(userId
+            Page<Notification> response = notificationRepo.findAllByReceiver(userId
                     , PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
 
-            PageImpl<Notification> notificationPage = new PageImpl<>(response, pageable, response.size());
-            return notificationPage;
+            return response;
         } else {
             List<String> privileges = getPrivilegesByUser(user);
-            List<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user,
+            Page<Notification> response = notificationRepo.findAllByPrivilegeAndCreatedByNot(privileges, user,
                     PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "creation_date"));
-            PageImpl<Notification> notificationPage = new PageImpl<>(response, pageable, response.size());
-            return notificationPage;
+
+            return response;
         }
     }
 
@@ -272,7 +271,7 @@ public class NotificationService {
 
         User user = userRepo.findById(userId).get();
         if (user.getRole().getId() == 3) {
-            List<Notification> notifications = notificationRepo.findAllByReceiver(userId
+            Page<Notification> notifications = notificationRepo.findAllByReceiver(userId
                     , PageRequest.of(0, 100000000, Sort.Direction.DESC, "creation_date"));
 
             AtomicInteger totalUnread = new AtomicInteger();
@@ -285,8 +284,8 @@ public class NotificationService {
                     totalUnread.set(totalUnread.get() + 1);
             });
             List<Notification> notificationsToSend = new ArrayList<>();
-            for (int i = 0; i < notifications.size() && i < 3; i++)
-                notificationsToSend.add(notifications.get(i));
+            for (int i = 0; i < notifications.getContent().size() && i < 3; i++)
+                notificationsToSend.add(notifications.getContent().get(i));
 
             NotificationResponse notificationResponse = new NotificationResponse();
             notificationResponse.setNotifications(notificationsToSend);
