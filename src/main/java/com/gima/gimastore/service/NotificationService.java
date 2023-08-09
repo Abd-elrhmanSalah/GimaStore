@@ -59,7 +59,7 @@ public class NotificationService {
             });
 
             List<Notification> notificationsToSend = new ArrayList<>();
-            for (int i = 0; i < notifications.size() && i < 3; i++)
+            for (int i = 0; i < notifications.size() && i < 20; i++)
                 notificationsToSend.add(notifications.get(i));
 
             NotificationResponse notificationResponse = new NotificationResponse();
@@ -84,7 +84,7 @@ public class NotificationService {
             });
 
             List<Notification> notificationsToSend = new ArrayList<>();
-            for (int i = 0; i < notifications.size() && i < 3; i++)
+            for (int i = 0; i < notifications.size() && i < 20; i++)
                 notificationsToSend.add(notifications.get(i));
 
             NotificationResponse notificationResponse = new NotificationResponse();
