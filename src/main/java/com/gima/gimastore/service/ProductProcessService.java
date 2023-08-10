@@ -58,7 +58,7 @@ public class ProductProcessService {
     public ProductProcessService(ProductionRequestRepository productionRequestRepo, ProductionRequestPartsRepository productionRequestPartsRepo,
             ProductRepository productRepo, StoreRepository storeRepo, ProductPartRepository productPartRepo, StorePartRepository storePartRepo,
             ProductionPartsStoreRequestRepository productionPartsStoreRequestRepo, NotificationController notificationController,
-            NotificationRepository notificationRepo,UserRepository userRepo,PartRepository partRepo) {
+            NotificationRepository notificationRepo, UserRepository userRepo, PartRepository partRepo) {
         this.productionRequestRepo = productionRequestRepo;
         this.productionRequestPartsRepo = productionRequestPartsRepo;
         this.productRepo = productRepo;
@@ -68,8 +68,8 @@ public class ProductProcessService {
         this.productionPartsStoreRequestRepo = productionPartsStoreRequestRepo;
         this.notificationController = notificationController;
         this.notificationRepo = notificationRepo;
-        this.userRepo=userRepo;
-        this.partRepo=partRepo;
+        this.userRepo = userRepo;
+        this.partRepo = partRepo;
     }
 
     @Transactional
@@ -104,24 +104,24 @@ public class ProductProcessService {
                 //Notification part
                 Notification notification = new Notification();
                 notification.setTitle("طلب مخرجات اذن صرف");
-              User user=  userRepo.findById(savedProductionRequest.getCreatedBy().getId()).get();
-              Part part=partRepo.findById(partApiRequest.getPart().getId()).get();
+                User user = userRepo.findById(savedProductionRequest.getCreatedBy().getId()).get();
+                Part part = partRepo.findById(partApiRequest.getPart().getId()).get();
                 notification.setMessage("قام " +
                         user.getFirstName() +
                         " " + user.getLastName() +
-                        " " + "بارسال طلب اخراج " +" كمية"+storeAmount.getAmount()+ " من"+" "+part.getPartName()+
-                        " من مخزنك خاص برقم صرف"+" "+
+                        " " + "بارسال طلب اخراج " + " كمية" + storeAmount.getAmount() + " من" + " " + part.getPartName() +
+                        " من مخزنك خاص برقم صرف" + " " +
                         partsStoreRequest.getProductionRequest().getRequestID());
                 notification.setCreationDate(savedProductionRequest.getCreationDate());
                 notification.setCreatedBy(savedProductionRequest.getCreatedBy());
                 notification.setPrivilege("haveDistStoreParts");
                 Store store = storeRepo.findById(storeAmount.getStore().getId()).get();
                 notification.setReceiver(store.getUser().getId());
-                              notification.setRouteName("/store-production-requests");
-                              notification.setReadBy(savedProductionRequest.getCreatedBy().getId().toString());
+                notification.setRouteName("/store-production-requests");
+                notification.setReadBy(savedProductionRequest.getCreatedBy().getId().toString());
                 notificationRepo.save(notification);
 
-notificationController.refreshTunles();
+                notificationController.refreshTunles();
             });
 
         });

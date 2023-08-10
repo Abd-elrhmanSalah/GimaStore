@@ -1,5 +1,6 @@
 package com.gima.gimastore.repository;
 
+import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.productProcess.Product;
 import com.gima.gimastore.entity.productProcess.ProductPart;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,5 +11,9 @@ import java.util.List;
 @Repository
 public interface ProductPartRepository extends JpaRepository<ProductPart, Long> {
     void deleteAllByProduct(Product product);
+
     List<ProductPart> findAllByProduct(Product product);
+
+    Boolean existsByPartAndProduct(Part part, Product product);
+    ProductPart findByPartAndProduct(Part part, Product product);
 }
