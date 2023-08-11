@@ -402,6 +402,7 @@ public class ReportService {
             totalHarmedReturns.set(totalHarmedReturns.get() + part.getAmountHarmed());
         });
         partReport.setTotalHarmed(totalHarmedReturns.get());
+
         ////////////////////////////////////////////////////////////////////////////
         Page<SupplyProcessPart> supplyProcessParts = supplyProcessPartsRepository.findAll(
                 (Specification<SupplyProcessPart>) (root, query, cb) -> {
@@ -433,7 +434,8 @@ public class ReportService {
         supplyProcessParts.getContent().stream().forEach(part -> {
             totalSuppliesIncome.set(totalSuppliesIncome.get() + part.getAmount());
         });
-        partReport.setTotalSuppliesIncome(totalHarmedReturns.get());
+        partReport.setTotalSuppliesIncome(totalSuppliesIncome.get());
+
         ////////////////////////////////////////////////////////////////////////////
         Page<SupplyProcessPartsReturns> supplyProcessPartsReturns = supplyProcessPartsReturnsRepo.findAll(
                 (Specification<SupplyProcessPartsReturns>) (root, query, cb) -> {
@@ -465,6 +467,7 @@ public class ReportService {
             totalSuppliesReturns.set(totalSuppliesReturns.get() + part.getAmountReturn());
         });
         partReport.setTotalSuppliesReturns(totalSuppliesReturns.get());
+
         ////////////////////////////////////////////////////////////////////////////
         Page<ProductOutProducts> productOutProducts = productOutProductsRepo.findAll(
                 (Specification<ProductOutProducts>) (root, query, cb) -> {
@@ -496,6 +499,7 @@ public class ReportService {
         });
 
         partReport.setTotalOut(totalOut.get());
+
         ////////////////////////////////////////////////////////////////////////////
         Page<ProductionRequestParts> productionRequestParts = productionRequestPartsRepository.findAll(
                 (Specification<ProductionRequestParts>) (root, query, cb) -> {
@@ -528,7 +532,36 @@ public class ReportService {
         productionRequestParts.getContent().stream().forEach(productionRequestPart -> {
             totalProductionRequested.set(totalProductionRequested.get() + productionRequestPart.getRequestedAmount());
         });
-        partReport.setTotalProductionReuested(totalProductionRequested.get());
+        partReport.setTotalProductionRequested(totalProductionRequested.get());
+
+        ////////////////////////////////////////////////////////////////////////////
+//        Page<SupplyProcessPart> startsSupplyProcessPart = supplyProcessPartsRepository.findAll(
+//                (Specification<SupplyProcessPart>) (root, query, cb) -> {
+//                    try {
+//                        List<Predicate> predicates = new ArrayList<>();
+//                        Join<SupplyProcessPart, SupplyProcess> partSupplyProcessJoin = root.join("supplyProcess");
+//                        Join<SupplyProcessPart, Part> partJoin = root.join("part");
+//
+//                        if (params.containsKey("FromDate"))
+//                            if (!params.get("FromDate").equals(""))
+//                                predicates.add(cb.lessThanOrEqualTo(
+//                                        partSupplyProcessJoin.get("creationDate"), formate.parse(params.get("FromDate"))));
+//
+//                        if (params.containsKey("partId"))
+//                            if (!params.get("partId").equals(""))
+//                                predicates.add(cb.equal(partJoin.get("id"), params.get("partId")));
+//
+//                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+//                    } catch (ParseException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }, pageable);
+//        AtomicReference<Integer> totalstartIncome = new AtomicReference<>(0);
+//        startsSupplyProcessPart.getContent().stream().forEach(part -> {
+//            totalSuppliesIncome.set(totalSuppliesIncome.get() + part.getAmount());
+//        });
+//        partReport.setTotalStartIncome(totalstartIncome.get());
+
         return partReport;
     }
 }

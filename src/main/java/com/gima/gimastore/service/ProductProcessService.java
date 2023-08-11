@@ -5,16 +5,10 @@ import com.gima.gimastore.entity.Notification;
 import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.StorePart;
-import com.gima.gimastore.entity.Supplier;
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.productProcess.*;
-import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
-import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.exception.ApplicationException;
 import com.gima.gimastore.exception.StatusResponse;
-import com.gima.gimastore.model.PartSearchSupplyResponse;
-import com.gima.gimastore.model.ProductPartReturnedResponse;
-import com.gima.gimastore.model.UserDTO;
 import com.gima.gimastore.model.productionProcess.*;
 import com.gima.gimastore.model.supplyProcess.StoreAmount;
 import com.gima.gimastore.repository.*;
@@ -22,10 +16,8 @@ import com.gima.gimastore.util.ObjectMapperUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
@@ -34,12 +26,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.gima.gimastore.constant.ResponseCodes.*;
-import static com.gima.gimastore.constant.ResponseCodes.NO_STORE_ID;
 
 @Service
 public class ProductProcessService {
@@ -173,6 +164,31 @@ public class ProductProcessService {
                     .findById(productionStoreRequest.getProductionRequest().getId()).get();
             productionRequestById.setFullOut(true);
             productionRequestRepo.save(productionRequestById);
+        }
+        //////////////////////////////////////////////////////////////
+        //Notification part
+        Part part = partRepo.findById(productionStoreRequest.getPart().getId()).get();
+        List<StorePart> storePartByPart = storePartRepo.findStorePartByPart(productionStoreRequest.getPart());
+        AtomicReference<Integer> totalAmountsInStore = new AtomicReference<>(0);
+        storePartByPart.stream().forEach(byPart -> {
+            totalAmountsInStore.set(totalAmountsInStore.get() + byPart.getAmount());
+        });
+
+        if (totalAmountsInStore.get() < part.getMinAmount()) {
+            Notification notification = new Notification();
+            notification.setTitle("انذار بالحد بالأدنى");
+
+            notification.setMessage("أصبحت كمية الجزء" +
+                    part.getPartName() + " " + totalAmountsInStore.get() + " " + " وهى أقل من الحد الأدنى" + " " + part.getMinAmount());
+            notification.setCreationDate(new Date());
+            notification.setCreatedBy(request.getLastUpdatedBy());
+            notification.setPrivilege("haveReports");
+            notification.setReceiver(null);
+            notification.setRouteName(" ");
+            notification.setReadBy(request.getLastUpdatedBy().getId().toString());
+            notificationRepo.save(notification);
+
+            notificationController.refreshTunles();
         }
     }
 

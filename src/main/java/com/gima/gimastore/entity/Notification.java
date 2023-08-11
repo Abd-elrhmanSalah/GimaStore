@@ -33,11 +33,12 @@ public class Notification implements Serializable {
 
     @Column(name = "READBY")
     @Nationalized
-    @NotNull
+    @Nullable
     private String readBy;
 
     @ManyToOne
     @JoinColumn(name = "CREATED_BY")
+    @Nullable
     private User createdBy;
     @Column(name = "CREATION_DATE")
     private Date creationDate;

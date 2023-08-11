@@ -9,7 +9,7 @@ public class PartReport implements Serializable {
     private Integer totalSuppliesIncome;
     private Integer totalSuppliesReturns;
     private Integer totalOut;
-    private Integer totalProductionReuested;
+    private Integer totalProductionRequested;
     private Integer totalReturns;
     private Integer totalHarmed;
 
@@ -33,12 +33,13 @@ public class PartReport implements Serializable {
         return totalSuppliesReturns;
     }
 
-    public Integer getTotalProductionReuested() {
-        return totalProductionReuested;
+    public Integer getTotalProductionRequested() {
+        return totalProductionRequested;
     }
 
-    public void setTotalProductionReuested(Integer totalProductionReuested) {
-        this.totalProductionReuested = totalProductionReuested;
+
+    public void setTotalProductionRequested(Integer totalProductionRequested) {
+        this.totalProductionRequested = totalProductionRequested;
     }
 
     public void setTotalSuppliesReturns(Integer totalSuppliesReturns) {
