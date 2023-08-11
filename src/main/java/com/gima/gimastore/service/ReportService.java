@@ -407,17 +407,18 @@ public class ReportService {
                 (Specification<SupplyProcessPart>) (root, query, cb) -> {
                     try {
                         List<Predicate> predicates = new ArrayList<>();
+                        Join<SupplyProcessPart, SupplyProcess> partSupplyProcessJoin = root.join("supplyProcess");
                         Join<SupplyProcessPart, Part> partJoin = root.join("part");
 
                         if (params.containsKey("FromDate"))
                             if (!params.get("FromDate").equals(""))
                                 predicates.add(cb.greaterThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
+                                        partSupplyProcessJoin.get("creationDate"), formate.parse(params.get("FromDate"))));
 
                         if (params.containsKey("ToDate"))
                             if (!params.get("ToDate").equals(""))
                                 predicates.add(cb.lessThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
+                                        partSupplyProcessJoin.get("creationDate"), formate.parse(params.get("ToDate"))));
 
                         if (params.containsKey("partId"))
                             if (!params.get("partId").equals(""))
@@ -495,6 +496,39 @@ public class ReportService {
         });
 
         partReport.setTotalOut(totalOut.get());
+        ////////////////////////////////////////////////////////////////////////////
+        Page<ProductionRequestParts> productionRequestParts = productionRequestPartsRepository.findAll(
+                (Specification<ProductionRequestParts>) (root, query, cb) -> {
+                    try {
+                        List<Predicate> predicates = new ArrayList<>();
+                        Join<ProductionRequestParts, ProductionRequest> productionRequestJoin = root.join("productionRequest");
+                        Join<ProductionRequestParts, Part> partJoin = root.join("part");
+
+                        if (params.containsKey("FromDate"))
+                            if (!params.get("FromDate").equals(""))
+                                predicates.add(cb.greaterThanOrEqualTo(
+                                        productionRequestJoin.get("creationDate"), formate.parse(params.get("FromDate"))));
+
+                        if (params.containsKey("ToDate"))
+                            if (!params.get("ToDate").equals(""))
+                                predicates.add(cb.lessThanOrEqualTo(
+                                        productionRequestJoin.get("creationDate"), formate.parse(params.get("ToDate"))));
+
+                        if (params.containsKey("partId"))
+                            if (!params.get("partId").equals(""))
+                                predicates.add(cb.equal(partJoin.get("id"), params.get("partId")));
+
+                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, pageable);
+        AtomicReference<Integer> totalProductionRequested = new AtomicReference<>(0);
+
+        productionRequestParts.getContent().stream().forEach(productionRequestPart -> {
+            totalProductionRequested.set(totalProductionRequested.get() + productionRequestPart.getRequestedAmount());
+        });
+        partReport.setTotalProductionReuested(totalProductionRequested.get());
         return partReport;
     }
 }
