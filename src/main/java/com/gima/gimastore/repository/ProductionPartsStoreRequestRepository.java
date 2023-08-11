@@ -1,5 +1,6 @@
 package com.gima.gimastore.repository;
 
+import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.productProcess.ProductionPartsStoreRequest;
 import com.gima.gimastore.entity.productProcess.ProductionRequest;
@@ -20,4 +21,6 @@ public interface ProductionPartsStoreRequestRepository extends JpaRepository<Pro
 
     List<ProductionPartsStoreRequest> findByStoreAndProductionRequest(Store store, ProductionRequest productionRequest);
     List<ProductionPartsStoreRequest>   findByProductionRequest(ProductionRequest productionRequest);
+    List<ProductionPartsStoreRequest> findByPartAndProductionRequest(Part part,ProductionRequest productionRequest);
+
 }

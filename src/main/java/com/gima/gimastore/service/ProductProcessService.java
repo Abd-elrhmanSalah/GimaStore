@@ -290,12 +290,16 @@ public class ProductProcessService {
 
             productPartResponse.setPart(productionRequestParts.getPart());
             productPartResponse.setRequestedAmount(productionRequestParts.getRequestedAmount());
-            //            productPartResponse.setHarmedAmount(productionRequestParts.getHarmedAmount());
-            //            productPartResponse.setUnharmedAmount(productionRequestParts.getUnharmedAmount());
-            //            productPartResponse.setHaveReturned(productionRequestParts.getHaveReturned());
-            //            productPartResponse.setReturnedAmount(productionRequestParts.getReturnedAmount());
-            //            productPartResponse.setUsedAmount(productionRequestParts.getUsedAmount());
 
+            List<ProductionPartsStoreRequest> byPartAndProductionRequest = productionPartsStoreRequestRepo.findByPartAndProductionRequest(
+                    productionRequestParts.getPart()
+                    , productionRequestParts.getProductionRequest());
+
+            AtomicReference<Integer> totalOut = new AtomicReference<>(0);
+            byPartAndProductionRequest.stream().forEach(partsStoreRequest -> {
+                totalOut.set(totalOut.get() + partsStoreRequest.getOutedAmount());
+            });
+            productPartResponse.setTotalAmountOut(totalOut.get());
             returnedProductPartResponseList.add(productPartResponse);
 
         });

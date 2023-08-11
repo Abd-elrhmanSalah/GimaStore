@@ -14,6 +14,7 @@ public class ProductionPartsAPIRequest implements Serializable {
     private Long id;
     private Part part;
     private Integer requestedAmount;
+    private Integer totalAmountOut;
     private List<StoreAmount> storeAmounts;
 
     @Nullable
@@ -49,4 +50,11 @@ public class ProductionPartsAPIRequest implements Serializable {
         this.storeAmounts = storeAmounts;
     }
 
+    public Integer getTotalAmountOut() {
+        return totalAmountOut;
+    }
+
+    public void setTotalAmountOut(Integer totalAmountOut) {
+        this.totalAmountOut = totalAmountOut;
+    }
 }
