@@ -71,6 +71,7 @@ public class ReturnsService {
             harmedPart.setCreatedBy(request.getCreatedBy());
             harmedPart.setAmountHarmed(request.getAmount());
             harmedPart.setPart(request.getPart());
+//            harmedPart.setNotes(request.getNotes());
             harmedPartRepo.save(harmedPart);
         });
 
@@ -90,16 +91,18 @@ public class ReturnsService {
                                 predicates.add(cb.greaterThanOrEqualTo(
                                         root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
-
                         if (params.containsKey("ToDate"))
                             if (!params.get("ToDate").equals(""))
                                 predicates.add(cb.lessThanOrEqualTo(
                                         root.get("creationDate"), formate.parse(params.get("ToDate"))));
 
-
                         if (params.containsKey("partId"))
                             if (!params.get("partId").equals(""))
                                 predicates.add(cb.equal(harmedPartPartJoin.get("id"), params.get("partId")));
+
+                        if (params.containsKey("notes"))
+                            if (!params.get("notes").equals(""))
+                                predicates.add(cb.like(root.get("notes"), params.get("notes")));
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {
@@ -123,14 +126,12 @@ public class ReturnsService {
                         if (params.containsKey("FromDate"))
                             if (!params.get("FromDate").equals(""))
                                 predicates.add(cb.greaterThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
-
+                                         root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
                         if (params.containsKey("ToDate"))
                             if (!params.get("ToDate").equals(""))
                                 predicates.add(cb.lessThanOrEqualTo(
                                         root.get("creationDate"), formate.parse(params.get("ToDate"))));
-
 
                         if (params.containsKey("partId"))
                             if (!params.get("partId").equals(""))
@@ -139,7 +140,6 @@ public class ReturnsService {
                         if (params.containsKey("storeId"))
                             if (!params.get("storeId").equals(""))
                                 predicates.add(cb.equal(returnedPartStoreJoin.get("id"), params.get("storeId")));
-
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {
@@ -165,12 +165,10 @@ public class ReturnsService {
                                 predicates.add(cb.greaterThanOrEqualTo(
                                         root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
-
                         if (params.containsKey("ToDate"))
                             if (!params.get("ToDate").equals(""))
                                 predicates.add(cb.lessThanOrEqualTo(
                                         root.get("creationDate"), formate.parse(params.get("ToDate"))));
-
 
                         if (params.containsKey("partId"))
                             if (!params.get("partId").equals(""))
@@ -179,7 +177,6 @@ public class ReturnsService {
                         if (params.containsKey("storeId"))
                             if (!params.get("storeId").equals(""))
                                 predicates.add(cb.equal(returnedPartStoreJoin.get("id"), params.get("storeId")));
-
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {
@@ -232,17 +229,18 @@ public class ReturnsService {
                                 predicates.add(cb.greaterThanOrEqualTo(
                                         root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
-
                         if (params.containsKey("ToDate"))
                             if (!params.get("ToDate").equals(""))
                                 predicates.add(cb.lessThanOrEqualTo(
                                         root.get("creationDate"), formate.parse(params.get("ToDate"))));
 
-
                         if (params.containsKey("partId"))
                             if (!params.get("partId").equals(""))
                                 predicates.add(cb.equal(returnedPartPartJoin.get("id"), params.get("partId")));
 
+                        if (params.containsKey("notes"))
+                            if (!params.get("notes").equals(""))
+                                predicates.add(cb.like(root.get("notes"), params.get("notes")));
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {

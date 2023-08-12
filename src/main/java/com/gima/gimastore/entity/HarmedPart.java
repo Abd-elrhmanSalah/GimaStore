@@ -1,6 +1,9 @@
 package com.gima.gimastore.entity;
 
+import org.hibernate.annotations.Nationalized;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -22,6 +25,10 @@ public class HarmedPart implements Serializable {
     private User createdBy;
     @Column(name = "CREATION_DATE")
     private Date creationDate;
+//    @Column(name = "NOTES")
+//    @Nationalized
+//    @NotNull
+//    private String notes;
 
     public Long getId() {
         return id;
@@ -62,4 +69,12 @@ public class HarmedPart implements Serializable {
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
+
+//    public String getNotes() {
+//        return notes;
+//    }
+//
+//    public void setNotes(String notes) {
+//        this.notes = notes;
+//    }
 }

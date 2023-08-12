@@ -13,6 +13,7 @@ public class HarmedPartRequest implements Serializable {
     private User createdBy;
     private Date creationDate = new Date();
     private Integer amount;
+//    private String notes;
 
     public Part getPart() {
         return part;
@@ -45,4 +46,12 @@ public class HarmedPartRequest implements Serializable {
     public void setAmount(Integer amount) {
         this.amount = amount;
     }
+
+//    public String getNotes() {
+//        return notes;
+//    }
+//
+//    public void setNotes(String notes) {
+//        this.notes = notes;
+//    }
 }
