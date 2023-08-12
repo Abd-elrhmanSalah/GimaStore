@@ -98,6 +98,7 @@ public class ProductService {
         List<ProductPart> allByProduct = productPartRepo.findAllByProduct(productById.get());
         allByProduct.forEach(byProduct -> {
             PartRequest partRequest = new PartRequest();
+            if(byProduct.getPart().getPicture()!=null)
             byProduct.getPart().setPicture(ImageUtil.decompressImage(byProduct.getPart().getPicture()));
             partRequest.setPart(byProduct.getPart());
             partRequest.setAmount(byProduct.getAmount());
