@@ -48,7 +48,8 @@ public class SupplyProcessService {
     private SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo;
     private StorePartRepository storePartRepo;
 
-    public SupplyProcessService(SupplyProcessRepository supplyProcessRepo, SupplyProcessPartsRepository supplyProcessPartsRepo, SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo, StorePartRepository storePartRepo) {
+    public SupplyProcessService(SupplyProcessRepository supplyProcessRepo, SupplyProcessPartsRepository supplyProcessPartsRepo,
+            SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo, StorePartRepository storePartRepo) {
         this.supplyProcessRepo = supplyProcessRepo;
         this.supplyProcessPartsRepo = supplyProcessPartsRepo;
         this.supplyProcessPartsReturnsRepo = supplyProcessPartsReturnsRepo;
@@ -97,7 +98,8 @@ public class SupplyProcessService {
 
         response.getSupplyProcessParts().setSupplyProcess(map);
 
-        List<SupplyProcessPart> supplyProcessPartList = supplyProcessPartsRepo.findBySupplyProcess(ObjectMapperUtils.map(response.getSupplyProcessParts().getSupplyProcess(), SupplyProcess.class));
+        List<SupplyProcessPart> supplyProcessPartList = supplyProcessPartsRepo.findBySupplyProcess(
+                ObjectMapperUtils.map(response.getSupplyProcessParts().getSupplyProcess(), SupplyProcess.class));
 
         supplyProcessPartList.forEach(supplyProcessPart -> {
 
@@ -129,11 +131,9 @@ public class SupplyProcessService {
 
         return supplyProcessRepo.findAll(pageable);
 
-
     }
 
     public Page<SupplyProcess> searchByPagingCriteria(Map<String, String> params, Pageable pageable) {
-
 
         Page<SupplyProcess> supplyProcessPage = supplyProcessRepo.findAll(
                 (Specification<SupplyProcess>) (root, query, cb) -> {
@@ -146,11 +146,9 @@ public class SupplyProcessService {
                             if (!params.get("FromDate").equals(""))
                                 predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
-
                         if (params.containsKey("ToDate"))
                             if (!params.get("ToDate").equals(""))
                                 predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("ToDate"))));
-
 
                         if (params.containsKey("supplierId"))
                             if (!params.get("supplierId").equals(""))
@@ -172,7 +170,6 @@ public class SupplyProcessService {
                     }
                 }, pageable);
 
-
         supplyProcessPage.getContent().stream().map(supplyProcess -> {
             return ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
         }).collect(Collectors.toList());
@@ -181,7 +178,6 @@ public class SupplyProcessService {
     }
 
     public Page<PartSearchSupplyResponse> searchByPartInSupplyProcess(Map<String, String> params, Pageable pageable) {
-
 
         Page<SupplyProcessPart> supplyProcessPage = supplyProcessPartsRepo.findAll(
                 (Specification<SupplyProcessPart>) (root, query, cb) -> {
@@ -202,7 +198,6 @@ public class SupplyProcessService {
                                 predicates.add(cb.greaterThanOrEqualTo(
                                         supplyProcessSupplyProcessPartJoin.get("creationDate"), formate.parse(params.get("FromDate"))));
 
-
                         if (params.containsKey("ToDate"))
                             if (!params.get("ToDate").equals(""))
                                 predicates.add(cb.lessThanOrEqualTo(
@@ -211,7 +206,6 @@ public class SupplyProcessService {
                         if (params.containsKey("partId"))
                             if (!params.get("partId").equals(""))
                                 predicates.add(cb.equal(supplyProcessPartPartJoin.get("id"), params.get("partId")));
-
 
                         if (params.containsKey("supplierId"))
                             if (!params.get("supplierId").equals(""))
@@ -222,13 +216,11 @@ public class SupplyProcessService {
                                 predicates.add(cb.equal(
                                         supplyProcessSupplyProcessPartJoin.get("billId"), params.get("billId")));
 
-
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
                 }, pageable);
-
 
         List<PartSearchSupplyResponse> supplyProcessList = new ArrayList<>();
 
@@ -280,7 +272,25 @@ public class SupplyProcessService {
             });
         });
 
+    }
 
+    public List<String> getAllSupplyProcessBillIds() {
+        List<SupplyProcess> all = supplyProcessRepo.findAll();
+        List<String> requestIds = new ArrayList<>();
+        all.forEach(supplyProcess -> {
+            requestIds.add(supplyProcess.getBillId());
+        });
+        return requestIds;
+    }
+
+    public List<Part> getPartsBySupplyProcessBillId(String billId) {
+        SupplyProcess supplyProcess = supplyProcessRepo.findByBillId(billId);
+        List<SupplyProcessPart> bySupplyProcess = supplyProcessPartsRepo.findBySupplyProcess(supplyProcess);
+        List<Part> partsOfSupplyProcess = new ArrayList<>();
+        bySupplyProcess.forEach(supplyProcessPart -> {
+            partsOfSupplyProcess.add(supplyProcessPart.getPart());
+        });
+        return partsOfSupplyProcess;
     }
 
     private SupplyProcess saveAndUpdateSupplyProcess(SupplyProcessRequest request, MultipartFile file, boolean update, byte[] oldPic) throws IOException {
@@ -292,7 +302,6 @@ public class SupplyProcessService {
 
         if (!file.isEmpty())
             supplyProcess.setPicture(ImageUtil.compressImage(file.getBytes()));
-
 
         return supplyProcessRepo.save(supplyProcess);
     }
@@ -306,7 +315,7 @@ public class SupplyProcessService {
             supPart.setCost(partRequest.getCost());
             supPart.setRemainAmount(partRequest.getAmount());
             supPart.setDistAmount(0);
-            supPart.setAmountAfterReturn(partRequest.getAmount() );
+            supPart.setAmountAfterReturn(partRequest.getAmount());
             supplyProcessPartsRepo.save(supPart);
         });
 
@@ -319,4 +328,5 @@ public class SupplyProcessService {
 
         return supplyById.get();
     }
+
 }

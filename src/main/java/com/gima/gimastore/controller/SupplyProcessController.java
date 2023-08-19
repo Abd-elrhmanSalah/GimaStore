@@ -172,4 +172,40 @@ public class SupplyProcessController {
         }
     }
 
+    @GetMapping("/getAllSupplyProcessBillIds")
+    public ResponseEntity<?> getAllSupplyProcessBillIds() {
+        try {
+
+            return new ResponseEntity<>(supplyProcessService.getAllSupplyProcessBillIds(), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/getPartsBySupplyProcessBillId")
+    public ResponseEntity<?> getPartsBySupplyProcessBillId(@RequestParam String billId) {
+        try {
+
+            return new ResponseEntity<>(supplyProcessService.getPartsBySupplyProcessBillId(billId), HttpStatus.OK);
+
+        } catch (ApplicationException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getStatus(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            ex.printStackTrace();
+            return new ResponseEntity<>(Utils.internalServerError(ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

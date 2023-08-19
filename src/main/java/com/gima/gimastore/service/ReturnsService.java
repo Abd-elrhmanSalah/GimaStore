@@ -2,6 +2,7 @@ package com.gima.gimastore.service;
 
 import com.gima.gimastore.entity.*;
 import com.gima.gimastore.entity.productProcess.ProductionRequest;
+import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
 import com.gima.gimastore.model.PartAmount;
 import com.gima.gimastore.model.ReturnsProcess.HarmedPartRequest;
 import com.gima.gimastore.model.ReturnsProcess.ReturnPartRequest;
@@ -26,8 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-@Service
-public class ReturnsService {
+@Service public class ReturnsService {
     private StorePartRepository storePartRepo;
     private ReturnPartRepository returnPartRepo;
     private HarmedPartRepository harmedPartRepo;
@@ -71,118 +71,110 @@ public class ReturnsService {
             harmedPart.setCreatedBy(request.getCreatedBy());
             harmedPart.setAmountHarmed(request.getAmount());
             harmedPart.setPart(request.getPart());
-//            harmedPart.setNotes(request.getNotes());
+            harmedPart.setBillId(request.getBillId());
             harmedPartRepo.save(harmedPart);
         });
 
     }
 
     public Page<HarmedPart> getDetailedHarmedParts(Map<String, String> params, Pageable pageable) {
-        Page<HarmedPart> list = harmedPartRepo.findAll(
-                (Specification<HarmedPart>) (root, query, cb) -> {
-                    try {
-                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
-                        List<Predicate> predicates = new ArrayList<>();
+        Page<HarmedPart> list = harmedPartRepo.findAll((Specification<HarmedPart>) (root, query, cb) -> {
+            try {
+                SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                List<Predicate> predicates = new ArrayList<>();
 
-                        Join<HarmedPart, Part> harmedPartPartJoin = root.join("part");
+                Join<HarmedPart, Part> harmedPartPartJoin = root.join("part");
+//                Join<HarmedPart, SupplyProcess> supplyProcessJoin = root.join("supplyProcess");
 
-                        if (params.containsKey("FromDate"))
-                            if (!params.get("FromDate").equals(""))
-                                predicates.add(cb.greaterThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
+                if (params.containsKey("FromDate"))
+                    if (!params.get("FromDate").equals(""))
+                        predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
-                        if (params.containsKey("ToDate"))
-                            if (!params.get("ToDate").equals(""))
-                                predicates.add(cb.lessThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
+                if (params.containsKey("ToDate"))
+                    if (!params.get("ToDate").equals(""))
+                        predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("ToDate"))));
 
-                        if (params.containsKey("partId"))
-                            if (!params.get("partId").equals(""))
-                                predicates.add(cb.equal(harmedPartPartJoin.get("id"), params.get("partId")));
+                if (params.containsKey("partId"))
+                    if (!params.get("partId").equals(""))
+                        predicates.add(cb.equal(harmedPartPartJoin.get("id"), params.get("partId")));
 
-                        if (params.containsKey("notes"))
-                            if (!params.get("notes").equals(""))
-                                predicates.add(cb.like(root.get("notes"), params.get("notes")));
+                if (params.containsKey("supplyRequestBillId"))
+                    if (!params.get("supplyRequestBillId").equals(""))
+                        predicates.add(cb.equal(root.get("billId"), params.get("supplyRequestBillId")));
 
-                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, pageable);
+                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }, pageable);
 
         return list;
     }
 
     public Page<ReturnedPart> getDetailedReturnedPart(Map<String, String> params, Pageable pageable) {
-        Page<ReturnedPart> list = returnPartRepo.findAll(
-                (Specification<ReturnedPart>) (root, query, cb) -> {
-                    try {
-                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
-                        List<Predicate> predicates = new ArrayList<>();
+        Page<ReturnedPart> list = returnPartRepo.findAll((Specification<ReturnedPart>) (root, query, cb) -> {
+            try {
+                SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                List<Predicate> predicates = new ArrayList<>();
 
-                        Join<ReturnedPart, Part> returnedPartPartJoin = root.join("part");
-                        Join<ReturnedPart, Store> returnedPartStoreJoin = root.join("store");
+                Join<ReturnedPart, Part> returnedPartPartJoin = root.join("part");
+                Join<ReturnedPart, Store> returnedPartStoreJoin = root.join("store");
 
-                        if (params.containsKey("FromDate"))
-                            if (!params.get("FromDate").equals(""))
-                                predicates.add(cb.greaterThanOrEqualTo(
-                                         root.get("creationDate"), formate.parse(params.get("FromDate"))));
+                if (params.containsKey("FromDate"))
+                    if (!params.get("FromDate").equals(""))
+                        predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
-                        if (params.containsKey("ToDate"))
-                            if (!params.get("ToDate").equals(""))
-                                predicates.add(cb.lessThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
+                if (params.containsKey("ToDate"))
+                    if (!params.get("ToDate").equals(""))
+                        predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("ToDate"))));
 
-                        if (params.containsKey("partId"))
-                            if (!params.get("partId").equals(""))
-                                predicates.add(cb.equal(returnedPartPartJoin.get("id"), params.get("partId")));
+                if (params.containsKey("partId"))
+                    if (!params.get("partId").equals(""))
+                        predicates.add(cb.equal(returnedPartPartJoin.get("id"), params.get("partId")));
 
-                        if (params.containsKey("storeId"))
-                            if (!params.get("storeId").equals(""))
-                                predicates.add(cb.equal(returnedPartStoreJoin.get("id"), params.get("storeId")));
+                if (params.containsKey("storeId"))
+                    if (!params.get("storeId").equals(""))
+                        predicates.add(cb.equal(returnedPartStoreJoin.get("id"), params.get("storeId")));
 
-                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, pageable);
+                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }, pageable);
 
         return list;
     }
 
     public Page<PartAmount> getTotalReturnedPart(Map<String, String> params, Pageable pageable) {
-        Page<ReturnedPart> list = returnPartRepo.findAll(
-                (Specification<ReturnedPart>) (root, query, cb) -> {
-                    try {
-                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
-                        List<Predicate> predicates = new ArrayList<>();
+        Page<ReturnedPart> list = returnPartRepo.findAll((Specification<ReturnedPart>) (root, query, cb) -> {
+            try {
+                SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                List<Predicate> predicates = new ArrayList<>();
 
-                        Join<ReturnedPart, Part> returnedPartPartJoin = root.join("part");
-                        Join<ReturnedPart, Store> returnedPartStoreJoin = root.join("store");
+                Join<ReturnedPart, Part> returnedPartPartJoin = root.join("part");
+                Join<ReturnedPart, Store> returnedPartStoreJoin = root.join("store");
 
-                        if (params.containsKey("FromDate"))
-                            if (!params.get("FromDate").equals(""))
-                                predicates.add(cb.greaterThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
+                if (params.containsKey("FromDate"))
+                    if (!params.get("FromDate").equals(""))
+                        predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
-                        if (params.containsKey("ToDate"))
-                            if (!params.get("ToDate").equals(""))
-                                predicates.add(cb.lessThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
+                if (params.containsKey("ToDate"))
+                    if (!params.get("ToDate").equals(""))
+                        predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("ToDate"))));
 
-                        if (params.containsKey("partId"))
-                            if (!params.get("partId").equals(""))
-                                predicates.add(cb.equal(returnedPartPartJoin.get("id"), params.get("partId")));
+                if (params.containsKey("partId"))
+                    if (!params.get("partId").equals(""))
+                        predicates.add(cb.equal(returnedPartPartJoin.get("id"), params.get("partId")));
 
-                        if (params.containsKey("storeId"))
-                            if (!params.get("storeId").equals(""))
-                                predicates.add(cb.equal(returnedPartStoreJoin.get("id"), params.get("storeId")));
+                if (params.containsKey("storeId"))
+                    if (!params.get("storeId").equals(""))
+                        predicates.add(cb.equal(returnedPartStoreJoin.get("id"), params.get("storeId")));
 
-                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, pageable);
+                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }, pageable);
         List<PartAmount> partAmounts = new ArrayList<>();
 
         list.getContent().forEach(returnedPart -> {
@@ -196,8 +188,7 @@ public class ReturnsService {
                 PartAmount partAmount = new PartAmount();
                 partAmount.setPart(returnedPart.getPart());
 
-                List<ReturnedPart> listToSum = list.getContent().stream().filter(returnedPart1 ->
-                {
+                List<ReturnedPart> listToSum = list.getContent().stream().filter(returnedPart1 -> {
                     return returnedPart.getPart().equals(returnedPart1.getPart());
                 }).collect(Collectors.toList());
 
@@ -216,37 +207,35 @@ public class ReturnsService {
     }
 
     public Page<PartAmount> getTotalHarmedParts(Map<String, String> params, Pageable pageable) {
-        Page<HarmedPart> list = harmedPartRepo.findAll(
-                (Specification<HarmedPart>) (root, query, cb) -> {
-                    try {
-                        SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
-                        List<Predicate> predicates = new ArrayList<>();
+        Page<HarmedPart> list = harmedPartRepo.findAll((Specification<HarmedPart>) (root, query, cb) -> {
+            try {
+                SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
+                List<Predicate> predicates = new ArrayList<>();
 
-                        Join<ReturnedPart, Part> returnedPartPartJoin = root.join("part");
+                Join<HarmedPart, Part> harmedPartPartJoin = root.join("part");
 
-                        if (params.containsKey("FromDate"))
-                            if (!params.get("FromDate").equals(""))
-                                predicates.add(cb.greaterThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
-                        if (params.containsKey("ToDate"))
-                            if (!params.get("ToDate").equals(""))
-                                predicates.add(cb.lessThanOrEqualTo(
-                                        root.get("creationDate"), formate.parse(params.get("ToDate"))));
+                if (params.containsKey("FromDate"))
+                    if (!params.get("FromDate").equals(""))
+                        predicates.add(cb.greaterThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("FromDate"))));
 
-                        if (params.containsKey("partId"))
-                            if (!params.get("partId").equals(""))
-                                predicates.add(cb.equal(returnedPartPartJoin.get("id"), params.get("partId")));
+                if (params.containsKey("ToDate"))
+                    if (!params.get("ToDate").equals(""))
+                        predicates.add(cb.lessThanOrEqualTo(root.get("creationDate"), formate.parse(params.get("ToDate"))));
 
-                        if (params.containsKey("notes"))
-                            if (!params.get("notes").equals(""))
-                                predicates.add(cb.like(root.get("notes"), params.get("notes")));
+                if (params.containsKey("partId"))
+                    if (!params.get("partId").equals(""))
+                        predicates.add(cb.equal(harmedPartPartJoin.get("id"), params.get("partId")));
 
-                        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, pageable);
+                if (params.containsKey("supplyRequestBillId"))
+                    if (!params.get("supplyRequestBillId").equals(""))
+                        predicates.add(cb.equal(root.get("billId"), params.get("supplyRequestBillId")));
+
+                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }, pageable);
         List<PartAmount> partAmounts = new ArrayList<>();
 
         list.getContent().forEach(harmedPart -> {
@@ -260,8 +249,7 @@ public class ReturnsService {
                 PartAmount partAmount = new PartAmount();
                 partAmount.setPart(harmedPart.getPart());
 
-                List<HarmedPart> listToSum = list.getContent().stream().filter(harmedPart1 ->
-                {
+                List<HarmedPart> listToSum = list.getContent().stream().filter(harmedPart1 -> {
                     return harmedPart.getPart().equals(harmedPart1.getPart());
                 }).collect(Collectors.toList());
 

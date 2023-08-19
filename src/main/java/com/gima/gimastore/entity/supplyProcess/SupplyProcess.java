@@ -40,6 +40,7 @@ public class SupplyProcess implements Serializable {
     private String notes;
 
     @Column(name = "BILL_ID")
+    @NotNull
     private String billId;
 
     @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")

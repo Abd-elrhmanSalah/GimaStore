@@ -296,7 +296,7 @@ public class ProductProcessService {
                     , productionRequestParts.getProductionRequest());
 
             AtomicReference<Integer> totalOut = new AtomicReference<>(0);
-            byPartAndProductionRequest.stream().forEach(partsStoreRequest -> {
+            byPartAndProductionRequest.forEach(partsStoreRequest -> {
                 totalOut.set(totalOut.get() + partsStoreRequest.getOutedAmount());
             });
             productPartResponse.setTotalAmountOut(totalOut.get());

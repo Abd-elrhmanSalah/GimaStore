@@ -32,7 +32,9 @@ public class SupplyProcessDistService {
     private PartRepository partRepo;
     private SupplyProcessRepository supplyProcessRepository;
 
-    public SupplyProcessDistService(SupplyProcessPartDistRepository supplyProcessPartDistRepo, StorePartRepository storePartRepo, SupplyProcessPartsRepository supplyProcessPartsRepo, UserRepository userRepo, CommonBusinessValidationUtil businessValidationUtil, PartRepository partRepo, SupplyProcessRepository supplyProcessRepository) {
+    public SupplyProcessDistService(SupplyProcessPartDistRepository supplyProcessPartDistRepo, StorePartRepository storePartRepo,
+            SupplyProcessPartsRepository supplyProcessPartsRepo, UserRepository userRepo, CommonBusinessValidationUtil businessValidationUtil, PartRepository partRepo,
+            SupplyProcessRepository supplyProcessRepository) {
         this.supplyProcessPartDistRepo = supplyProcessPartDistRepo;
         this.storePartRepo = storePartRepo;
         this.supplyProcessPartsRepo = supplyProcessPartsRepo;
@@ -68,7 +70,7 @@ public class SupplyProcessDistService {
         if (supplyProcessPartById.get().getPartialDist() == false)
             supplyProcessPartById.get().setPartialDist(true);
 
-//if()
+        //if()
     }
 
     public Page<SupplyProcessPartDist> getDistRequests(Map<String, String> params, Pageable pageable) {
@@ -107,7 +109,6 @@ public class SupplyProcessDistService {
                         if (params.containsKey("partId"))
                             if (!params.get("partId").equals(""))
                                 predicates.add(cb.equal(processPartJoin.get("id"), params.get("partId")));
-
 
                         return cb.and(predicates.toArray(new Predicate[predicates.size()]));
                     } catch (ParseException e) {

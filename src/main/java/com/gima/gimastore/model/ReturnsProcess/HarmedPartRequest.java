@@ -2,6 +2,7 @@ package com.gima.gimastore.model.ReturnsProcess;
 
 import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.User;
+import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
 import com.gima.gimastore.model.supplyProcess.StoreAmount;
 
 import java.io.Serializable;
@@ -13,7 +14,7 @@ public class HarmedPartRequest implements Serializable {
     private User createdBy;
     private Date creationDate = new Date();
     private Integer amount;
-//    private String notes;
+    private String billId;
 
     public Part getPart() {
         return part;
@@ -47,11 +48,11 @@ public class HarmedPartRequest implements Serializable {
         this.amount = amount;
     }
 
-//    public String getNotes() {
-//        return notes;
-//    }
-//
-//    public void setNotes(String notes) {
-//        this.notes = notes;
-//    }
+    public String getBillId() {
+        return billId;
+    }
+
+    public void setBillId(String billId) {
+        this.billId = billId;
+    }
 }
