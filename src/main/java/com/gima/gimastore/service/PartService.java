@@ -63,7 +63,7 @@ public class PartService {
 
     public void delete(Long id) {
         Optional<Part> partById = validateExistPart(id);
-        partById.get().setLocked(true);
+        partById.get().setIsLocked(true);
         partRepo.save(partById.get());
     }
 

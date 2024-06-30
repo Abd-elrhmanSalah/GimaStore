@@ -1,6 +1,8 @@
 package com.gima.gimastore.entity.supplyProcess;
 
 import com.gima.gimastore.entity.Part;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,6 +10,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "SUPPLY_PROCESS_PARTS")
 public class SupplyProcessPart implements Serializable {
     @Id
@@ -43,83 +47,4 @@ public class SupplyProcessPart implements Serializable {
     @NotNull
     private Boolean isPartialDist = false;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Part getPart() {
-        return part;
-    }
-
-    public void setPart(Part part) {
-        this.part = part;
-    }
-
-    public SupplyProcess getSupplyProcess() {
-        return supplyProcess;
-    }
-
-    public void setSupplyProcess(SupplyProcess supplyProcess) {
-        this.supplyProcess = supplyProcess;
-    }
-
-    public BigDecimal getCost() {
-        return cost;
-    }
-
-    public void setCost(BigDecimal cost) {
-        this.cost = cost;
-    }
-
-    public Integer getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Integer amount) {
-        this.amount = amount;
-    }
-
-    public Integer getDistAmount() {
-        return distAmount;
-    }
-
-    public void setDistAmount(Integer distAmount) {
-        this.distAmount = distAmount;
-    }
-
-    public Integer getRemainAmount() {
-        return remainAmount;
-    }
-
-    public void setRemainAmount(Integer remainAmount) {
-        this.remainAmount = remainAmount;
-    }
-
-    public Boolean getFullDist() {
-        return isFullDist;
-    }
-
-    public void setFullDist(Boolean fullDist) {
-        isFullDist = fullDist;
-    }
-
-    public Boolean getPartialDist() {
-        return isPartialDist;
-    }
-
-    public void setPartialDist(Boolean partialDist) {
-        isPartialDist = partialDist;
-    }
-
-    public Integer getAmountAfterReturn() {
-        return amountAfterReturn;
-    }
-
-    public void setAmountAfterReturn(Integer amountAfterReturn) {
-        this.amountAfterReturn = amountAfterReturn;
-    }
 }

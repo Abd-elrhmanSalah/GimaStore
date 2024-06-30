@@ -1,5 +1,7 @@
 package com.gima.gimastore.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
@@ -7,6 +9,8 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "SUPERVISOR")
 public class Supervisor implements Serializable {
     @Id
@@ -23,27 +27,4 @@ public class Supervisor implements Serializable {
     @NotNull
     private Boolean isLocked = false;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getSupervisorName() {
-        return supervisorName;
-    }
-
-    public void setSupervisorName(String supervisorName) {
-        this.supervisorName = supervisorName;
-    }
-
-    public Boolean getLocked() {
-        return isLocked;
-    }
-
-    public void setLocked(Boolean locked) {
-        isLocked = locked;
-    }
 }

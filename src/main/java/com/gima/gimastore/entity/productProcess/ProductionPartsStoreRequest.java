@@ -3,6 +3,8 @@ package com.gima.gimastore.entity.productProcess;
 import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.Store;
 import com.gima.gimastore.entity.User;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -11,6 +13,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "PRODUCTION_PARTS_STORE_REQUEST")
 public class ProductionPartsStoreRequest implements Serializable {
     @Id
@@ -44,93 +48,7 @@ public class ProductionPartsStoreRequest implements Serializable {
     @Column(name = "IS_FULL_OUT", columnDefinition = "BIT DEFAULT 0")
     private Boolean isFullOut = false;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Nullable
-    public ProductionRequest getProductionRequest() {
-        return productionRequest;
-    }
-
-    public void setProductionRequest(@Nullable ProductionRequest productionRequest) {
-        this.productionRequest = productionRequest;
-    }
-
     public ProductionPartsStoreRequest() {
-    }
-
-    public ProductionPartsStoreRequest(Long id, @Nullable ProductionRequest productionRequest, @Nullable Part part, Store store, Integer requestedAmount, Integer outedAmount, User lastUpdatedBy, Date lastUpdateDate, Boolean isFullOut) {
-        this.id = id;
-        this.productionRequest = productionRequest;
-        this.part = part;
-        this.store = store;
-        this.requestedAmount = requestedAmount;
-        this.outedAmount = outedAmount;
-        this.lastUpdatedBy = lastUpdatedBy;
-        this.lastUpdateDate = lastUpdateDate;
-        this.isFullOut = isFullOut;
-    }
-
-    @Nullable
-    public Part getPart() {
-        return part;
-    }
-
-    public void setPart(@Nullable Part part) {
-        this.part = part;
-    }
-
-    public Store getStore() {
-        return store;
-    }
-
-    public void setStore(Store store) {
-        this.store = store;
-    }
-
-    public Integer getRequestedAmount() {
-        return requestedAmount;
-    }
-
-    public void setRequestedAmount(Integer requestedAmount) {
-        this.requestedAmount = requestedAmount;
-    }
-
-    public Integer getOutedAmount() {
-        return outedAmount;
-    }
-
-    public void setOutedAmount(Integer outedAmount) {
-        this.outedAmount = outedAmount;
-    }
-
-    public User getLastUpdatedBy() {
-        return lastUpdatedBy;
-    }
-
-    public void setLastUpdatedBy(User lastUpdatedBy) {
-        this.lastUpdatedBy = lastUpdatedBy;
-    }
-
-    public Date getLastUpdateDate() {
-        return lastUpdateDate;
-    }
-
-    public void setLastUpdateDate(Date lastUpdateDate) {
-        this.lastUpdateDate = lastUpdateDate;
-    }
-
-    public Boolean getFullOut() {
-        return isFullOut;
-    }
-
-    public void setFullOut(Boolean fullOut) {
-        isFullOut = fullOut;
     }
 
     @Override
@@ -143,8 +61,4 @@ public class ProductionPartsStoreRequest implements Serializable {
         return getProductionRequest() == psr.getProductionRequest();
     }
 
-//    @Override
-//    public int hashCode() {
-//        return productionRequest.getId();
-//    }
 }

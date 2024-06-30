@@ -73,9 +73,9 @@ public class ProductService {
 
     public void delete(Long id) {
         Optional<Product> productById = validateExistProduct(id);
-        if (productById.get().getLocked())
-            productById.get().setLocked(false);
-        else productById.get().setLocked(true);
+        if (productById.get().getIsLocked())
+            productById.get().setIsLocked(false);
+        else productById.get().setIsLocked(true);
         productRepo.save(productById.get());
     }
 

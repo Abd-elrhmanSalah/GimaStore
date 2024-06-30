@@ -99,7 +99,7 @@ public class UserService {
         if (userById.get().getRole().getId() == 3)
             if (storeRepo.existsByUser(userById.get()))
                 throw new ApplicationException(new StatusResponse(USER_EXIST_IN_STORE.getCode(), USER_EXIST_IN_STORE.getKey(), USER_EXIST_IN_STORE.getMessage()));
-        userById.get().setLocked(true);
+        userById.get().setIsLocked(true);
         userRepo.save(userById.get());
 
     }
@@ -155,7 +155,7 @@ public class UserService {
         if (role.isEmpty())
             throw new ApplicationException(new StatusResponse(NO_ROLE_ID.getCode(), NO_ROLE_ID.getKey(), NO_ROLE_ID.getMessage()));
 
-        List<User> users = userRepo.findByRole(ObjectMapperUtils.map(role.get(), Role.class)).stream().filter(user -> !user.getLocked()).collect(Collectors.toList());
+        List<User> users = userRepo.findByRole(ObjectMapperUtils.map(role.get(), Role.class)).stream().filter(user -> !user.getIsLocked()).collect(Collectors.toList());
         return ObjectMapperUtils.mapAll(users, UserDTO.class);
     }
 

@@ -117,8 +117,8 @@ public class SupplyProcessService {
             partRequest.setCost(supplyProcessPart.getCost());
             partRequest.setRemainAmount(supplyProcessPart.getRemainAmount());
             partRequest.setDistAmount(supplyProcessPart.getDistAmount());
-            partRequest.setIsFullDist(supplyProcessPart.getFullDist());
-            partRequest.setIsPartialDist(supplyProcessPart.getPartialDist());
+            partRequest.setIsFullDist(supplyProcessPart.getIsFullDist());
+            partRequest.setIsPartialDist(supplyProcessPart.getIsPartialDist());
             partRequest.setAmountAfterReturn(supplyProcessPart.getAmountAfterReturn());
             response.getSupplyProcessParts().getParts().add(partRequest);
 

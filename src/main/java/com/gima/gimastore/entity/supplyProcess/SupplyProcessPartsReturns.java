@@ -2,6 +2,8 @@ package com.gima.gimastore.entity.supplyProcess;
 
 import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.User;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
@@ -11,6 +13,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "SUPPLY_PROCESS_PARTS_RETURNS")
 public class SupplyProcessPartsReturns implements Serializable {
     @Id
@@ -36,60 +40,4 @@ public class SupplyProcessPartsReturns implements Serializable {
 
     @Column(name = "CREATION_DATE")
     private Date creationDate;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public SupplyProcess getSupplyProcess() {
-        return supplyProcess;
-    }
-
-    public void setSupplyProcess(SupplyProcess supplyProcess) {
-        this.supplyProcess = supplyProcess;
-    }
-
-    public Part getPart() {
-        return part;
-    }
-
-    public void setPart(Part part) {
-        this.part = part;
-    }
-
-    public Integer getAmountReturn() {
-        return amountReturn;
-    }
-
-    public void setAmountReturn(Integer amountReturn) {
-        this.amountReturn = amountReturn;
-    }
-
-    public Integer getAmountIncoming() {
-        return amountIncoming;
-    }
-
-    public void setAmountIncoming(Integer amountIncoming) {
-        this.amountIncoming = amountIncoming;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
 }

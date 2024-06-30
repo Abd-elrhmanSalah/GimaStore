@@ -55,7 +55,7 @@ public class StoreService {
 
     public void delete(Long id) {
         Optional<Store> store = validateExistStore(id);
-        store.get().setLocked(true);
+        store.get().setIsLocked(true);
         storeRepo.save(store.get());
 
     }

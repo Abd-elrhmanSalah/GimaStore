@@ -1,10 +1,15 @@
 package com.gima.gimastore.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "RETURNED_PART")
 public class ReturnedPart implements Serializable {
     @Id
@@ -25,51 +30,4 @@ public class ReturnedPart implements Serializable {
     @Column(name = "CREATION_DATE")
     private Date creationDate;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Part getPart() {
-        return part;
-    }
-
-    public void setPart(Part part) {
-        this.part = part;
-    }
-
-    public Store getStore() {
-        return store;
-    }
-
-    public void setStore(Store store) {
-        this.store = store;
-    }
-
-    public Integer getAmountReturned() {
-        return amountReturned;
-    }
-
-    public void setAmountReturned(Integer amountReturned) {
-        this.amountReturned = amountReturned;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
 }

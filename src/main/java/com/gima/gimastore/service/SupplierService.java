@@ -40,7 +40,7 @@ public class SupplierService {
 
     public void delete(Long id) {
         Optional<Supplier> partById = validateExistSupplier(id);
-        partById.get().setLocked(true);
+        partById.get().setIsLocked(true);
         supplierRepo.save(partById.get());
 
     }

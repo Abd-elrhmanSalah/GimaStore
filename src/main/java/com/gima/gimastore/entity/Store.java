@@ -1,11 +1,15 @@
 package com.gima.gimastore.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "STORE")
 public class Store implements Serializable {
 
@@ -27,36 +31,4 @@ public class Store implements Serializable {
     @Column(name = "IS_LOCKED", columnDefinition = "BIT DEFAULT 0")
     private Boolean isLocked = false;
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getStoreName() {
-        return storeName;
-    }
-
-    public void setStoreName(String storeName) {
-        this.storeName = storeName;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Boolean getLocked() {
-        return isLocked;
-    }
-
-    public void setLocked(Boolean locked) {
-        isLocked = locked;
-    }
 }

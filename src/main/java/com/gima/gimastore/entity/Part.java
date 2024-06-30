@@ -1,5 +1,7 @@
 package com.gima.gimastore.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Nationalized;
 import org.springframework.lang.Nullable;
 
@@ -9,6 +11,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "PART")
 public class Part implements Serializable {
 
@@ -39,51 +43,5 @@ public class Part implements Serializable {
     @NotNull
     private Integer minAmount = 1;
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getPartName() {
-        return partName;
-    }
-
-    public void setPartName(String partName) {
-        this.partName = partName;
-    }
-
-    public BigDecimal getCurrentCost() {
-        return currentCost;
-    }
-
-    public void setCurrentCost(BigDecimal currentAmount) {
-        this.currentCost = currentAmount;
-    }
-
-    public byte[] getPicture() {
-        return picture;
-    }
-
-    public void setPicture(byte[] picture) {
-        this.picture = picture;
-    }
-
-    public Boolean getLocked() {
-        return isLocked;
-    }
-
-    public void setLocked(Boolean locked) {
-        isLocked = locked;
-    }
-
-    public Integer getMinAmount() {
-        return minAmount;
-    }
-
-    public void setMinAmount(Integer minAmount) {
-        this.minAmount = minAmount;
-    }
 }

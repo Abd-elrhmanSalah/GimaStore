@@ -1,6 +1,8 @@
 package com.gima.gimastore.entity.productProcess;
 
 import com.gima.gimastore.entity.Part;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -8,6 +10,8 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "PRODUCT_REQUEST_PARTS")
 public class ProductionRequestParts implements Serializable {
     @Id
@@ -29,38 +33,4 @@ public class ProductionRequestParts implements Serializable {
     @NotNull
     private Integer requestedAmount;
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Nullable
-    public ProductionRequest getProductionRequest() {
-        return productionRequest;
-    }
-
-    public void setProductionRequest(@Nullable ProductionRequest productionRequest) {
-        this.productionRequest = productionRequest;
-    }
-
-    @Nullable
-    public Part getPart() {
-        return part;
-    }
-
-    public void setPart(@Nullable Part part) {
-        this.part = part;
-    }
-
-    public Integer getRequestedAmount() {
-        return requestedAmount;
-    }
-
-    public void setRequestedAmount(Integer requestedAmount) {
-        this.requestedAmount = requestedAmount;
-    }
 }

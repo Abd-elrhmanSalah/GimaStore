@@ -3,6 +3,8 @@ package com.gima.gimastore.entity.productProcess;
 import com.gima.gimastore.entity.Department;
 import com.gima.gimastore.entity.Supervisor;
 import com.gima.gimastore.entity.User;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -11,6 +13,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "PRODUCT_REQUEST")
 public class ProductionRequest implements Serializable {
 
@@ -60,102 +64,4 @@ public class ProductionRequest implements Serializable {
     @Column(name = "IS_COMPLETED", columnDefinition = "BIT DEFAULT 0")
     private Boolean isCompleted = false;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getRequestID() {
-        return requestID;
-    }
-
-    public void setRequestID(String requestID) {
-        this.requestID = requestID;
-    }
-
-    @Nullable
-    public Product getProduct() {
-        return product;
-    }
-
-
-    public Boolean getFullOut() {
-        return isFullOut;
-    }
-
-    public void setFullOut(Boolean fullOut) {
-        isFullOut = fullOut;
-    }
-
-    public void setProduct(@Nullable Product product) {
-        this.product = product;
-    }
-
-    public Department getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
-    public Supervisor getSupervisor() {
-        return supervisor;
-    }
-
-    public void setSupervisor(Supervisor supervisor) {
-        this.supervisor = supervisor;
-    }
-
-    public Integer getExpectedProduction() {
-        return expectedProduction;
-    }
-
-    public void setExpectedProduction(Integer expectedProduction) {
-        this.expectedProduction = expectedProduction;
-    }
-
-    @Nullable
-    public Integer getExactlyProduction() {
-        return exactlyProduction;
-    }
-
-    public void setExactlyProduction(@Nullable Integer exactlyProduction) {
-        this.exactlyProduction = exactlyProduction;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Boolean getItProduct() {
-        return isItProduct;
-    }
-
-    public void setItProduct(Boolean itProduct) {
-        isItProduct = itProduct;
-    }
-
-    public Boolean getCompleted() {
-        return isCompleted;
-    }
-
-    public void setCompleted(Boolean completed) {
-        isCompleted = completed;
-    }
 }

@@ -1,9 +1,15 @@
 package com.gima.gimastore.entity;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "STATUS")
 public class Status implements Serializable {
     @Id
@@ -13,26 +19,7 @@ public class Status implements Serializable {
 
     private String statusValue;
 
-    public Status() {
-    }
-
     public Status(Long id) {
         this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getStatusValue() {
-        return statusValue;
-    }
-
-    public void setStatusValue(String statusValue) {
-        this.statusValue = statusValue;
     }
 }

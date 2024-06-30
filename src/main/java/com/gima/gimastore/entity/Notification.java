@@ -1,6 +1,8 @@
 package com.gima.gimastore.entity;
 
 import com.gima.gimastore.entity.User;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Nationalized;
 import org.springframework.lang.Nullable;
 
@@ -10,6 +12,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "Notification")
 public class Notification implements Serializable {
     @Id

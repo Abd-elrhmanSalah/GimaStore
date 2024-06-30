@@ -37,7 +37,7 @@ public class DepartmentService {
 
     public void delete(Long id) {
         Optional<Department> deptById = validateExistDept(id);
-        deptById.get().setLocked(true);
+        deptById.get().setIsLocked(true);
         departmentRepo.save(deptById.get());
     }
 

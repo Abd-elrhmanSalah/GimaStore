@@ -146,18 +146,18 @@ public class ProductProcessService {
         productionStoreRequest.setLastUpdateDate(request.getLastUpdateDate());
         productionStoreRequest.setLastUpdatedBy(request.getLastUpdatedBy());
         if (updatedAmount == productionStoreRequest.getRequestedAmount())
-            productionStoreRequest.setFullOut(true);
+            productionStoreRequest.setIsFullOut(true);
         productionPartsStoreRequestRepo.save(productionStoreRequest);
         StorePart storePart = storePartRepo.findByStoreAndPart(productionStoreRequest.getStore(), productionStoreRequest.getPart()).get();
         storePart.setAmount(storePart.getAmount() - request.getOutedAmount());
         storePartRepo.save(storePart);
         List<ProductionPartsStoreRequest> byProductionRequest = productionPartsStoreRequestRepo
                 .findByProductionRequest(productionStoreRequest.getProductionRequest());
-        boolean allFullOut = byProductionRequest.stream().allMatch(pr -> pr.getFullOut());
+        boolean allFullOut = byProductionRequest.stream().allMatch(pr -> pr.getIsFullOut());
         if (allFullOut) {
             ProductionRequest productionRequestById = productionRequestRepo
                     .findById(productionStoreRequest.getProductionRequest().getId()).get();
-            productionRequestById.setFullOut(true);
+            productionRequestById.setIsFullOut(true);
             productionRequestRepo.save(productionRequestById);
         }
         //////////////////////////////////////////////////////////////
@@ -189,7 +189,7 @@ public class ProductProcessService {
 
     public void confirmProductionRequest(String requestId, Integer exactlyAmount) {
         ProductionRequest productionRequest = productionRequestRepo.findByRequestID(requestId).get();
-        productionRequest.setCompleted(true);
+        productionRequest.setIsCompleted(true);
         productionRequest.setExactlyProduction(exactlyAmount);
         productionRequestRepo.save(productionRequest);
     }

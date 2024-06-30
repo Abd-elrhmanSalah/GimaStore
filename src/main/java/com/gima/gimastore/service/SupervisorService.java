@@ -37,7 +37,7 @@ public class SupervisorService {
 
     public void delete(Long id) {
         Optional<Supervisor> supervisorById = validateExistSupervisor(id);
-        supervisorById.get().setLocked(true);
+        supervisorById.get().setIsLocked(true);
         supervisorRepo.save(supervisorById.get());
     }
 

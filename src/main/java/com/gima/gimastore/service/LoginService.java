@@ -36,7 +36,7 @@ public class LoginService {
         if (!byUserNameAndPassword.isPresent())
             throw new ApplicationException(new StatusResponse(LOGIN_FAILED.getCode(), LOGIN_FAILED.getKey(), LOGIN_FAILED.getMessage()));
 
-        if (byUserNameAndPassword.get().getLocked() == true)
+        if (byUserNameAndPassword.get().getIsLocked() == true)
             throw new ApplicationException(new StatusResponse(LOGIN_USER_LOCKED.getCode(), LOGIN_USER_LOCKED.getKey(), LOGIN_USER_LOCKED.getMessage()));
 
         UserDTO userDto = ObjectMapperUtils.map(byUserNameAndPassword.get(), UserDTO.class);

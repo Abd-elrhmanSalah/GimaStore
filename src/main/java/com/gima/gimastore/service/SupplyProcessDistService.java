@@ -53,13 +53,13 @@ public class SupplyProcessDistService {
             supplyProcessPartById.get().setRemainAmount(supplyProcessPartById.get().getRemainAmount() - dto.getAmount());
             supplyProcessPartById.get().setDistAmount(supplyProcessPartById.get().getDistAmount() + dto.getAmount());
             if (supplyProcessPartById.get().getRemainAmount() == 0)
-                supplyProcessPartById.get().setFullDist(true);
+                supplyProcessPartById.get().setIsFullDist(true);
 
             supplyProcessPartsRepo.save(supplyProcessPartById.get());
         });
 
-        if (supplyProcessPartById.get().getPartialDist() == false)
-            supplyProcessPartById.get().setPartialDist(true);
+        if (supplyProcessPartById.get().getIsPartialDist() == false)
+            supplyProcessPartById.get().setIsPartialDist(true);
 
         //if()
     }
@@ -149,7 +149,7 @@ public class SupplyProcessDistService {
         supplyProcessPartDistRepo.save(partDistById.get());
         List<SupplyProcessPart> bySupplyProcess = supplyProcessPartsRepo.findBySupplyProcess(partDistById.get().getSupplyProcessPart().getSupplyProcess());
         Boolean allPartialDist = bySupplyProcess.stream().allMatch(supplyProcessPart ->
-                supplyProcessPart.getFullDist() == true);
+                supplyProcessPart.getIsFullDist() == true);
         if (allPartialDist) {
             SupplyProcess supplyProcess = supplyProcessRepository.findById(partDistById.get().getSupplyProcessPart().getSupplyProcess().getId()).get();
             supplyProcess.setIsFullDist(true);
@@ -168,9 +168,9 @@ public class SupplyProcessDistService {
                 setDistAmount(partDistById.get().getSupplyProcessPart().getDistAmount() - partDistById.get().getAmount());
 
         if (partDistById.get().getSupplyProcessPart().getDistAmount() == 0)
-            partDistById.get().getSupplyProcessPart().setPartialDist(false);
+            partDistById.get().getSupplyProcessPart().setIsPartialDist(false);
         if (partDistById.get().getSupplyProcessPart().getRemainAmount() == 0)
-            partDistById.get().getSupplyProcessPart().setFullDist(true);
+            partDistById.get().getSupplyProcessPart().setIsFullDist(true);
 
         partDistById.get().setNotes(notes);
         User user = userRepo.findById(userId).get();

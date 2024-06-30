@@ -1,6 +1,8 @@
 package com.gima.gimastore.entity.productProcess;
 
 import com.gima.gimastore.entity.User;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Nationalized;
@@ -12,6 +14,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "PRODUCT_OUT")
 public class ProductOut implements Serializable {
     @Id
@@ -47,67 +51,4 @@ public class ProductOut implements Serializable {
     @Column(name = "CREATION_DATE")
     private Date creationDate;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDestinationName() {
-        return destinationName;
-    }
-
-    public void setDestinationName(String destinationName) {
-        this.destinationName = destinationName;
-    }
-
-    public String getDriverName() {
-        return driverName;
-    }
-
-    public void setDriverName(String driverName) {
-        this.driverName = driverName;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public User getResponsibleBy() {
-        return responsibleBy;
-    }
-
-    public void setResponsibleBy(User responsibleBy) {
-        this.responsibleBy = responsibleBy;
-    }
-
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
-    }
 }
