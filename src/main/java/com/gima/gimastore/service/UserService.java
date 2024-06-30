@@ -12,6 +12,7 @@ import com.gima.gimastore.repository.UserPrivilegesRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,20 +31,14 @@ import java.util.zip.DataFormatException;
 import static com.gima.gimastore.constant.ResponseCodes.*;
 
 @Service
-
+@RequiredArgsConstructor
 public class UserService {
 
-    private UserRepository userRepo;
-    private RoleRepository roleRepo;
-    private StoreRepository storeRepo;
-    private UserPrivilegesRepository userPrivilegesRepo;
+    private final UserRepository userRepo;
+    private final RoleRepository roleRepo;
+    private final StoreRepository storeRepo;
+    private final UserPrivilegesRepository userPrivilegesRepo;
 
-    public UserService(UserRepository userRepo, RoleRepository roleRepo, StoreRepository storeRepo, UserPrivilegesRepository userPrivilegesRepo) {
-        this.userRepo = userRepo;
-        this.roleRepo = roleRepo;
-        this.storeRepo = storeRepo;
-        this.userPrivilegesRepo = userPrivilegesRepo;
-    }
 
     @Transactional
     public void addUser(UserDTO userDTOParam, MultipartFile file) throws IOException {

@@ -10,6 +10,7 @@ import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.productionProcess.ProductOutRequest;
 import com.gima.gimastore.repository.ProductOutProductsRepository;
 import com.gima.gimastore.repository.ProductOutRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,16 +30,10 @@ import static com.gima.gimastore.constant.ResponseCodes.*;
 import static com.gima.gimastore.constant.ResponseCodes.REPEATED_PARTNAME;
 
 @Service
+@RequiredArgsConstructor
 public class ProductOutService {
-    private ProductOutRepository productOutRepo;
-    private ProductOutProductsRepository productOutProductsRepo;
-    @Autowired
-    EntityManager em;
-
-    public ProductOutService(ProductOutRepository productOutRepo, ProductOutProductsRepository productOutProductsRepo) {
-        this.productOutRepo = productOutRepo;
-        this.productOutProductsRepo = productOutProductsRepo;
-    }
+    private final ProductOutRepository productOutRepo;
+    private final ProductOutProductsRepository productOutProductsRepo;
 
     @Transactional
     public void addProductOut(ProductOutRequest request) {

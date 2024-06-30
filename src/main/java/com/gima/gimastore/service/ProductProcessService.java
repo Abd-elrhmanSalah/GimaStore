@@ -13,6 +13,7 @@ import com.gima.gimastore.model.productionProcess.*;
 import com.gima.gimastore.model.supplyProcess.StoreAmount;
 import com.gima.gimastore.repository.*;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -33,35 +34,19 @@ import java.util.stream.Collectors;
 import static com.gima.gimastore.constant.ResponseCodes.*;
 
 @Service
+@RequiredArgsConstructor
 public class ProductProcessService {
-    private ProductionRequestRepository productionRequestRepo;
-    private ProductionRequestPartsRepository productionRequestPartsRepo;
-    private ProductRepository productRepo;
-    private StoreRepository storeRepo;
-    private ProductPartRepository productPartRepo;
-    private StorePartRepository storePartRepo;
-    private ProductionPartsStoreRequestRepository productionPartsStoreRequestRepo;
-    private NotificationController notificationController;
-    private NotificationRepository notificationRepo;
-    private UserRepository userRepo;
-    private PartRepository partRepo;
-
-    public ProductProcessService(ProductionRequestRepository productionRequestRepo, ProductionRequestPartsRepository productionRequestPartsRepo,
-            ProductRepository productRepo, StoreRepository storeRepo, ProductPartRepository productPartRepo, StorePartRepository storePartRepo,
-            ProductionPartsStoreRequestRepository productionPartsStoreRequestRepo, NotificationController notificationController,
-            NotificationRepository notificationRepo, UserRepository userRepo, PartRepository partRepo) {
-        this.productionRequestRepo = productionRequestRepo;
-        this.productionRequestPartsRepo = productionRequestPartsRepo;
-        this.productRepo = productRepo;
-        this.storeRepo = storeRepo;
-        this.productPartRepo = productPartRepo;
-        this.storePartRepo = storePartRepo;
-        this.productionPartsStoreRequestRepo = productionPartsStoreRequestRepo;
-        this.notificationController = notificationController;
-        this.notificationRepo = notificationRepo;
-        this.userRepo = userRepo;
-        this.partRepo = partRepo;
-    }
+    private final ProductionRequestRepository productionRequestRepo;
+    private final ProductionRequestPartsRepository productionRequestPartsRepo;
+    private final ProductRepository productRepo;
+    private final StoreRepository storeRepo;
+    private final ProductPartRepository productPartRepo;
+    private final StorePartRepository storePartRepo;
+    private final ProductionPartsStoreRequestRepository productionPartsStoreRequestRepo;
+    private final NotificationController notificationController;
+    private final NotificationRepository notificationRepo;
+    private final UserRepository userRepo;
+    private final PartRepository partRepo;
 
     @Transactional
     public void addProductionRequest(ProductionAPIRequest productionAPIRequest) {
@@ -121,17 +106,27 @@ public class ProductProcessService {
 
     public Page<ProductionRequest> getProductionRequestsByStore(Long storeId, Pageable pageable) {
         Store store = storeRepo.findById(storeId).get();
-        Page<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo
-                .findAllByStoreAndIsFullOut(store, false, pageable);
-        List<ProductionPartsStoreRequest> requests = productionPartsStoreRequests.getContent().stream().
+
+        List<ProductionPartsStoreRequest> productionPartsStoreRequests = productionPartsStoreRequestRepo
+                .findAllByStoreAndIsFullOut(store, false);
+
+        List<ProductionPartsStoreRequest> requests = productionPartsStoreRequests.stream().
                 filter(distinctByKey(p -> p.getProductionRequest())).collect(Collectors.toList());
+
         List<ProductionRequest> productionRequests = new ArrayList<>();
         requests.forEach(partsStoreRequest -> {
             productionRequests.add(productionRequestRepo.findById(partsStoreRequest.getProductionRequest().getId()).get());
         });
-        PageImpl<ProductionRequest> productionRequestpage = new PageImpl<>(productionRequests, pageable, productionRequests.size());
+        Collections.sort(productionRequests,
+                Comparator.comparingLong(ProductionRequest::getId).reversed());
 
-        return productionRequestpage;
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), productionRequests.size());
+
+        PageImpl<ProductionRequest> productionRequestPage = new PageImpl<>(productionRequests.subList(start, end), pageable,
+                requests.size());
+
+        return productionRequestPage;
     }
 
     public List<ProductionPartsStoreRequest> getRequestsByStoreAndRequestId(Long storeId, Long requestId) {

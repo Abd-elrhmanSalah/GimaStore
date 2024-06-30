@@ -107,10 +107,10 @@ public class StoreController {
     }
 
     @GetMapping("/getStoreParts")
-    public ResponseEntity<?> getAllStoreParts(@RequestParam Long storeId, Pageable pageable) {
+    public ResponseEntity<?> getAllStoreParts(@RequestParam Long storeId, @RequestParam String searchText, Pageable pageable) {
         try {
 
-            return new ResponseEntity<>(partStoreService.findPartsByStore(storeId, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(partStoreService.findPartsByStore(storeId, searchText,pageable), HttpStatus.OK);
 
         } catch (ApplicationException e) {
             logger.error(e.getMessage(), e);

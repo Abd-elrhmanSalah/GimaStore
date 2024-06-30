@@ -6,6 +6,7 @@ import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.SupplierDTO;
 import com.gima.gimastore.repository.SupplierRepository;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,14 +17,10 @@ import static com.gima.gimastore.constant.ResponseCodes.NO_SUPPLIER_ID;
 import static com.gima.gimastore.constant.ResponseCodes.REPEATED_SUPPLIERNAME;
 
 @Service
+@RequiredArgsConstructor
 public class SupplierService {
-    private SupplierRepository supplierRepo;
-
-    public SupplierService(SupplierRepository supplierRepo) {
-        this.supplierRepo = supplierRepo;
-    }
-
-
+    private final SupplierRepository supplierRepo;
+    
     public void add(SupplierDTO supplierDTOParam) {
         validateSupplierName(supplierDTOParam.getSupplierName());
         Supplier map = ObjectMapperUtils.map(supplierDTOParam, Supplier.class);

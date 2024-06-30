@@ -1,32 +1,15 @@
 package com.gima.gimastore.model;
 
 import com.gima.gimastore.entity.Store;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
-
+@Data
+@RequiredArgsConstructor
 public class StorePartRequest implements Serializable {
 
     private PartDTO part;
     private Integer amount;
-
-
-    public StorePartRequest() {
-    }
-
-    public PartDTO getPart() {
-        return part;
-    }
-
-    public void setPart(PartDTO part) {
-        this.part = part;
-    }
-
-    public Integer getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Integer amount) {
-        this.amount = amount;
-    }
 
 }

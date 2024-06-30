@@ -9,6 +9,7 @@ import com.gima.gimastore.repository.PartRepository;
 import com.gima.gimastore.repository.StorePartRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,15 +25,11 @@ import static com.gima.gimastore.constant.ResponseCodes.NO_PART_ID;
 import static com.gima.gimastore.constant.ResponseCodes.REPEATED_PARTNAME;
 
 @Service
+@RequiredArgsConstructor
 public class PartService {
 
-    private PartRepository partRepo;
-    private StorePartRepository storePartRepo;
-
-    public PartService(PartRepository partRepo, StorePartRepository storePartRepo) {
-        this.partRepo = partRepo;
-        this.storePartRepo = storePartRepo;
-    }
+    private final PartRepository partRepo;
+    private final StorePartRepository storePartRepo;
 
     public void add(PartDTO partDTOParam, MultipartFile file) throws IOException {
 

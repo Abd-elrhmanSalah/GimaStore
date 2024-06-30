@@ -17,7 +17,7 @@ import java.util.Set;
 @Repository
 public interface ProductionPartsStoreRequestRepository extends JpaRepository<ProductionPartsStoreRequest, Long> {
 
-    Page<ProductionPartsStoreRequest> findAllByStoreAndIsFullOut(Store store, Boolean fullOut, Pageable pageable);
+    List<ProductionPartsStoreRequest> findAllByStoreAndIsFullOut(Store store, Boolean fullOut );
 
     List<ProductionPartsStoreRequest> findByStoreAndProductionRequest(Store store, ProductionRequest productionRequest);
     List<ProductionPartsStoreRequest>   findByProductionRequest(ProductionRequest productionRequest);

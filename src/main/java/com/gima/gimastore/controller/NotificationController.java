@@ -56,10 +56,6 @@ public class NotificationController {
         this.idList = idList;
     }
 
-    @MessageMapping("/message/{room}")
-    @SendTo("/topic/message/{room}")
-    public void handleMessage(@DestinationVariable String room) {
-    }
 
     @ResponseBody
     @GetMapping("/notifyByUser")

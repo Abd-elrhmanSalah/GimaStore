@@ -18,6 +18,7 @@ public interface StorePartRepository extends JpaRepository<StorePart, Long> {
     Optional<StorePart> findByStoreAndPart(Store store, Part part);
 
     Page<StorePart> findByStore(Store store, Pageable pageable);
+//    Optional<StorePart> findByStoreAndPartContains(Store store, Part part);
 
     List<StorePart> findStorePartByPart(Part part);
 

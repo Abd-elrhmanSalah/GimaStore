@@ -8,6 +8,7 @@ import com.gima.gimastore.model.StoreDTO;
 import com.gima.gimastore.repository.StoreRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,16 +18,11 @@ import java.util.Optional;
 import static com.gima.gimastore.constant.ResponseCodes.*;
 
 @Service
+@RequiredArgsConstructor
 public class StoreService {
 
-    private StoreRepository storeRepo;
-    private UserRepository userRepo;
-
-    public StoreService(StoreRepository storeRepo, UserRepository userRepo) {
-        this.storeRepo = storeRepo;
-        this.userRepo = userRepo;
-    }
-
+    private final StoreRepository storeRepo;
+    private final UserRepository userRepo;
 
     public void add(StoreDTO storeDTOParam) {
 

@@ -13,6 +13,7 @@ import com.gima.gimastore.repository.UserPrivilegesRepository;
 import com.gima.gimastore.repository.UserRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -22,21 +23,17 @@ import static com.gima.gimastore.constant.ResponseCodes.LOGIN_FAILED;
 import static com.gima.gimastore.constant.ResponseCodes.LOGIN_USER_LOCKED;
 
 @Service
+@RequiredArgsConstructor
 public class LoginService {
 
-    private UserRepository userRepo;
-    private StoreRepository storeRepo;
-    private UserPrivilegesRepository userPrivilegesRepo;
+    private final UserRepository userRepo;
+    private final StoreRepository storeRepo;
+    private final UserPrivilegesRepository userPrivilegesRepo;
 
-    public LoginService(UserRepository userRepo, StoreRepository storeRepo, UserPrivilegesRepository userPrivilegesRepo) {
-        this.userRepo = userRepo;
-        this.storeRepo = storeRepo;
-        this.userPrivilegesRepo = userPrivilegesRepo;
-    }
 
-    public UserDTO login(String username, String password){
+    public UserDTO login(String username, String password) {
         Optional<User> byUserNameAndPassword = userRepo.findByUserNameAndPassword(username, password);
-        if (byUserNameAndPassword.isEmpty())
+        if (!byUserNameAndPassword.isPresent())
             throw new ApplicationException(new StatusResponse(LOGIN_FAILED.getCode(), LOGIN_FAILED.getKey(), LOGIN_FAILED.getMessage()));
 
         if (byUserNameAndPassword.get().getLocked() == true)
@@ -48,7 +45,7 @@ public class LoginService {
 
         if (byUserNameAndPassword.get().getRole().getId() == 3) {
             Optional<Store> byUserAndIsLocked = storeRepo.findByUserAndIsLocked(byUserNameAndPassword.get(), false);
-            if (!byUserAndIsLocked.isEmpty())
+            if (byUserAndIsLocked.isPresent())
                 userDto.setStoreId(byUserAndIsLocked.get().getId());
         }
         UserPrivileges byUser = userPrivilegesRepo.findByUser(byUserNameAndPassword.get()).get();

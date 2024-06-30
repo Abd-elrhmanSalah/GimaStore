@@ -9,6 +9,7 @@ import com.gima.gimastore.model.ReturnsProcess.ReturnPartRequest;
 import com.gima.gimastore.repository.HarmedPartRepository;
 import com.gima.gimastore.repository.ReturnPartRepository;
 import com.gima.gimastore.repository.StorePartRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,17 +28,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-@Service public class ReturnsService {
-    private StorePartRepository storePartRepo;
-    private ReturnPartRepository returnPartRepo;
-    private HarmedPartRepository harmedPartRepo;
-
-    public ReturnsService(StorePartRepository storePartRepo, ReturnPartRepository returnPartRepo, HarmedPartRepository harmedPartRepo) {
-        this.storePartRepo = storePartRepo;
-        this.returnPartRepo = returnPartRepo;
-        this.harmedPartRepo = harmedPartRepo;
-    }
-
+@Service
+@RequiredArgsConstructor
+public class ReturnsService {
+    private final StorePartRepository storePartRepo;
+    private final ReturnPartRepository returnPartRepo;
+    private final HarmedPartRepository harmedPartRepo;
+    
     public void addPartToReturn(List<ReturnPartRequest> requestList) {
         requestList.forEach(request -> {
             request.getStoreAmounts().forEach(storeAmount -> {

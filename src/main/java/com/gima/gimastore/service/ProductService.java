@@ -11,6 +11,7 @@ import com.gima.gimastore.repository.ProductPartRepository;
 import com.gima.gimastore.repository.ProductRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,10 @@ import java.util.zip.DataFormatException;
 import static com.gima.gimastore.constant.ResponseCodes.*;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
-    private ProductRepository productRepo;
-    private ProductPartRepository productPartRepo;
-
-    public ProductService(ProductRepository productRepo, ProductPartRepository productPartRepo) {
-        this.productRepo = productRepo;
-        this.productPartRepo = productPartRepo;
-    }
+    private final ProductRepository productRepo;
+    private final ProductPartRepository productPartRepo;
 
     public void addProduct(ProductDTO productParamDTO, MultipartFile file) throws IOException {
         validateProductName(productParamDTO.getProductName());

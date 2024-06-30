@@ -9,6 +9,7 @@ import com.gima.gimastore.model.PartReport;
 import com.gima.gimastore.model.PartReportResponse;
 import com.gima.gimastore.model.productionProcess.ProductBalanceResponse;
 import com.gima.gimastore.repository.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,37 +25,22 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
+@RequiredArgsConstructor
 public class ReportService {
 
-    private ProductionRequestPartsRepository productionRequestPartsRepository;
-    private ProductionRequestRepository productionRequestRepo;
-    private StorePartRepository storePartRepository;
-    private SupplyProcessPartsRepository supplyProcessPartsRepository;
-    private StorePartSettlementRepository storePartSettlementRepo;
-    private SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo;
-    private ProductOutProductsRepository productOutProductsRepo;
-    private PartRepository partRepo;
-    private HarmedPartRepository harmedPartRepo;
-    private ReturnPartRepository returnPartRepo;
-    private ProductPartRepository productPartRepo;
+    private final ProductionRequestPartsRepository productionRequestPartsRepository;
+    private final ProductionRequestRepository productionRequestRepo;
+    private final StorePartRepository storePartRepository;
+    private final SupplyProcessPartsRepository supplyProcessPartsRepository;
+    private final StorePartSettlementRepository storePartSettlementRepo;
+    private final SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo;
+    private final ProductOutProductsRepository productOutProductsRepo;
+    private final PartRepository partRepo;
+    private final HarmedPartRepository harmedPartRepo;
+    private final ReturnPartRepository returnPartRepo;
+    private final ProductPartRepository productPartRepo;
     SimpleDateFormat formate = new SimpleDateFormat("dd/MM/yyyy");
 
-    public ReportService(ProductionRequestPartsRepository productionRequestPartsRepository, ProductionRequestRepository productionRequestRepo,
-            StorePartRepository storePartRepository, SupplyProcessPartsRepository supplyProcessPartsRepository, StorePartSettlementRepository storePartSettlementRepo,
-            SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo, ProductOutProductsRepository productOutProductsRepo, PartRepository partRepo,
-            HarmedPartRepository harmedPartRepo, ReturnPartRepository returnPartRepo, ProductPartRepository productPartRepo) {
-        this.productionRequestPartsRepository = productionRequestPartsRepository;
-        this.productionRequestRepo = productionRequestRepo;
-        this.storePartRepository = storePartRepository;
-        this.supplyProcessPartsRepository = supplyProcessPartsRepository;
-        this.storePartSettlementRepo = storePartSettlementRepo;
-        this.supplyProcessPartsReturnsRepo = supplyProcessPartsReturnsRepo;
-        this.productOutProductsRepo = productOutProductsRepo;
-        this.partRepo = partRepo;
-        this.harmedPartRepo = harmedPartRepo;
-        this.returnPartRepo = returnPartRepo;
-        this.productPartRepo = productPartRepo;
-    }
 
     public PartReportResponse getPartReport(Map<String, String> params, Pageable pageable) {
         PartReportResponse partReportResponse = new PartReportResponse();

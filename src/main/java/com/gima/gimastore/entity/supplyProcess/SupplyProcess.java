@@ -6,6 +6,8 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.gima.gimastore.entity.Supplier;
 import com.gima.gimastore.entity.User;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
@@ -15,6 +17,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "SUPPLY_PROCESS")
 public class SupplyProcess implements Serializable {
 
@@ -54,77 +58,4 @@ public class SupplyProcess implements Serializable {
     @Column(name = "IS_FULL_DIST", columnDefinition = "BIT DEFAULT 0")
     @NotNull
     private Boolean isFullDist;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Supplier getSupplier() {
-        return supplier;
-    }
-
-    public void setSupplier(Supplier supplier) {
-        this.supplier = supplier;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public Boolean getLocked() {
-        return isLocked;
-    }
-
-    public void setLocked(Boolean locked) {
-        isLocked = locked;
-    }
-
-    public String getBillId() {
-        return billId;
-    }
-
-    public void setBillId(String billId) {
-        this.billId = billId;
-    }
-
-    public byte[] getPicture() {
-        return picture;
-    }
-
-    public void setPicture(byte[] picture) {
-        this.picture = picture;
-    }
-
-    public Boolean getFullDist() {
-        return isFullDist;
-    }
-
-    public void setFullDist(Boolean fullDist) {
-        isFullDist = fullDist;
-    }
 }

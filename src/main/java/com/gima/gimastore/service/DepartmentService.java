@@ -6,6 +6,7 @@ import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.DepartmentDTO;
 import com.gima.gimastore.repository.DepartmentRepository;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,13 +17,9 @@ import static com.gima.gimastore.constant.ResponseCodes.NO_DEPARTMENT_ID;
 import static com.gima.gimastore.constant.ResponseCodes.REPEATED_DEPARTMENT_NAME;
 
 @Service
+@RequiredArgsConstructor
 public class DepartmentService {
-    private DepartmentRepository departmentRepo;
-
-    public DepartmentService(DepartmentRepository departmentRepo) {
-        this.departmentRepo = departmentRepo;
-    }
-
+    private final DepartmentRepository departmentRepo;
 
     public void add(DepartmentDTO dto) {
         validateDepartmentName(dto.getDeptName());
@@ -46,7 +43,7 @@ public class DepartmentService {
 
     public DepartmentDTO findById(Long id) {
         Optional<Department> deptById = departmentRepo.findById(id);
-        if (deptById.isEmpty())
+        if (!deptById.isPresent())
             throw new ApplicationException(new StatusResponse(NO_DEPARTMENT_ID.getCode(), NO_DEPARTMENT_ID.getKey(), NO_DEPARTMENT_ID.getMessage()));
 
         return ObjectMapperUtils.map(deptById.get(), DepartmentDTO.class);
@@ -71,7 +68,7 @@ public class DepartmentService {
 
     private Optional<Department> validateExistDept(Long id) {
         Optional<Department> deptById = departmentRepo.findById(id);
-        if (deptById.isEmpty())
+        if (!deptById.isPresent())
             throw new ApplicationException(new StatusResponse(NO_DEPARTMENT_ID.getCode(), NO_DEPARTMENT_ID.getKey(), NO_DEPARTMENT_ID.getMessage()));
         return deptById;
     }

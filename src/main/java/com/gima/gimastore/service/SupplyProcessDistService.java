@@ -10,6 +10,7 @@ import com.gima.gimastore.repository.*;
 import com.gima.gimastore.util.CommonBusinessValidationUtil;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,26 +24,16 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class SupplyProcessDistService {
-    private SupplyProcessPartDistRepository supplyProcessPartDistRepo;
-    private StorePartRepository storePartRepo;
-    private SupplyProcessPartsRepository supplyProcessPartsRepo;
-    private UserRepository userRepo;
-    private CommonBusinessValidationUtil businessValidationUtil;
-    private PartRepository partRepo;
-    private SupplyProcessRepository supplyProcessRepository;
+    private final SupplyProcessPartDistRepository supplyProcessPartDistRepo;
+    private final StorePartRepository storePartRepo;
+    private final SupplyProcessPartsRepository supplyProcessPartsRepo;
+    private final UserRepository userRepo;
+    private final CommonBusinessValidationUtil businessValidationUtil;
+    private final PartRepository partRepo;
+    private final SupplyProcessRepository supplyProcessRepository;
 
-    public SupplyProcessDistService(SupplyProcessPartDistRepository supplyProcessPartDistRepo, StorePartRepository storePartRepo,
-            SupplyProcessPartsRepository supplyProcessPartsRepo, UserRepository userRepo, CommonBusinessValidationUtil businessValidationUtil, PartRepository partRepo,
-            SupplyProcessRepository supplyProcessRepository) {
-        this.supplyProcessPartDistRepo = supplyProcessPartDistRepo;
-        this.storePartRepo = storePartRepo;
-        this.supplyProcessPartsRepo = supplyProcessPartsRepo;
-        this.userRepo = userRepo;
-        this.businessValidationUtil = businessValidationUtil;
-        this.partRepo = partRepo;
-        this.supplyProcessRepository = supplyProcessRepository;
-    }
 
     @Transactional
     public void add(SupplyProcessPartDistRequest supplyProcessPartDistDTO) {
@@ -161,7 +152,7 @@ public class SupplyProcessDistService {
                 supplyProcessPart.getFullDist() == true);
         if (allPartialDist) {
             SupplyProcess supplyProcess = supplyProcessRepository.findById(partDistById.get().getSupplyProcessPart().getSupplyProcess().getId()).get();
-            supplyProcess.setFullDist(true);
+            supplyProcess.setIsFullDist(true);
             supplyProcessRepository.save(supplyProcess);
         }
     }

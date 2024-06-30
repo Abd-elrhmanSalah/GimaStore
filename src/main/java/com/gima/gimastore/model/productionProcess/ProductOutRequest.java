@@ -2,6 +2,8 @@ package com.gima.gimastore.model.productionProcess;
 
 import com.gima.gimastore.entity.User;
 import com.gima.gimastore.entity.productProcess.Product;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Nationalized;
@@ -14,7 +16,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@Data
+@RequiredArgsConstructor
 public class ProductOutRequest implements Serializable {
+
     private Long id;
     private String destinationName;
     private String driverName;
@@ -25,75 +30,4 @@ public class ProductOutRequest implements Serializable {
     private Date creationDate = new Date();
     private List<ProductAmount> productAmounts;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDestinationName() {
-        return destinationName;
-    }
-
-    public void setDestinationName(String destinationName) {
-        this.destinationName = destinationName;
-    }
-
-    public String getDriverName() {
-        return driverName;
-    }
-
-    public void setDriverName(String driverName) {
-        this.driverName = driverName;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public List<ProductAmount> getProductAmounts() {
-        return productAmounts;
-    }
-
-    public void setProductAmounts(List<ProductAmount> productAmounts) {
-        this.productAmounts = productAmounts;
-    }
-
-    public User getResponsibleBy() {
-        return responsibleBy;
-    }
-
-    public void setResponsibleBy(User responsibleBy) {
-        this.responsibleBy = responsibleBy;
-    }
-
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
-    }
 }

@@ -1,6 +1,7 @@
 package com.gima.gimastore.service;
 
 import com.gima.gimastore.model.NotificationResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import com.gima.gimastore.entity.Notification;
@@ -23,19 +24,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationService {
-    private NotificationRepository notificationRepo;
-    private SimpMessagingTemplate messagingTemplate;
-    private UserRepository userRepo;
-    private UserPrivilegesRepository userPrivilegesRepo;
-
-    public NotificationService(NotificationRepository notificationRepo, SimpMessagingTemplate messagingTemplate, UserRepository userRepo,
-            UserPrivilegesRepository userPrivilegesRepo) {
-        this.notificationRepo = notificationRepo;
-        this.messagingTemplate = messagingTemplate;
-        this.userRepo = userRepo;
-        this.userPrivilegesRepo = userPrivilegesRepo;
-    }
+    private final NotificationRepository notificationRepo;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final UserRepository userRepo;
+    private final UserPrivilegesRepository userPrivilegesRepo;
 
     public void addNotification(NotificationDTO notificationDTO) {
         notificationRepo.save(ObjectMapperUtils.map(notificationDTO, Notification.class));

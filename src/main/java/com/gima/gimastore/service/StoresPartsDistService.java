@@ -11,6 +11,7 @@ import com.gima.gimastore.repository.*;
 import com.gima.gimastore.util.CommonBusinessValidationUtil;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,23 +25,16 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class StoresPartsDistService {
 
-    private StoresPartsDistRepository storesPartsDistRepo;
-    private CommonBusinessValidationUtil businessValidationUtil;
-    private PartRepository partRepo;
-    private StorePartRepository storePartRepo;
-    private StoreRepository storeRepo;
-    private UserRepository userRepo;
-
-    public StoresPartsDistService(StoresPartsDistRepository storesPartsDistRepo, CommonBusinessValidationUtil businessValidationUtil, PartRepository partRepo, StorePartRepository storePartRepo, StoreRepository storeRepo, UserRepository userRepo) {
-        this.storesPartsDistRepo = storesPartsDistRepo;
-        this.businessValidationUtil = businessValidationUtil;
-        this.partRepo = partRepo;
-        this.storePartRepo = storePartRepo;
-        this.storeRepo = storeRepo;
-        this.userRepo = userRepo;
-    }
+    private final StoresPartsDistRepository storesPartsDistRepo;
+    private final CommonBusinessValidationUtil businessValidationUtil;
+    private final PartRepository partRepo;
+    private final StorePartRepository storePartRepo;
+    private final StoreRepository storeRepo;
+    private final UserRepository userRepo;
+    
 
     @Transactional
     public void add(StoresPartsDistRequest storesPartsDistDTO) {

@@ -3,6 +3,7 @@ package com.gima.gimastore.service;
 import com.gima.gimastore.entity.Part;
 import com.gima.gimastore.entity.StorePart;
 import com.gima.gimastore.entity.Supplier;
+import com.gima.gimastore.entity.productProcess.ProductionRequest;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcess;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPart;
 import com.gima.gimastore.entity.supplyProcess.SupplyProcessPartsReturns;
@@ -17,9 +18,12 @@ import com.gima.gimastore.repository.SupplyProcessPartsReturnsRepository;
 import com.gima.gimastore.repository.SupplyProcessRepository;
 import com.gima.gimastore.util.ImageUtil;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +35,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,20 +47,14 @@ import static com.gima.gimastore.constant.ResponseCodes.NO_SUPPLYPROCESS_ID;
 import static com.gima.gimastore.constant.ResponseCodes.REPEATED_SUPPLIER_AND_BILLID;
 
 @Service
+@RequiredArgsConstructor
 public class SupplyProcessService {
 
-    private SupplyProcessRepository supplyProcessRepo;
-    private SupplyProcessPartsRepository supplyProcessPartsRepo;
-    private SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo;
-    private StorePartRepository storePartRepo;
+    private final SupplyProcessRepository supplyProcessRepo;
+    private final SupplyProcessPartsRepository supplyProcessPartsRepo;
+    private final SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo;
+    private final StorePartRepository storePartRepo;
 
-    public SupplyProcessService(SupplyProcessRepository supplyProcessRepo, SupplyProcessPartsRepository supplyProcessPartsRepo,
-            SupplyProcessPartsReturnsRepository supplyProcessPartsReturnsRepo, StorePartRepository storePartRepo) {
-        this.supplyProcessRepo = supplyProcessRepo;
-        this.supplyProcessPartsRepo = supplyProcessPartsRepo;
-        this.supplyProcessPartsReturnsRepo = supplyProcessPartsReturnsRepo;
-        this.storePartRepo = storePartRepo;
-    }
 
     public void add(SupplyProcessRequest request, MultipartFile file) throws IOException {
 
@@ -117,8 +117,8 @@ public class SupplyProcessService {
             partRequest.setCost(supplyProcessPart.getCost());
             partRequest.setRemainAmount(supplyProcessPart.getRemainAmount());
             partRequest.setDistAmount(supplyProcessPart.getDistAmount());
-            partRequest.setFullDist(supplyProcessPart.getFullDist());
-            partRequest.setPartialDist(supplyProcessPart.getPartialDist());
+            partRequest.setIsFullDist(supplyProcessPart.getFullDist());
+            partRequest.setIsPartialDist(supplyProcessPart.getPartialDist());
             partRequest.setAmountAfterReturn(supplyProcessPart.getAmountAfterReturn());
             response.getSupplyProcessParts().getParts().add(partRequest);
 
@@ -134,6 +134,7 @@ public class SupplyProcessService {
     }
 
     public Page<SupplyProcess> searchByPagingCriteria(Map<String, String> params, Pageable pageable) {
+        Pageable pageablee = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "id"));
 
         Page<SupplyProcess> supplyProcessPage = supplyProcessRepo.findAll(
                 (Specification<SupplyProcess>) (root, query, cb) -> {
@@ -168,11 +169,25 @@ public class SupplyProcessService {
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
-                }, pageable);
+                }, pageablee);
 
         supplyProcessPage.getContent().stream().map(supplyProcess -> {
             return ObjectMapperUtils.map(supplyProcess, SupplyProcessDTO.class);
         }).collect(Collectors.toList());
+
+//        List<SupplyProcess> mutableList = new ArrayList<>();
+//
+//        mutableList.addAll(supplyProcessPage.getContent());
+//
+//        Collections.sort(mutableList,
+//                Comparator.comparingLong(SupplyProcess::getId).reversed());
+//
+//        int start = (int) pageable.getOffset();
+//        int end = Math.min((start + pageable.getPageSize()), supplyProcessPage.getContent().size());
+//
+//        PageImpl<SupplyProcess> toReturn = new PageImpl<>(mutableList.subList(start, end), pageable,
+//                supplyProcessPage.getTotalElements());
+
         return supplyProcessPage;
 
     }

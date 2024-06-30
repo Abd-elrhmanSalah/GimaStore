@@ -6,6 +6,7 @@ import com.gima.gimastore.exception.StatusResponse;
 import com.gima.gimastore.model.SupervisorDTO;
 import com.gima.gimastore.repository.SupervisorRepository;
 import com.gima.gimastore.util.ObjectMapperUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,9 @@ import static com.gima.gimastore.constant.ResponseCodes.NO_SUPERVISOR_ID;
 import static com.gima.gimastore.constant.ResponseCodes.REPEATED_SUPERVISOR_NAME;
 
 @Service
+@RequiredArgsConstructor
 public class SupervisorService {
-    private SupervisorRepository supervisorRepo;
-
-    public SupervisorService(SupervisorRepository supervisorRepo) {
-        this.supervisorRepo = supervisorRepo;
-    }
+    private final SupervisorRepository supervisorRepo;
 
     public void add(SupervisorDTO dto) {
         validateSupervisorName(dto.getSupervisorName());
