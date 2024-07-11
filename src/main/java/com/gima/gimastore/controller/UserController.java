@@ -30,6 +30,7 @@ public class UserController {
     public ResponseEntity<?> insertUser(@RequestPart String stringDto, @RequestPart("avatar") MultipartFile file) {
         try {
 
+
             userService.addUser(Utils.formattedJsonToUserDTOObject(stringDto), file);
             return new ResponseEntity<>(new StatusResponse(SUCCESS.getCode(), SUCCESS.getKey(), "تمت إضافة المستخدم" + SUCCESS.getMessage()), HttpStatus.OK);
 

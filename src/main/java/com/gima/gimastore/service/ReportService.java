@@ -455,7 +455,7 @@ public class ReportService {
         partReport.setTotalSuppliesReturns(totalSuppliesReturns.get());
 
         ////////////////////////////////////////////////////////////////////////////
-        Page<ProductOutProducts> productOutProducts = productOutProductsRepo.findAll(
+        List<ProductOutProducts> productOutProducts = productOutProductsRepo.findAll(
                 (Specification<ProductOutProducts>) (root, query, cb) -> {
                     try {
                         List<Predicate> predicates = new ArrayList<>();
@@ -475,9 +475,9 @@ public class ReportService {
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
-                }, pageable);
+                });
         AtomicReference<Integer> totalOut = new AtomicReference<>(0);
-        productOutProducts.getContent().stream().forEach(productOutProduct -> {
+        productOutProducts.stream().forEach(productOutProduct -> {
             if (productPartRepo.existsByPartAndProduct(partReport.getPart(), productOutProduct.getProduct()))
                 totalOut.set(totalOut.get() + productOutProduct.getAmount() *
                         productPartRepo.findByPartAndProduct(partReport.getPart(), productOutProduct.getProduct()).

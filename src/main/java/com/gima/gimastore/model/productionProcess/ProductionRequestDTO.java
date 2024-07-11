@@ -33,7 +33,7 @@ public class ProductionRequestDTO implements Serializable {
     private Date creationDate = new Date();
     private Boolean isLocked = false;
     private Boolean isCompleted = false;
-    private Boolean isItProduct;
+    private Boolean isItProduct= false;
 
 
 }

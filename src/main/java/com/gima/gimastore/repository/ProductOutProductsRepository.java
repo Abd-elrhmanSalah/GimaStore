@@ -17,5 +17,6 @@ public interface ProductOutProductsRepository extends JpaRepository<ProductOutPr
     List<ProductOutProducts> findByProductOut(ProductOut productOut);
 
     Page<ProductOutProducts> findAll(Specification<ProductOutProducts> specification, Pageable pageable);
+    List<ProductOutProducts> findAll(Specification<ProductOutProducts> specification);
 
 }
